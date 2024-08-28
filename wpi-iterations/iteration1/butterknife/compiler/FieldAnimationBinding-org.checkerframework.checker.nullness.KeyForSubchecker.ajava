@@ -1,0 +1,33 @@
+package butterknife.compiler;
+
+import com.squareup.javapoet.CodeBlock;
+import static butterknife.compiler.BindingSet.ANIMATION_UTILS;
+
+@org.checkerframework.framework.qual.AnnotatedFor("org.checkerframework.checker.nullness.KeyForSubchecker")
+final class FieldAnimationBinding implements ResourceBinding {
+
+    private final  Id id;
+
+    private final  String name;
+
+    @org.checkerframework.dataflow.qual.SideEffectFree
+    FieldAnimationBinding( Id id,  String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public  Id id( FieldAnimationBinding this) {
+        return id;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public   boolean requiresResources( FieldAnimationBinding this,   int sdk) {
+        return false;
+    }
+
+    @org.checkerframework.dataflow.qual.Impure
+    public  CodeBlock render( FieldAnimationBinding this,   int sdk) {
+        return CodeBlock.of("target.$L = $T.loadAnimation(context, $L)", name, ANIMATION_UTILS, id.code);
+    }
+}

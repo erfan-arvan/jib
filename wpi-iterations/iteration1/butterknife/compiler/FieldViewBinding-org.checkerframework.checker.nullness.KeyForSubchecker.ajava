@@ -1,0 +1,50 @@
+package butterknife.compiler;
+
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+
+@org.checkerframework.framework.qual.AnnotatedFor("org.checkerframework.checker.nullness.KeyForSubchecker")
+final class FieldViewBinding implements MemberViewBinding {
+
+    private final  String name;
+
+    private final  TypeName type;
+
+    private final   boolean required;
+
+    @org.checkerframework.dataflow.qual.SideEffectFree
+    FieldViewBinding( String name,  TypeName type,   boolean required) {
+        this.name = name;
+        this.type = type;
+        this.required = required;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public  String getName( FieldViewBinding this) {
+        return name;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public  TypeName getType( FieldViewBinding this) {
+        return type;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public  ClassName getRawType( FieldViewBinding this) {
+        if (type instanceof ParameterizedTypeName) {
+            return ((ParameterizedTypeName) type).rawType;
+        }
+        return (ClassName) type;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public  String getDescription( FieldViewBinding this) {
+        return "field '" + name + "'";
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public   boolean isRequired( FieldViewBinding this) {
+        return required;
+    }
+}

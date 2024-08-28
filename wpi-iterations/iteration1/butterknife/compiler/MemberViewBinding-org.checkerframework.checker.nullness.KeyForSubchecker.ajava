@@ -1,0 +1,14 @@
+package butterknife.compiler;
+
+/**
+ * A field or method view binding.
+ */
+@org.checkerframework.framework.qual.AnnotatedFor("org.checkerframework.checker.nullness.KeyForSubchecker")
+interface MemberViewBinding {
+
+    /**
+     * A description of the binding in human readable form (e.g., "field 'foo'").
+     */
+    @org.checkerframework.dataflow.qual.Pure
+     String getDescription(MemberViewBinding this);
+}

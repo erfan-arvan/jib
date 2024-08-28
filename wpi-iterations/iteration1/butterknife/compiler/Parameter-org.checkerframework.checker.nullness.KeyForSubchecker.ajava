@@ -1,0 +1,37 @@
+package butterknife.compiler;
+
+import com.squareup.javapoet.TypeName;
+
+/**
+ * Represents a parameter type and its position in the listener method.
+ */
+@org.checkerframework.framework.qual.AnnotatedFor("org.checkerframework.checker.nullness.KeyForSubchecker")
+final class Parameter {
+
+    static final  Parameter  [] NONE = new Parameter[0];
+
+    private final   int listenerPosition;
+
+    private final  TypeName type;
+
+    @org.checkerframework.dataflow.qual.SideEffectFree
+    Parameter(  int listenerPosition,  TypeName type) {
+        this.listenerPosition = listenerPosition;
+        this.type = type;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+      int getListenerPosition( Parameter this) {
+        return listenerPosition;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+     TypeName getType( Parameter this) {
+        return type;
+    }
+
+    @org.checkerframework.dataflow.qual.Pure
+    public   boolean requiresCast( Parameter this,  String toType) {
+        return !type.toString().equals(toType);
+    }
+}

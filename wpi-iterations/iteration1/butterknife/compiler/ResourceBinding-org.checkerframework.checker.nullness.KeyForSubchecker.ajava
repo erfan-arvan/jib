@@ -1,0 +1,19 @@
+package butterknife.compiler;
+
+import com.squareup.javapoet.CodeBlock;
+
+@org.checkerframework.framework.qual.AnnotatedFor("org.checkerframework.checker.nullness.KeyForSubchecker")
+interface ResourceBinding {
+
+    @org.checkerframework.dataflow.qual.Pure
+     Id id( ResourceBinding this);
+
+    /**
+     * True if the code for this binding requires a 'res' variable for {@code Resources} access.
+     */
+    @org.checkerframework.dataflow.qual.Pure
+      boolean requiresResources( ResourceBinding this,   int sdk);
+
+    @org.checkerframework.dataflow.qual.Impure
+     CodeBlock render( ResourceBinding this,   int sdk);
+}
