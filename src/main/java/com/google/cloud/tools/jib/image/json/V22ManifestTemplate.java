@@ -72,7 +72,7 @@ public class V22ManifestTemplate implements BuildableManifestTemplate {
   private final String mediaType = MANIFEST_MEDIA_TYPE;
 
   /** The container configuration reference. */
-   private ContentDescriptorTemplate config;
+   @Nullable private ContentDescriptorTemplate config;
 
   /** The list of layer references. */
   private final List<ContentDescriptorTemplate> layers = new ArrayList<>();
@@ -87,7 +87,7 @@ public class V22ManifestTemplate implements BuildableManifestTemplate {
     return MANIFEST_MEDIA_TYPE;
   }
 
-  @Override
+  @Nullable @Override
   
   public ContentDescriptorTemplate getContainerConfiguration() {
     return config;

@@ -33,7 +33,7 @@ public class CacheMetadataLayerObjectTemplate implements JsonTemplate {
   private final ReferenceObject reference = new ReferenceObject();
 
   /** Additional properties for the layer. */
-   private CacheMetadataLayerPropertiesObjectTemplate properties;
+   @Nullable private CacheMetadataLayerPropertiesObjectTemplate properties;
 
   /**
    * The reference for a layer consists of its size (in bytes), digest, and diff ID.
@@ -43,8 +43,8 @@ public class CacheMetadataLayerObjectTemplate implements JsonTemplate {
   private static class ReferenceObject implements JsonTemplate {
 
     private long size;
-     private DescriptorDigest digest;
-     private DescriptorDigest diffId;
+     @Nullable private DescriptorDigest digest;
+     @Nullable private DescriptorDigest diffId;
   }
 
   public long getSize() {
@@ -52,17 +52,17 @@ public class CacheMetadataLayerObjectTemplate implements JsonTemplate {
   }
 
   
-  public DescriptorDigest getDigest() {
+  @Nullable public DescriptorDigest getDigest() {
     return reference.digest;
   }
 
   
-  public DescriptorDigest getDiffId() {
+  @Nullable public DescriptorDigest getDiffId() {
     return reference.diffId;
   }
 
   
-  public CacheMetadataLayerPropertiesObjectTemplate getProperties() {
+  @Nullable public CacheMetadataLayerPropertiesObjectTemplate getProperties() {
     return properties;
   }
 

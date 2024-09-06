@@ -52,7 +52,7 @@ public class Connection implements Closeable {
    */
   private HttpRequestFactory requestFactory = new ApacheHttpTransport().createRequestFactory();
 
-   private HttpResponse httpResponse;
+   @Nullable private HttpResponse httpResponse;
 
   /** The URL to send the request to. */
   private final GenericUrl url;

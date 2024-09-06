@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  */
 public class RegistryErrorException extends RegistryException {
 
-  RegistryErrorException(String message,  Throwable cause) {
+  RegistryErrorException(String message,  @Nullable Throwable cause) {
     super(message, cause);
   }
 }

@@ -44,8 +44,8 @@ public class DockerCredentialHelper {
   @JsonIgnoreProperties(ignoreUnknown = true)
   private static class DockerCredentialsTemplate implements JsonTemplate {
 
-     private String Username;
-     private String Secret;
+     @Nullable private String Username;
+     @Nullable private String Secret;
   }
 
   /**

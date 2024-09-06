@@ -40,8 +40,8 @@ public interface BuildableManifestTemplate extends ManifestTemplate {
   @VisibleForTesting
   class ContentDescriptorTemplate implements JsonTemplate {
 
-     private String mediaType;
-     private DescriptorDigest digest;
+     @Nullable private String mediaType;
+     @Nullable private DescriptorDigest digest;
     private long size;
 
     ContentDescriptorTemplate(String mediaType, long size, DescriptorDigest digest) {
@@ -62,7 +62,7 @@ public interface BuildableManifestTemplate extends ManifestTemplate {
       this.size = size;
     }
 
-    @VisibleForTesting
+    @Nullable @VisibleForTesting
     
     public DescriptorDigest getDigest() {
       return digest;
@@ -78,7 +78,7 @@ public interface BuildableManifestTemplate extends ManifestTemplate {
 
   /** @return the content descriptor of the container configuration */
   
-  ContentDescriptorTemplate getContainerConfiguration();
+  @Nullable ContentDescriptorTemplate getContainerConfiguration();
 
   /** @return an unmodifiable view of the layers */
   List<ContentDescriptorTemplate> getLayers();

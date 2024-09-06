@@ -51,7 +51,7 @@ public class RegistryAuthenticator {
    *     href="https://docs.docker.com/registry/spec/auth/token/#how-to-authenticate">https://docs.docker.com/registry/spec/auth/token/#how-to-authenticate</a>
    */
   
-  static RegistryAuthenticator fromAuthenticationMethod(
+  @Nullable static RegistryAuthenticator fromAuthenticationMethod(
       String authenticationMethod, String repository)
       throws RegistryAuthenticationFailedException, MalformedURLException {
     // If the authentication method starts with 'Basic ', no registry authentication is needed.
@@ -94,11 +94,11 @@ public class RegistryAuthenticator {
   @JsonIgnoreProperties(ignoreUnknown = true)
   private static class AuthenticationResponseTemplate implements JsonTemplate {
 
-     private String token;
+     @Nullable private String token;
   }
 
   private final String authenticationUrlBase;
-   private Authorization authorization;
+   @Nullable private Authorization authorization;
 
   RegistryAuthenticator(String realm, String service, String repository)
       throws MalformedURLException {

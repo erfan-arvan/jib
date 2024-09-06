@@ -55,7 +55,7 @@ public class ImageLayers<T extends Layer> implements Iterable<T> {
 
   /** @return the layer by digest, or {@code null} if not found */
   
-  public T get(DescriptorDigest digest) throws LayerPropertyNotFoundException {
+  @Nullable public T get(DescriptorDigest digest) throws LayerPropertyNotFoundException {
     if (!has(digest)) {
       return null;
     }

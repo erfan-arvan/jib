@@ -32,7 +32,7 @@ public class Image {
   private final List<String> environment = new ArrayList<>();
 
   /** Initial command to run when running the image. */
-   private List<String> entrypoint;
+   @Nullable private List<String> entrypoint;
 
   public List<String> getEnvironment() {
     return Collections.unmodifiableList(environment);

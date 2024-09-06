@@ -70,10 +70,10 @@ public class ContainerConfigurationTemplate implements JsonTemplate {
   private static class ConfigurationObjectTemplate implements JsonTemplate {
 
     /** Environment variables in the format {@code VARNAME=VARVALUE}. */
-     private List<String> Env;
+     @Nullable private List<String> Env;
 
     /** Command to run when container starts. */
-     private List<String> Entrypoint;
+     @Nullable private List<String> Entrypoint;
   }
 
   /**
@@ -109,12 +109,12 @@ public class ContainerConfigurationTemplate implements JsonTemplate {
   }
 
   
-  List<String> getContainerEnvironment() {
+  @Nullable List<String> getContainerEnvironment() {
     return config.Env;
   }
 
   
-  List<String> getContainerEntrypoint() {
+  @Nullable List<String> getContainerEntrypoint() {
     return config.Entrypoint;
   }
 

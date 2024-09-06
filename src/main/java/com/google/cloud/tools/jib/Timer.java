@@ -29,7 +29,7 @@ public class Timer implements Closeable {
   private final BuildLogger buildLogger;
   private final int depth;
 
-   private String label;
+   @Nullable private String label;
   private long startTime = System.nanoTime();
 
   public Timer(BuildLogger buildLogger, String label) {
@@ -53,7 +53,7 @@ public class Timer implements Closeable {
     return new Timer(buildLogger, label, depth + 1);
   }
 
-  public void lap( String label) {
+  public void lap( @Nullable String label) {
     if (this.label == null) {
       throw new IllegalStateException("Tried to lap Timer after closing");
     }

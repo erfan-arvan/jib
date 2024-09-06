@@ -72,10 +72,10 @@ public class V21ManifestTemplate implements ManifestTemplate {
    */
   static class LayerObjectTemplate implements JsonTemplate {
 
-     private DescriptorDigest blobSum;
+     @Nullable private DescriptorDigest blobSum;
 
     
-    DescriptorDigest getDigest() {
+    @Nullable DescriptorDigest getDigest() {
       return blobSum;
     }
   }
@@ -84,7 +84,7 @@ public class V21ManifestTemplate implements ManifestTemplate {
   private static class V1CompatibilityTemplate implements JsonTemplate {
 
     // TODO: Change to its own JSON template that can extract the layer diff ID.
-     private String v1Compatibility;
+     @Nullable private String v1Compatibility;
   }
 
   public List<DescriptorDigest> getLayerDigests() {
@@ -106,7 +106,7 @@ public class V21ManifestTemplate implements ManifestTemplate {
     return Collections.unmodifiableList(fsLayers);
   }
 
-  @VisibleForTesting
+  @Nullable @VisibleForTesting
   
   String getV1Compatibility(int index) {
     return history.get(index).v1Compatibility;

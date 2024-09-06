@@ -53,7 +53,7 @@ class ManifestPuller<T extends ManifestTemplate> implements RegistryEndpointProv
   }
 
   
-  @Override
+  @Nullable @Override
   public BlobHttpContent getContent() {
     return null;
   }

@@ -79,7 +79,7 @@ public class CacheReader {
 
   /** @return the cached layer with digest {@code layerDigest}, or {@code null} if not found */
   
-  public CachedLayer getLayer(DescriptorDigest layerDigest) throws LayerPropertyNotFoundException {
+  @Nullable public CachedLayer getLayer(DescriptorDigest layerDigest) throws LayerPropertyNotFoundException {
     return cache.getMetadata().getLayers().get(layerDigest);
   }
 
@@ -91,7 +91,7 @@ public class CacheReader {
    *     sourceFiles}, or {@code null} if there is no match
    */
   
-  public Path getLayerFile(List<Path> sourceFiles) throws CacheMetadataCorruptedException {
+  @Nullable public Path getLayerFile(List<Path> sourceFiles) throws CacheMetadataCorruptedException {
     CacheMetadata cacheMetadata = cache.getMetadata();
     ImageLayers<CachedLayerWithMetadata> cachedLayers =
         cacheMetadata.filterLayers().bySourceFiles(sourceFiles).filter();
@@ -123,7 +123,7 @@ public class CacheReader {
    * should have the same file contents)
    */
   
-  public CachedLayer getUpToDateLayerBySourceFiles(List<Path> sourceFiles)
+  @Nullable public CachedLayer getUpToDateLayerBySourceFiles(List<Path> sourceFiles)
       throws IOException, CacheMetadataCorruptedException {
     // Grabs all the layers that have matching source files.
     ImageLayers<CachedLayerWithMetadata> cachedLayersWithSourceFiles =
