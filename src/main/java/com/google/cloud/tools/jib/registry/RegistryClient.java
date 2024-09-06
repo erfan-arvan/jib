@@ -57,7 +57,7 @@ public class RegistryClient {
             public void info(CharSequence message) {}
 
             @Override
-            public void warn(CharSequence message) {}
+            public void warn(@Nullable CharSequence message) {}
 
             @Override
             public void error(CharSequence message) {}
@@ -71,7 +71,7 @@ public class RegistryClient {
 
   private static final String PROTOCOL = "https";
 
-   private static String userAgentSuffix;
+   @Nullable private static String userAgentSuffix;
 
   // TODO: Inject via a RegistryClientFactory.
   /** Sets a suffix to append to {@code User-Agent} headers. */
@@ -94,10 +94,10 @@ public class RegistryClient {
     return userAgentBuilder.toString();
   }
 
-   private final Authorization authorization;
+   @Nullable private final Authorization authorization;
   private final RegistryEndpointProperties registryEndpointProperties;
 
-  public RegistryClient( Authorization authorization, String serverUrl, String imageName) {
+  public RegistryClient( @Nullable Authorization authorization, String serverUrl, String imageName) {
     this.authorization = authorization;
     this.registryEndpointProperties = new RegistryEndpointProperties(serverUrl, imageName);
   }
@@ -107,7 +107,7 @@ public class RegistryClient {
    *     {@code null} if no token authentication is necessary
    */
   
-  public RegistryAuthenticator getRegistryAuthenticator() throws IOException, RegistryException {
+  @Nullable public RegistryAuthenticator getRegistryAuthenticator() throws IOException, RegistryException {
     // Gets the WWW-Authenticate header (eg. 'WWW-Authenticate: Bearer
     // realm="https://gcr.io/v2/token",service="gcr.io"')
     return callRegistryEndpoint(new AuthenticationMethodRetriever(registryEndpointProperties));
@@ -120,14 +120,14 @@ public class RegistryClient {
    * @param manifestTemplateClass the specific version of manifest template to pull, or {@link
    *     ManifestTemplate} to pull either {@link V22ManifestTemplate} or {@link V21ManifestTemplate}
    */
-  public <T extends ManifestTemplate> T pullManifest(
+  @Nullable public <T extends ManifestTemplate> T pullManifest(
       String imageTag, Class<T> manifestTemplateClass) throws IOException, RegistryException {
     ManifestPuller<T> manifestPuller =
         new ManifestPuller<>(registryEndpointProperties, imageTag, manifestTemplateClass);
     return callRegistryEndpoint(manifestPuller);
   }
 
-  public ManifestTemplate pullManifest(String imageTag) throws IOException, RegistryException {
+  @Nullable public ManifestTemplate pullManifest(String imageTag) throws IOException, RegistryException {
     return pullManifest(imageTag, ManifestTemplate.class);
   }
 
@@ -142,7 +142,7 @@ public class RegistryClient {
    * @return the BLOB's {@link BlobDescriptor} if the BLOB exists on the registry, or {@code null}
    *     if it doesn't
    */
-  public BlobDescriptor checkBlob(DescriptorDigest blobDigest)
+  @Nullable public BlobDescriptor checkBlob(DescriptorDigest blobDigest)
       throws IOException, RegistryException {
     BlobChecker blobChecker = new BlobChecker(registryEndpointProperties, blobDigest);
     return callRegistryEndpoint(blobChecker);
@@ -213,7 +213,7 @@ public class RegistryClient {
    *
    * @param registryEndpointProvider the {@link RegistryEndpointProvider} to the endpoint
    */
-  private <T> T callRegistryEndpoint(RegistryEndpointProvider<T> registryEndpointProvider)
+  @Nullable private <T> T callRegistryEndpoint(RegistryEndpointProvider<T> registryEndpointProvider)
       throws IOException, RegistryException {
     return callRegistryEndpoint(null, registryEndpointProvider);
   }
@@ -225,8 +225,8 @@ public class RegistryClient {
    *     registryEndpointProvider}
    * @param registryEndpointProvider the {@link RegistryEndpointProvider} to the endpoint
    */
-  private <T> T callRegistryEndpoint(
-       URL url, RegistryEndpointProvider<T> registryEndpointProvider)
+  @Nullable private <T> T callRegistryEndpoint(
+       @Nullable URL url, RegistryEndpointProvider<T> registryEndpointProvider)
       throws IOException, RegistryException {
     if (url == null) {
       url = registryEndpointProvider.getApiRoute(getApiRouteBase());

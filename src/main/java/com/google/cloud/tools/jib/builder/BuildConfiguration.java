@@ -38,7 +38,7 @@ public class BuildConfiguration {
     private List<String> credentialHelperNames = new ArrayList<>();
     private RegistryCredentials knownRegistryCredentials = RegistryCredentials.none();
     private boolean enableReproducibleBuilds = true;
-    private String mainClass;
+    @Nullable private String mainClass;
     private List<String> jvmFlags = new ArrayList<>();
     private Map<String, String> environmentMap = new HashMap<>();
     private Class<? extends BuildableManifestTemplate> targetFormat = V22ManifestTemplate.class;
@@ -161,7 +161,7 @@ public class BuildConfiguration {
   private List<String> credentialHelperNames;
   private RegistryCredentials knownRegistryCredentials;
   private boolean enableReproducibleBuilds;
-  private String mainClass;
+  @Nullable private String mainClass;
   private List<String> jvmFlags;
   private Map<String, String> environmentMap;
   private Class<? extends BuildableManifestTemplate> targetFormat;
@@ -178,7 +178,7 @@ public class BuildConfiguration {
       List<String> credentialHelperNames,
       RegistryCredentials knownRegistryCredentials,
       boolean enableReproducibleBuilds,
-      String mainClass,
+      @Nullable String mainClass,
       List<String> jvmFlags,
       Map<String, String> environmentMap,
       Class<? extends BuildableManifestTemplate> targetFormat) {
@@ -234,7 +234,7 @@ public class BuildConfiguration {
     return enableReproducibleBuilds;
   }
 
-  public String getMainClass() {
+  @Nullable public String getMainClass() {
     return mainClass;
   }
 

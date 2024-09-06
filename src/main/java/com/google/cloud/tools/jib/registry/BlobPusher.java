@@ -52,7 +52,7 @@ class BlobPusher {
   private class Initializer implements RegistryEndpointProvider<String> {
 
     
-    @Override
+    @Nullable @Override
     public BlobHttpContent getContent() {
       return null;
     }
@@ -67,7 +67,7 @@ class BlobPusher {
      *     the registry
      */
     
-    @Override
+    @Nullable @Override
     public String handleResponse(Response response) throws RegistryErrorException {
       switch (response.getStatusCode()) {
         case HttpStatusCodes.STATUS_CODE_CREATED:
@@ -152,7 +152,7 @@ class BlobPusher {
     private final URL location;
 
     
-    @Override
+    @Nullable @Override
     public BlobHttpContent getContent() {
       return null;
     }

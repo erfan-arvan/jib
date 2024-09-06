@@ -18,6 +18,7 @@ package com.google.cloud.tools.jib.image;
 
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
+import javax.annotation.Nullable;
 
 /**
  * Represents a layer in an image. Implementations represent the various types of layers.
@@ -66,5 +67,5 @@ public interface Layer {
    * @return the layer's diff ID
    * @throws LayerPropertyNotFoundException if not available
    */
-  DescriptorDigest getDiffId() throws LayerPropertyNotFoundException;
+  @Nullable DescriptorDigest getDiffId() throws LayerPropertyNotFoundException;
 }

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 
 /** Pulls and caches a single base image layer. */
 class PullAndCacheBaseImageLayerStep implements Callable<CachedLayer> {

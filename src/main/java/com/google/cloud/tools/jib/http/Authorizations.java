@@ -18,17 +18,18 @@ package com.google.cloud.tools.jib.http;
 
 import com.google.api.client.util.Base64;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 
 /** Static initializers for {@link Authorization}. */
 public class Authorizations {
 
   /** Creates an {@link Authorization} with a {@code Bearer} token. */
-  public static Authorization withBearerToken(String token) {
+  public static Authorization withBearerToken(@Nullable String token) {
     return new Authorization("Bearer", token);
   }
 
   /** Creates an {@link Authorization} with a {@code Basic} credentials. */
-  public static Authorization withBasicCredentials(String username, String secret) {
+  public static Authorization withBasicCredentials(@Nullable String username, @Nullable String secret) {
     String credentials = username + ":" + secret;
     String token =
         new String(

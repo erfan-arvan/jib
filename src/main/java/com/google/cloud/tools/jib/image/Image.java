@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /** Represents an image. */
 public class Image {
@@ -31,7 +32,7 @@ public class Image {
   private final List<String> environment = new ArrayList<>();
 
   /** Initial command to run when running the image. */
-  private List<String> entrypoint;
+  @Nullable private List<String> entrypoint;
 
   public List<String> getEnvironment() {
     return Collections.unmodifiableList(environment);
@@ -60,7 +61,7 @@ public class Image {
     return Collections.unmodifiableList(entrypoint);
   }
 
-  public Image setEntrypoint(List<String> entrypoint) {
+  public Image setEntrypoint(@Nullable List<String> entrypoint) {
     this.entrypoint = entrypoint;
     return this;
   }

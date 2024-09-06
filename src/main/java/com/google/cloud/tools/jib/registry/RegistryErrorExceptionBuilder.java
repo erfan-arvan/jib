@@ -18,11 +18,12 @@ package com.google.cloud.tools.jib.registry;
 
 import com.google.cloud.tools.jib.ProjectInfo;
 import com.google.cloud.tools.jib.registry.json.ErrorEntryTemplate;
+import javax.annotation.Nullable;
 
 /** Builds a {@link RegistryErrorException} with multiple causes. */
 class RegistryErrorExceptionBuilder {
 
-  private final Throwable cause;
+  @Nullable private final Throwable cause;
   private final StringBuilder errorMessageBuilder = new StringBuilder();
 
   private boolean firstErrorReason = true;
@@ -34,7 +35,7 @@ class RegistryErrorExceptionBuilder {
    * @param message the original received error message, which may or may not be used depending on
    *     the {@code errorCode}
    */
-  private static String getReason(String errorCodeString, String message) {
+  @Nullable private static String getReason(String errorCodeString, @Nullable String message) {
     try {
       ErrorCodes errorCode = ErrorCodes.valueOf(errorCodeString);
 
@@ -57,7 +58,7 @@ class RegistryErrorExceptionBuilder {
   }
 
   /** @param method the registry method that errored */
-  RegistryErrorExceptionBuilder(String method, Throwable cause) {
+  RegistryErrorExceptionBuilder(String method, @Nullable Throwable cause) {
     this.cause = cause;
 
     errorMessageBuilder.append("Tried to ");
@@ -83,7 +84,7 @@ class RegistryErrorExceptionBuilder {
   }
 
   /** Adds an entry to the error reasons. */
-  RegistryErrorExceptionBuilder addReason(String reason) {
+  RegistryErrorExceptionBuilder addReason(@Nullable String reason) {
     if (!firstErrorReason) {
       errorMessageBuilder.append(", ");
     }

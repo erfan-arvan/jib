@@ -37,7 +37,7 @@ class CacheMetadata {
 
     private final ImageLayers<CachedLayerWithMetadata> layers;
 
-     private List<Path> sourceFiles;
+     @Nullable private List<Path> sourceFiles;
 
     private LayerFilter(ImageLayers<CachedLayerWithMetadata> layers) {
       this.layers = layers;

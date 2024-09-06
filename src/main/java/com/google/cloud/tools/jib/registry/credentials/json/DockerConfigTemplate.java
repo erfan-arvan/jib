@@ -62,13 +62,13 @@ public class DockerConfigTemplate implements JsonTemplate {
   /** Template for an {@code auth} defined for a registry under {@code auths}. */
   private static class AuthTemplate implements JsonTemplate {
 
-    private String auth;
+    @Nullable private String auth;
   }
 
   /** Maps from registry to its {@link AuthTemplate}. */
   private final Map<String, AuthTemplate> auths = new HashMap<>();
 
-  private String credsStore;
+  @Nullable private String credsStore;
 
   /** Maps from registry to credential helper name. */
   private final Map<String, String> credHelpers = new HashMap<>();
@@ -78,7 +78,7 @@ public class DockerConfigTemplate implements JsonTemplate {
    *     none exists
    */
   
-  public String getAuthFor(String registry) {
+  @Nullable public String getAuthFor(String registry) {
     if (!auths.containsKey(registry)) {
       return null;
     }
@@ -90,7 +90,7 @@ public class DockerConfigTemplate implements JsonTemplate {
    *     {@code credHelpers}; otherwise, {@code null} if not found
    */
   
-  public String getCredentialHelperFor(String registry) {
+  @Nullable public String getCredentialHelperFor(String registry) {
     if (credsStore != null && auths.containsKey(registry)) {
       return credsStore;
     }

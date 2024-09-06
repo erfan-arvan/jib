@@ -22,6 +22,7 @@ import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.annotation.Nullable;
 
 /** Contains properties describing a BLOB, including its digest and possibly its size (in bytes). */
 public class BlobDescriptor {

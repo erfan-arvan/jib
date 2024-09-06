@@ -60,7 +60,7 @@ class BlobChecker implements RegistryEndpointProvider<BlobDescriptor> {
     return new BlobDescriptor(contentLength, blobDigest);
   }
 
-  @Override
+  @Nullable @Override
   public BlobDescriptor handleHttpResponseException(HttpResponseException httpResponseException)
       throws RegistryErrorException, HttpResponseException {
     if (httpResponseException.getStatusCode() != HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
@@ -103,7 +103,7 @@ class BlobChecker implements RegistryEndpointProvider<BlobDescriptor> {
   }
 
   
-  @Override
+  @Nullable @Override
   public BlobHttpContent getContent() {
     return null;
   }

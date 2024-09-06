@@ -18,6 +18,7 @@ package com.google.cloud.tools.jib.builder;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** Builds an image entrypoint for the Java application. */
 public class EntrypointBuilder {
@@ -28,7 +29,7 @@ public class EntrypointBuilder {
    * <p>The entrypoint is {@code java [jvm flags] -cp [classpaths] [main class]}.
    */
   public static List<String> makeEntrypoint(
-      SourceFilesConfiguration sourceFilesConfiguration, List<String> jvmFlags, String mainClass) {
+      SourceFilesConfiguration sourceFilesConfiguration, List<String> jvmFlags, @Nullable String mainClass) {
     List<String> classPaths = new ArrayList<>();
     classPaths.add(sourceFilesConfiguration.getDependenciesPathOnImage() + "*");
     classPaths.add(sourceFilesConfiguration.getResourcesPathOnImage());

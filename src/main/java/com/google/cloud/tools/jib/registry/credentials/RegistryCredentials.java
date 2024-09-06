@@ -124,7 +124,7 @@ public class RegistryCredentials {
    *     exists
    */
   
-  public Authorization getAuthorization(String registry) {
+  @Nullable public Authorization getAuthorization(String registry) {
     if (!has(registry)) {
       return null;
     }
@@ -136,7 +136,7 @@ public class RegistryCredentials {
    *     registry}, or {@code null} if none exists
    */
   
-  public String getCredentialSource(String registry) {
+  @Nullable public String getCredentialSource(String registry) {
     if (!has(registry)) {
       return null;
     }

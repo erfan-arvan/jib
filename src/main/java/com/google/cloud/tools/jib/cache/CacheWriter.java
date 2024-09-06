@@ -35,6 +35,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import javax.annotation.Nullable;
 
 /** Writes {@link UnwrittenLayer}s to the cache. */
 public class CacheWriter {

@@ -15,6 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.http;
+import javax.annotation.Nullable;
 
 /**
  * Holds the credentials for an HTTP {@code Authorization} header.
@@ -26,9 +27,9 @@ package com.google.cloud.tools.jib.http;
 public class Authorization {
 
   private final String scheme;
-  private final String token;
+  @Nullable private final String token;
 
-  Authorization(String scheme, String token) {
+  Authorization(String scheme, @Nullable String token) {
     this.scheme = scheme;
     this.token = token;
   }
@@ -37,7 +38,7 @@ public class Authorization {
     return scheme;
   }
 
-  public String getToken() {
+  @Nullable public String getToken() {
     return token;
   }
 

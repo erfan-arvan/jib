@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 /** Reads image content from the cache. */
 public class CacheReader {
@@ -77,7 +78,7 @@ public class CacheReader {
   }
 
   /** @return the cached layer with digest {@code layerDigest} */
-  public CachedLayer getLayer(DescriptorDigest layerDigest) throws LayerPropertyNotFoundException {
+  @Nullable public CachedLayer getLayer(DescriptorDigest layerDigest) throws LayerPropertyNotFoundException {
     return cache.getMetadata().getLayers().get(layerDigest);
   }
 
@@ -87,7 +88,7 @@ public class CacheReader {
    * @param sourceFiles the source files the layer must be built from
    * @return the newest cached layer file that matches the {@code layerType} and {@code sourceFiles}
    */
-  public Path getLayerFile(List<Path> sourceFiles) throws CacheMetadataCorruptedException {
+  @Nullable public Path getLayerFile(List<Path> sourceFiles) throws CacheMetadataCorruptedException {
     CacheMetadata cacheMetadata = cache.getMetadata();
     ImageLayers<CachedLayerWithMetadata> cachedLayers =
         cacheMetadata.filterLayers().bySourceFiles(sourceFiles).filter();
@@ -114,7 +115,7 @@ public class CacheReader {
    * will not have been modified since creation of any up-to-date layer (ie. all up-to-date layers
    * should have the same file contents)
    */
-  public CachedLayer getUpToDateLayerBySourceFiles(List<Path> sourceFiles)
+  @Nullable public CachedLayer getUpToDateLayerBySourceFiles(List<Path> sourceFiles)
       throws IOException, CacheMetadataCorruptedException {
     // Grabs all the layers that have matching source files.
     ImageLayers<CachedLayerWithMetadata> cachedLayersWithSourceFiles =

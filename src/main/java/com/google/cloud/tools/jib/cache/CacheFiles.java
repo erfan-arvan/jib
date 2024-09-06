@@ -18,6 +18,7 @@ package com.google.cloud.tools.jib.cache;
 
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.nio.file.Path;
+import javax.annotation.Nullable;
 
 /** Methods for getting static cache filename properties. */
 class CacheFiles {

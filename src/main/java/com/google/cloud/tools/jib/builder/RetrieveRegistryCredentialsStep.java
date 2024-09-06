@@ -65,7 +65,7 @@ class RetrieveRegistryCredentialsStep implements Callable<Authorization> {
     this.dockerConfigCredentialRetriever = dockerConfigCredentialRetriever;
   }
 
-  @Override
+  @Nullable @Override
   public Authorization call() throws IOException, NonexistentDockerCredentialHelperException {
     try (Timer ignored =
         new Timer(
@@ -128,7 +128,7 @@ class RetrieveRegistryCredentialsStep implements Callable<Authorization> {
    * Attempts to retrieve authorization for the registry using {@code
    * docker-credential-[credentialHelperSuffix]}.
    */
-  @VisibleForTesting
+  @Nullable @VisibleForTesting
   
   Authorization retrieveFromCredentialHelper(String credentialHelperSuffix)
       throws NonexistentDockerCredentialHelperException, IOException {
@@ -153,7 +153,7 @@ class RetrieveRegistryCredentialsStep implements Callable<Authorization> {
     }
   }
 
-  private void logGotCredentialsFrom(String credentialSource) {
+  private void logGotCredentialsFrom(@Nullable String credentialSource) {
     buildConfiguration.getBuildLogger().info("Using " + credentialSource + " for " + registry);
   }
 }

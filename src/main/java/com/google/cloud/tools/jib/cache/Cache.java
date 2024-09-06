@@ -83,7 +83,7 @@ public class Cache implements Closeable {
   }
 
   /** Adds the cached layer to the cache metadata. */
-  void addLayerToMetadata(CachedLayer cachedLayer,  LayerMetadata layerMetadata)
+  void addLayerToMetadata(CachedLayer cachedLayer,  @Nullable LayerMetadata layerMetadata)
       throws LayerPropertyNotFoundException {
     cacheMetadata.addLayer(new CachedLayerWithMetadata(cachedLayer, layerMetadata));
   }

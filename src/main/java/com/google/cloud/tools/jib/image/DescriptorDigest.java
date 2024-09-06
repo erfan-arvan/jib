@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.cloud.tools.jib.image.json.DescriptorDigestDeserializer;
 import com.google.cloud.tools.jib.image.json.DescriptorDigestSerializer;
 import java.security.DigestException;
+import javax.annotation.Nullable;
 
 /**
  * Represents a SHA-256 content descriptor digest as defined by the Registry HTTP API v2 reference.

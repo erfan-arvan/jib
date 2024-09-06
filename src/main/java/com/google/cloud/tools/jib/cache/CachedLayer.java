@@ -22,6 +22,7 @@ import com.google.cloud.tools.jib.blob.Blobs;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.image.Layer;
 import java.nio.file.Path;
+import javax.annotation.Nullable;
 
 /**
  * A {@link Layer} that has been written out to a cache and has its file-backed content BLOB,
@@ -31,7 +32,7 @@ public class CachedLayer implements Layer {
 
   private final Path contentFile;
   private final BlobDescriptor blobDescriptor;
-  private final DescriptorDigest diffId;
+  @Nullable private final DescriptorDigest diffId;
 
   /**
    * Initializes the layer with its file-backed content BLOB, content descriptor (digest and size),
@@ -43,7 +44,7 @@ public class CachedLayer implements Layer {
    * @param diffId the diff ID for the layer
    * @see Layer
    */
-  public CachedLayer(Path contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
+  public CachedLayer(Path contentFile, BlobDescriptor blobDescriptor, @Nullable DescriptorDigest diffId) {
     this.contentFile = contentFile;
     this.blobDescriptor = blobDescriptor;
     this.diffId = diffId;
@@ -63,7 +64,7 @@ public class CachedLayer implements Layer {
     return blobDescriptor;
   }
 
-  @Override
+  @Nullable @Override
   public DescriptorDigest getDiffId() {
     return diffId;
   }

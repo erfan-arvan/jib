@@ -43,14 +43,14 @@ interface RegistryEndpointProvider<T> {
 
   /** @return the {@link BlobHttpContent} to send as the request body */
   
-  BlobHttpContent getContent();
+  @Nullable BlobHttpContent getContent();
 
   /** @return a list of MIME types to pass as an HTTP {@code Accept} header */
   List<String> getAccept();
 
   /** Handles the response specific to the registry action. */
   
-  T handleResponse(Response response) throws IOException, RegistryException;
+  @Nullable T handleResponse(Response response) throws IOException, RegistryException;
 
   /**
    * Handles an {@link HttpResponseException} that occurs.
@@ -60,7 +60,7 @@ interface RegistryEndpointProvider<T> {
    *     could not be handled
    */
   
-  default T handleHttpResponseException(HttpResponseException httpResponseException)
+  @Nullable default T handleHttpResponseException(HttpResponseException httpResponseException)
       throws HttpResponseException, RegistryErrorException {
     throw httpResponseException;
   }

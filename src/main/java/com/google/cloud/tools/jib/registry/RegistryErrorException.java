@@ -15,6 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
+import javax.annotation.Nullable;
 
 /**
  * Thrown when an HTTP request to a registry endpoint failed with errors as defined in {@link
@@ -22,7 +23,7 @@ package com.google.cloud.tools.jib.registry;
  */
 public class RegistryErrorException extends RegistryException {
 
-  RegistryErrorException(String message, Throwable cause) {
+  RegistryErrorException(String message, @Nullable Throwable cause) {
     super(message, cause);
   }
 }
