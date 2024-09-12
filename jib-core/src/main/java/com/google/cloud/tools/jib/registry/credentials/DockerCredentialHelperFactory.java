@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry.credentials;
-
+import javax.annotation.Nullable;
 /** Factory class for constructing {@link DockerCredentialHelper}. */
 public class DockerCredentialHelperFactory {
 

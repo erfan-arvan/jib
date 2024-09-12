@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.blob.Blobs;
@@ -29,42 +28,44 @@ import java.nio.file.Path;
  */
 public class CachedLayer implements Layer {
 
-  private final Path contentFile;
-  private final BlobDescriptor blobDescriptor;
-  private final DescriptorDigest diffId;
+    private final Path contentFile;
 
-  /**
-   * Initializes the layer with its file-backed content BLOB, content descriptor (digest and size),
-   * and diff ID. The {@code blobDescriptor} and {@code diffId} <b>must match</b> the BLOB stored in
-   * the file - no checks are made at runtime.
-   *
-   * @param contentFile the file with the layer's content BLOB
-   * @param blobDescriptor the content descriptor for the layer's content BLOB
-   * @param diffId the diff ID for the layer
-   * @see Layer
-   */
-  public CachedLayer(Path contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
-    this.contentFile = contentFile;
-    this.blobDescriptor = blobDescriptor;
-    this.diffId = diffId;
-  }
+    private final BlobDescriptor blobDescriptor;
 
-  public Path getContentFile() {
-    return contentFile;
-  }
+    private final DescriptorDigest diffId;
 
-  @Override
-  public Blob getBlob() {
-    return Blobs.from(contentFile);
-  }
+    /**
+     * Initializes the layer with its file-backed content BLOB, content descriptor (digest and size),
+     * and diff ID. The {@code blobDescriptor} and {@code diffId} <b>must match</b> the BLOB stored in
+     * the file - no checks are made at runtime.
+     *
+     * @param contentFile the file with the layer's content BLOB
+     * @param blobDescriptor the content descriptor for the layer's content BLOB
+     * @param diffId the diff ID for the layer
+     * @see Layer
+     */
+    public CachedLayer(Path contentFile, BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
+        this.contentFile = contentFile;
+        this.blobDescriptor = blobDescriptor;
+        this.diffId = diffId;
+    }
 
-  @Override
-  public BlobDescriptor getBlobDescriptor() {
-    return blobDescriptor;
-  }
+    public Path getContentFile() {
+        return contentFile;
+    }
 
-  @Override
-  public DescriptorDigest getDiffId() {
-    return diffId;
-  }
+    @Override
+    public Blob getBlob() {
+        return Blobs.from(contentFile);
+    }
+
+    @Override
+    public BlobDescriptor getBlobDescriptor() {
+        return blobDescriptor;
+    }
+
+    @Override
+    public DescriptorDigest getDiffId() {
+        return diffId;
+    }
 }

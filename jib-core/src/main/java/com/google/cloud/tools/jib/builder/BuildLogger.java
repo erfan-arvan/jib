@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.builder;
-
+import javax.annotation.Nullable;
 public interface BuildLogger {
 
   void debug(CharSequence message);

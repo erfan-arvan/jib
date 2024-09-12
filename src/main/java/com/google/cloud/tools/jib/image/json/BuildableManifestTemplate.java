@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
@@ -29,60 +28,75 @@ import java.util.List;
  */
 public interface BuildableManifestTemplate extends ManifestTemplate {
 
-  /**
-   * Template for inner JSON object representing content descriptor for a layer or container
-   * configuration.
-   *
-   * @see <a href="https://github.com/opencontainers/image-spec/blob/master/descriptor.md">OCI
-   *     Content Descriptors</a>
-   */
-  @VisibleForTesting
-  class ContentDescriptorTemplate implements JsonTemplate {
-
-    private String mediaType;
-    private DescriptorDigest digest;
-    private long size;
-
-    ContentDescriptorTemplate(String mediaType, long size, DescriptorDigest digest) {
-      this.mediaType = mediaType;
-      this.size = size;
-      this.digest = digest;
-    }
-
-    /** Necessary for Jackson to create from JSON. */
-    private ContentDescriptorTemplate() {}
-
+    /**
+     * Template for inner JSON object representing content descriptor for a layer or container
+     * configuration.
+     *
+     * @see <a href="https://github.com/opencontainers/image-spec/blob/master/descriptor.md">OCI
+     *     Content Descriptors</a>
+     */
     @VisibleForTesting
-    public long getSize() {
-      return size;
+    class ContentDescriptorTemplate implements JsonTemplate {
+
+        private String mediaType;
+
+        private DescriptorDigest digest;
+
+        private long size;
+
+        ContentDescriptorTemplate(String mediaType, long size, DescriptorDigest digest) {
+            this.mediaType = mediaType;
+            this.size = size;
+            this.digest = digest;
+        }
+
+        /**
+         * Necessary for Jackson to create from JSON.
+         */
+        private ContentDescriptorTemplate() {
+        }
+
+        @VisibleForTesting
+        public long getSize() {
+            return size;
+        }
+
+        void setSize(long size) {
+            this.size = size;
+        }
+
+        @VisibleForTesting
+        public DescriptorDigest getDigest() {
+            return digest;
+        }
+
+        void setDigest(DescriptorDigest digest) {
+            this.digest = digest;
+        }
     }
 
-    void setSize(long size) {
-      this.size = size;
-    }
+    /**
+     * @return the media type for this manifest, specific to the image format
+     */
+    String getManifestMediaType();
 
-    @VisibleForTesting
-    public DescriptorDigest getDigest() {
-      return digest;
-    }
+    /**
+     * @return the content descriptor of the container configuration
+     */
+    ContentDescriptorTemplate getContainerConfiguration();
 
-    void setDigest(DescriptorDigest digest) {
-      this.digest = digest;
-    }
-  }
+    /**
+     * @return an unmodifiable view of the layers
+     */
+    List<ContentDescriptorTemplate> getLayers();
 
-  /** @return the media type for this manifest, specific to the image format */
-  String getManifestMediaType();
+    /**
+     * Sets the content descriptor of the container configuration.
+     */
+    void setContainerConfiguration(@Nullable() long size, @Nullable() DescriptorDigest digest);
 
-  /** @return the content descriptor of the container configuration */
-  ContentDescriptorTemplate getContainerConfiguration();
-
-  /** @return an unmodifiable view of the layers */
-  List<ContentDescriptorTemplate> getLayers();
-
-  /** Sets the content descriptor of the container configuration. */
-  void setContainerConfiguration(long size, DescriptorDigest digest);
-
-  /** Adds a layer to the manifest. */
-  void addLayer(long size, DescriptorDigest digest);
+    /**
+     * Adds a layer to the manifest.
+     */
+    void addLayer(@Nullable() long size, @Nullable() DescriptorDigest digest);
 }

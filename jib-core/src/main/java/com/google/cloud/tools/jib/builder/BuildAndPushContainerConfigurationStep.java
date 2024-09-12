@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.builder;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.Timer;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;

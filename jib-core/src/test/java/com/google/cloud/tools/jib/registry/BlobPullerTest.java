@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.Blobs;
 import com.google.cloud.tools.jib.hash.CountingDigestOutputStream;

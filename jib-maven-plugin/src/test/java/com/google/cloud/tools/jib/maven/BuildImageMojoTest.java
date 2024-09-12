@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.maven;
-
+import javax.annotation.Nullable;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpStatusCodes;
 import com.google.cloud.tools.jib.builder.BuildConfiguration;

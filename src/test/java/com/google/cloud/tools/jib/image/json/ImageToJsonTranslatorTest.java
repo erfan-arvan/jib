@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
@@ -39,76 +38,60 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/** Tests for {@link ImageToJsonTranslator}. */
+/**
+ * Tests for {@link ImageToJsonTranslator}.
+ */
 public class ImageToJsonTranslatorTest {
 
-  private ImageToJsonTranslator imageToJsonTranslator;
+    private ImageToJsonTranslator imageToJsonTranslator;
 
-  @Before
-  public void setUp() throws DigestException, LayerPropertyNotFoundException {
-    Image testImage = new Image();
+    @Before
+    public void setUp() throws DigestException, LayerPropertyNotFoundException {
+        Image testImage = new Image();
+        testImage.setEnvironmentVariable("VAR1", "VAL1");
+        testImage.setEnvironmentVariable("VAR2", "VAL2");
+        testImage.setEntrypoint(Arrays.asList("some", "entrypoint", "command"));
+        DescriptorDigest fakeDigest = DescriptorDigest.fromDigest("sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad");
+        Layer fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
+        testImage.addLayer(fakeLayer);
+        imageToJsonTranslator = new ImageToJsonTranslator(testImage);
+    }
 
-    testImage.setEnvironmentVariable("VAR1", "VAL1");
-    testImage.setEnvironmentVariable("VAR2", "VAL2");
+    @Test
+    public void testGetContainerConfiguration() throws IOException, LayerPropertyNotFoundException, URISyntaxException {
+        // Loads the expected JSON string.
+        Path jsonFile = Paths.get(Resources.getResource("json/containerconfig.json").toURI());
+        String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
+        // Translates the image to the container configuration and writes the JSON string.
+        Blob containerConfigurationBlob = imageToJsonTranslator.getContainerConfigurationBlob();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        containerConfigurationBlob.writeTo(byteArrayOutputStream);
+        Assert.assertEquals(expectedJson, new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8));
+    }
 
-    testImage.setEntrypoint(Arrays.asList("some", "entrypoint", "command"));
+    @Test
+    public void testGetManifest_v22() throws URISyntaxException, IOException, LayerPropertyNotFoundException {
+        testGetManifest(V22ManifestTemplate.class, "json/translated_v22manifest.json");
+    }
 
-    DescriptorDigest fakeDigest =
-        DescriptorDigest.fromDigest(
-            "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad");
-    Layer fakeLayer = new ReferenceLayer(new BlobDescriptor(1000, fakeDigest), fakeDigest);
-    testImage.addLayer(fakeLayer);
+    @Test
+    public void testGetManifest_oci() throws URISyntaxException, IOException, LayerPropertyNotFoundException {
+        testGetManifest(OCIManifestTemplate.class, "json/translated_ocimanifest.json");
+    }
 
-    imageToJsonTranslator = new ImageToJsonTranslator(testImage);
-  }
-
-  @Test
-  public void testGetContainerConfiguration()
-      throws IOException, LayerPropertyNotFoundException, URISyntaxException {
-    // Loads the expected JSON string.
-    Path jsonFile = Paths.get(Resources.getResource("json/containerconfig.json").toURI());
-    String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
-
-    // Translates the image to the container configuration and writes the JSON string.
-    Blob containerConfigurationBlob = imageToJsonTranslator.getContainerConfigurationBlob();
-
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    containerConfigurationBlob.writeTo(byteArrayOutputStream);
-
-    Assert.assertEquals(
-        expectedJson, new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8));
-  }
-
-  @Test
-  public void testGetManifest_v22()
-      throws URISyntaxException, IOException, LayerPropertyNotFoundException {
-    testGetManifest(V22ManifestTemplate.class, "json/translated_v22manifest.json");
-  }
-
-  @Test
-  public void testGetManifest_oci()
-      throws URISyntaxException, IOException, LayerPropertyNotFoundException {
-    testGetManifest(OCIManifestTemplate.class, "json/translated_ocimanifest.json");
-  }
-
-  /** Tests translation of image to {@link BuildableManifestTemplate}. */
-  private <T extends BuildableManifestTemplate> void testGetManifest(
-      Class<T> manifestTemplateClass, String translatedJsonFilename)
-      throws URISyntaxException, IOException, LayerPropertyNotFoundException {
-    // Loads the expected JSON string.
-    Path jsonFile = Paths.get(Resources.getResource(translatedJsonFilename).toURI());
-    String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
-
-    // Translates the image to the manifest and writes the JSON string.
-    Blob containerConfigurationBlob = imageToJsonTranslator.getContainerConfigurationBlob();
-    BlobDescriptor blobDescriptor =
-        containerConfigurationBlob.writeTo(ByteStreams.nullOutputStream());
-    T manifestTemplate =
-        imageToJsonTranslator.getManifestTemplate(manifestTemplateClass, blobDescriptor);
-
-    ByteArrayOutputStream jsonStream = new ByteArrayOutputStream();
-    JsonTemplateMapper.toBlob(manifestTemplate).writeTo(jsonStream);
-
-    Assert.assertEquals(expectedJson, new String(jsonStream.toByteArray(), StandardCharsets.UTF_8));
-  }
+    /**
+     * Tests translation of image to {@link BuildableManifestTemplate}.
+     */
+    private <T extends BuildableManifestTemplate> void testGetManifest(Class<T> manifestTemplateClass, String translatedJsonFilename) throws URISyntaxException, IOException, LayerPropertyNotFoundException {
+        // Loads the expected JSON string.
+        Path jsonFile = Paths.get(Resources.getResource(translatedJsonFilename).toURI());
+        String expectedJson = new String(Files.readAllBytes(jsonFile), StandardCharsets.UTF_8);
+        // Translates the image to the manifest and writes the JSON string.
+        Blob containerConfigurationBlob = imageToJsonTranslator.getContainerConfigurationBlob();
+        BlobDescriptor blobDescriptor = containerConfigurationBlob.writeTo(ByteStreams.nullOutputStream());
+        T manifestTemplate = imageToJsonTranslator.getManifestTemplate(manifestTemplateClass, blobDescriptor);
+        ByteArrayOutputStream jsonStream = new ByteArrayOutputStream();
+        JsonTemplateMapper.toBlob(manifestTemplate).writeTo(jsonStream);
+        Assert.assertEquals(expectedJson, new String(jsonStream.toByteArray(), StandardCharsets.UTF_8));
+    }
 }

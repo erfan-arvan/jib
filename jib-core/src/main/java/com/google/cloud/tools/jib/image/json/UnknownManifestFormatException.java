@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image.json;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.registry.RegistryException;
 
 /** Exception thrown when trying to parse an unknown image manifest format. */

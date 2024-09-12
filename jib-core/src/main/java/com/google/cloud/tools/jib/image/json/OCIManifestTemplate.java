@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image.json;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.util.ArrayList;
 import java.util.Collections;

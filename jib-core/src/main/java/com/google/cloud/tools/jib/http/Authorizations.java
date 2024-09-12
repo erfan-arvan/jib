@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.http;
-
+import javax.annotation.Nullable;
 import com.google.api.client.util.Base64;
 import java.nio.charset.StandardCharsets;
 

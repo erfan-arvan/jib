@@ -13,29 +13,32 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Properties of registry endpoints. */
+/**
+ * Properties of registry endpoints.
+ */
 class RegistryEndpointProperties {
 
-  private final String serverUrl;
-  private final String imageName;
+    private final String serverUrl;
 
-  /**
-   * @param serverUrl the server URL for the registry (for example, {@code gcr.io})
-   * @param imageName the image/repository name (also known as, namespace)
-   */
-  RegistryEndpointProperties(String serverUrl, String imageName) {
-    this.serverUrl = serverUrl;
-    this.imageName = imageName;
-  }
+    private final String imageName;
 
-  String getServerUrl() {
-    return serverUrl;
-  }
+    /**
+     * @param serverUrl the server URL for the registry (for example, {@code gcr.io})
+     * @param imageName the image/repository name (also known as, namespace)
+     */
+    RegistryEndpointProperties(String serverUrl, String imageName) {
+        this.serverUrl = serverUrl;
+        this.imageName = imageName;
+    }
 
-  String getImageName() {
-    return imageName;
-  }
+    String getServerUrl() {
+        return serverUrl;
+    }
+
+    String getImageName() {
+        return imageName;
+    }
 }

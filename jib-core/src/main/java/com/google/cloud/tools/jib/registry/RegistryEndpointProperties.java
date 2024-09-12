@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 /** Properties of registry endpoints. */
 class RegistryEndpointProperties {
 

@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry.credentials;
-
+import javax.annotation.Nullable;
 /** Thrown because the requested credential helper CLI does not exist. */
 public class NonexistentDockerCredentialHelperException extends Exception {
 

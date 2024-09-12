@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 
@@ -25,30 +24,36 @@ import com.google.cloud.tools.jib.blob.BlobDescriptor;
  */
 public class ReferenceLayer implements Layer {
 
-  /** The {@link BlobDescriptor} of the compressed layer content. */
-  private final BlobDescriptor blobDescriptor;
+    /**
+     * The {@link BlobDescriptor} of the compressed layer content.
+     */
+    private final BlobDescriptor blobDescriptor;
 
-  /** The digest of the uncompressed layer content. */
-  private final DescriptorDigest diffId;
+    /**
+     * The digest of the uncompressed layer content.
+     */
+    private final DescriptorDigest diffId;
 
-  /** Instantiate with a {@link BlobDescriptor} and diff ID. */
-  public ReferenceLayer(BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
-    this.blobDescriptor = blobDescriptor;
-    this.diffId = diffId;
-  }
+    /**
+     * Instantiate with a {@link BlobDescriptor} and diff ID.
+     */
+    public ReferenceLayer(BlobDescriptor blobDescriptor, DescriptorDigest diffId) {
+        this.blobDescriptor = blobDescriptor;
+        this.diffId = diffId;
+    }
 
-  @Override
-  public Blob getBlob() throws LayerPropertyNotFoundException {
-    throw new LayerPropertyNotFoundException("Blob not available for reference layer");
-  }
+    @Override
+    public Blob getBlob() throws LayerPropertyNotFoundException {
+        throw new LayerPropertyNotFoundException("Blob not available for reference layer");
+    }
 
-  @Override
-  public BlobDescriptor getBlobDescriptor() {
-    return blobDescriptor;
-  }
+    @Override
+    public BlobDescriptor getBlobDescriptor() {
+        return blobDescriptor;
+    }
 
-  @Override
-  public DescriptorDigest getDiffId() {
-    return diffId;
-  }
+    @Override
+    public DescriptorDigest getDiffId() {
+        return diffId;
+    }
 }

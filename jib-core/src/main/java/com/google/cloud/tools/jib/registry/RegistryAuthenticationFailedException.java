@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 /** Thrown because registry authentication failed. */
 public class RegistryAuthenticationFailedException extends Exception {
 

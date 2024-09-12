@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache;
-
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 
 /**

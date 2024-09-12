@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.maven;
-
+import javax.annotation.Nullable;
 import java.io.FileReader;
 import java.io.IOException;
 import org.apache.maven.it.VerificationException;

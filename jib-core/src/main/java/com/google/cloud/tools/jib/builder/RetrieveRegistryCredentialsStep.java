@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.builder;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.Timer;
 import com.google.cloud.tools.jib.http.Authorization;
 import com.google.cloud.tools.jib.registry.credentials.DockerConfigCredentialRetriever;
@@ -26,7 +26,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.util.concurrent.Callable;
-import javax.annotation.Nullable;
 
 /** Attempts to retrieve registry credentials. */
 class RetrieveRegistryCredentialsStep implements Callable<Authorization> {

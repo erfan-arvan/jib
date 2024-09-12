@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.http;
-
+import javax.annotation.Nullable;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpMethods;

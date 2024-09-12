@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.image.json.V22ManifestTemplate;
 import java.io.IOException;

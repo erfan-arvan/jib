@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.http;
-
+import javax.annotation.Nullable;
 /**
  * Holds the credentials for an HTTP {@code Authorization} header.
  *

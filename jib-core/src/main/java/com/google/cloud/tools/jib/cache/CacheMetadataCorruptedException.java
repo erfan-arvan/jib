@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache;
-
+import javax.annotation.Nullable;
 /**
  * Exception thrown when the cache metadata failed to load correctly, indicating that it is probably
  * corrupted.

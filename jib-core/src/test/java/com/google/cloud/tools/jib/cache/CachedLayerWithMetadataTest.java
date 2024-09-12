@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache;
-
+import javax.annotation.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

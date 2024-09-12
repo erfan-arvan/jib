@@ -13,29 +13,29 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-/** A {@link Blob} that holds a {@link String}. */
+/**
+ * A {@link Blob} that holds a {@link String}.
+ */
 class StringBlob implements Blob {
 
-  private final String content;
+    private final String content;
 
-  StringBlob(String content) {
-    this.content = content;
-  }
-
-  @Override
-  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
-    try (InputStream stringInputStream =
-        new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
-      return BlobDescriptor.fromPipe(stringInputStream, outputStream);
+    StringBlob(String content) {
+        this.content = content;
     }
-  }
+
+    @Override
+    public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
+        try (InputStream stringInputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
+            return BlobDescriptor.fromPipe(stringInputStream, outputStream);
+        }
+    }
 }

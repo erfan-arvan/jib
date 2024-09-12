@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image;
-
+import javax.annotation.Nullable;
 /** Exception thrown when accessing non-existent properties of layers. */
 public class LayerPropertyNotFoundException extends Exception {
 

@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -23,16 +22,17 @@ import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.io.IOException;
 import java.security.DigestException;
 
-/** Deserializes a JSON element into a {@link DescriptorDigest} object. */
+/**
+ * Deserializes a JSON element into a {@link DescriptorDigest} object.
+ */
 public class DescriptorDigestDeserializer extends JsonDeserializer<DescriptorDigest> {
 
-  @Override
-  public DescriptorDigest deserialize(JsonParser jsonParser, DeserializationContext ignored)
-      throws IOException {
-    try {
-      return DescriptorDigest.fromDigest(jsonParser.getValueAsString());
-    } catch (DigestException ex) {
-      throw new IOException(ex);
+    @Override
+    public DescriptorDigest deserialize(JsonParser jsonParser, DeserializationContext ignored) throws IOException {
+        try {
+            return DescriptorDigest.fromDigest(jsonParser.getValueAsString());
+        } catch (DigestException ex) {
+            throw new IOException(ex);
+        }
     }
-  }
 }

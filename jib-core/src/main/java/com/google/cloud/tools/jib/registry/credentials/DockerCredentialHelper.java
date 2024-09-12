@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry.credentials;
-
+import javax.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.cloud.tools.jib.http.Authorization;

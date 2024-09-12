@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.tar.TarStreamBuilder;
 import java.io.IOException;
 import java.nio.file.Files;

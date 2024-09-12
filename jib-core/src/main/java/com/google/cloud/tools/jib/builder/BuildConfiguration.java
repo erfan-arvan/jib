@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.builder;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.image.ImageReference;
 import com.google.cloud.tools.jib.image.json.BuildableManifestTemplate;
 import com.google.cloud.tools.jib.image.json.V22ManifestTemplate;
@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Immutable configuration options for the builder process. */
 public class BuildConfiguration {

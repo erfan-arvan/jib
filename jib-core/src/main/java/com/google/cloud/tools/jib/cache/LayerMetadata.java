@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache;
-
+import javax.annotation.Nullable;
 import com.google.common.annotations.VisibleForTesting;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;

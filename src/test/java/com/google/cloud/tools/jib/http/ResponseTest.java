@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.http;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.api.client.http.HttpResponse;
 import com.google.cloud.tools.jib.blob.Blob;
 import java.io.ByteArrayInputStream;
@@ -29,27 +28,24 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-/** Tests for {@link Response}. */
+/**
+ * Tests for {@link Response}.
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ResponseTest {
 
-  @Mock private HttpResponse httpResponseMock;
+    @Mock
+    private HttpResponse httpResponseMock;
 
-  @Test
-  public void testGetContent() throws IOException {
-    String expectedResponse = "crepecake\nis\ngood!";
-    ByteArrayInputStream responseInputStream =
-        new ByteArrayInputStream(expectedResponse.getBytes(StandardCharsets.UTF_8));
-
-    Mockito.when(httpResponseMock.getContent()).thenReturn(responseInputStream);
-
-    Response response = new Response(httpResponseMock);
-    Blob responseStream = response.getBody();
-
-    ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
-    responseStream.writeTo(responseOutputStream);
-
-    Assert.assertEquals(
-        expectedResponse, new String(responseOutputStream.toByteArray(), StandardCharsets.UTF_8));
-  }
+    @Test
+    public void testGetContent() throws IOException {
+        String expectedResponse = "crepecake\nis\ngood!";
+        ByteArrayInputStream responseInputStream = new ByteArrayInputStream(expectedResponse.getBytes(StandardCharsets.UTF_8));
+        Mockito.when(httpResponseMock.getContent()).thenReturn(responseInputStream);
+        Response response = new Response(httpResponseMock);
+        Blob responseStream = response.getBody();
+        ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
+        responseStream.writeTo(responseOutputStream);
+        Assert.assertEquals(expectedResponse, new String(responseOutputStream.toByteArray(), StandardCharsets.UTF_8));
+    }
 }

@@ -13,36 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import javax.annotation.Nullable;
 
-/** Static initializers for {@link RegistryAuthenticator}. */
+/**
+ * Static initializers for {@link RegistryAuthenticator}.
+ */
 public abstract class RegistryAuthenticators {
 
-  public static RegistryAuthenticator forDockerHub(String repository)
-      throws RegistryAuthenticationFailedException {
-    try {
-      return new RegistryAuthenticator(
-          "https://auth.docker.io/token", "registry.docker.io", repository);
-
-    } catch (MalformedURLException ex) {
-      throw new RegistryAuthenticationFailedException(ex);
+    public static RegistryAuthenticator forDockerHub(String repository) throws RegistryAuthenticationFailedException {
+        try {
+            return new RegistryAuthenticator("https://auth.docker.io/token", "registry.docker.io", repository);
+        } catch (MalformedURLException ex) {
+            throw new RegistryAuthenticationFailedException(ex);
+        }
     }
-  }
 
-  
-  public static RegistryAuthenticator forOther(String serverUrl, String repository)
-      throws RegistryAuthenticationFailedException, IOException, RegistryException {
-    try {
-      RegistryClient registryClient = new RegistryClient(null, serverUrl, repository);
-      return registryClient.getRegistryAuthenticator();
-
-    } catch (MalformedURLException ex) {
-      throw new RegistryAuthenticationFailedException(ex);
+    public static RegistryAuthenticator forOther(String serverUrl, String repository) throws RegistryAuthenticationFailedException, IOException, RegistryException {
+        try {
+            RegistryClient registryClient = new RegistryClient(null, serverUrl, repository);
+            return registryClient.getRegistryAuthenticator();
+        } catch (MalformedURLException ex) {
+            throw new RegistryAuthenticationFailedException(ex);
+        }
     }
-  }
 }

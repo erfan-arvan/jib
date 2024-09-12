@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.ProjectInfo;
 import com.google.cloud.tools.jib.registry.json.ErrorEntryTemplate;
 

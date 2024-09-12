@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.builder;
-
+import javax.annotation.Nullable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 

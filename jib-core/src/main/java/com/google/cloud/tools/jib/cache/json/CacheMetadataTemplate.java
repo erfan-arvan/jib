@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache.json;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import java.util.ArrayList;
 import java.util.List;

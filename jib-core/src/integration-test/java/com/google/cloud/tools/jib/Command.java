@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib;
-
+import javax.annotation.Nullable;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /** Test utility to run shell commands for integration tests. */
 public class Command {

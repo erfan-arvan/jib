@@ -15,7 +15,6 @@
  */
 
 package com.google.cloud.tools.jib.cache;
-
 import javax.annotation.Nullable;
 
 /** A {@link CachedLayer} with a last modified time. */

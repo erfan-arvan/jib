@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 /**
  * Enumerated errors that can be received from the Registry API.
  *

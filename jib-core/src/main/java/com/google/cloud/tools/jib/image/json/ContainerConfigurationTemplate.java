@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image.json;
-
+import javax.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.json.JsonTemplate;

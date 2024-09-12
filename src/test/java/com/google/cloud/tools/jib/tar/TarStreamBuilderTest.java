@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.tar;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
@@ -38,100 +37,81 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/** Tests for {@link TarStreamBuilder}. */
+/**
+ * Tests for {@link TarStreamBuilder}.
+ */
 public class TarStreamBuilderTest {
 
-  private String expectedFileAString;
-  private String expectedFileBString;
-  private TarStreamBuilder testTarStreamBuilder = new TarStreamBuilder();
+    private String expectedFileAString;
 
-  @Before
-  public void setUp() throws IOException, URISyntaxException {
-    // Gets the test resource files.
-    Path fileA = Paths.get(Resources.getResource("fileA").toURI());
-    Path fileB = Paths.get(Resources.getResource("fileB").toURI());
-    Path directoryA = Paths.get(Resources.getResource("directoryA").toURI());
+    private String expectedFileBString;
 
-    expectedFileAString = new String(Files.readAllBytes(fileA), StandardCharsets.UTF_8);
-    expectedFileBString = new String(Files.readAllBytes(fileB), StandardCharsets.UTF_8);
+    private TarStreamBuilder testTarStreamBuilder = new TarStreamBuilder();
 
-    // Prepares a test TarStreamBuilder.
-    testTarStreamBuilder.addEntry(
-        new TarArchiveEntry(fileA.toFile(), "some/path/to/resourceFileA"));
-    testTarStreamBuilder.addEntry(new TarArchiveEntry(fileB.toFile(), "crepecake"));
-    testTarStreamBuilder.addEntry(new TarArchiveEntry(directoryA.toFile(), "some/path/to"));
-    testTarStreamBuilder.addEntry(
-        new TarArchiveEntry(
-            fileA.toFile(),
-            "some/really/long/path/that/exceeds/100/characters/abcdefghijklmnopqrstuvwxyz0123456789012345678901234567890"));
-  }
+    @Before
+    public void setUp() throws IOException, URISyntaxException {
+        // Gets the test resource files.
+        Path fileA = Paths.get(Resources.getResource("fileA").toURI());
+        Path fileB = Paths.get(Resources.getResource("fileB").toURI());
+        Path directoryA = Paths.get(Resources.getResource("directoryA").toURI());
+        expectedFileAString = new String(Files.readAllBytes(fileA), StandardCharsets.UTF_8);
+        expectedFileBString = new String(Files.readAllBytes(fileB), StandardCharsets.UTF_8);
+        // Prepares a test TarStreamBuilder.
+        testTarStreamBuilder.addEntry(new TarArchiveEntry(fileA.toFile(), "some/path/to/resourceFileA"));
+        testTarStreamBuilder.addEntry(new TarArchiveEntry(fileB.toFile(), "crepecake"));
+        testTarStreamBuilder.addEntry(new TarArchiveEntry(directoryA.toFile(), "some/path/to"));
+        testTarStreamBuilder.addEntry(new TarArchiveEntry(fileA.toFile(), "some/really/long/path/that/exceeds/100/characters/abcdefghijklmnopqrstuvwxyz0123456789012345678901234567890"));
+    }
 
-  @Test
-  public void testToBlob() throws IOException {
-    Blob blob = testTarStreamBuilder.toBlob();
+    @Test
+    public void testToBlob() throws IOException {
+        Blob blob = testTarStreamBuilder.toBlob();
+        // Writes the BLOB and captures the output.
+        ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
+        blob.writeTo(tarByteOutputStream);
+        // Rearrange the output into input for verification.
+        ByteArrayInputStream tarByteInputStream = new ByteArrayInputStream(tarByteOutputStream.toByteArray());
+        TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
+        verifyTarArchive(tarArchiveInputStream);
+    }
 
-    // Writes the BLOB and captures the output.
-    ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
-    blob.writeTo(tarByteOutputStream);
+    @Test
+    public void testToBlob_withCompression() throws IOException {
+        Blob blob = testTarStreamBuilder.toBlob();
+        // Writes the BLOB and captures the output.
+        ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
+        OutputStream compressorStream = new GZIPOutputStream(tarByteOutputStream);
+        blob.writeTo(compressorStream);
+        // Rearrange the output into input for verification.
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(tarByteOutputStream.toByteArray());
+        InputStream tarByteInputStream = new GZIPInputStream(byteArrayInputStream);
+        TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
+        verifyTarArchive(tarArchiveInputStream);
+    }
 
-    // Rearrange the output into input for verification.
-    ByteArrayInputStream tarByteInputStream =
-        new ByteArrayInputStream(tarByteOutputStream.toByteArray());
-    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
-
-    verifyTarArchive(tarArchiveInputStream);
-  }
-
-  @Test
-  public void testToBlob_withCompression() throws IOException {
-    Blob blob = testTarStreamBuilder.toBlob();
-
-    // Writes the BLOB and captures the output.
-    ByteArrayOutputStream tarByteOutputStream = new ByteArrayOutputStream();
-    OutputStream compressorStream = new GZIPOutputStream(tarByteOutputStream);
-    blob.writeTo(compressorStream);
-
-    // Rearrange the output into input for verification.
-    ByteArrayInputStream byteArrayInputStream =
-        new ByteArrayInputStream(tarByteOutputStream.toByteArray());
-    InputStream tarByteInputStream = new GZIPInputStream(byteArrayInputStream);
-    TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(tarByteInputStream);
-
-    verifyTarArchive(tarArchiveInputStream);
-  }
-
-  /**
-   * Helper method to verify that the files were archived correctly by reading {@code
-   * tarArchiveInputStream}.
-   */
-  private void verifyTarArchive(TarArchiveInputStream tarArchiveInputStream) throws IOException {
-    // Verifies fileA was archived correctly.
-    TarArchiveEntry headerFileA = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals("some/path/to/resourceFileA", headerFileA.getName());
-    String fileAString =
-        CharStreams.toString(new InputStreamReader(tarArchiveInputStream, StandardCharsets.UTF_8));
-    Assert.assertEquals(expectedFileAString, fileAString);
-
-    // Verifies fileB was archived correctly.
-    TarArchiveEntry headerFileB = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals("crepecake", headerFileB.getName());
-    String fileBString =
-        CharStreams.toString(new InputStreamReader(tarArchiveInputStream, StandardCharsets.UTF_8));
-    Assert.assertEquals(expectedFileBString, fileBString);
-
-    // Verifies directoryA was archived correctly.
-    TarArchiveEntry headerDirectoryA = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals("some/path/to/", headerDirectoryA.getName());
-
-    // Verifies the long file was archived correctly.
-    TarArchiveEntry headerFileALong = tarArchiveInputStream.getNextTarEntry();
-    Assert.assertEquals(
-        "some/really/long/path/that/exceeds/100/characters/abcdefghijklmnopqrstuvwxyz0123456789012345678901234567890",
-        headerFileALong.getName());
-    String fileALongString =
-        CharStreams.toString(new InputStreamReader(tarArchiveInputStream, StandardCharsets.UTF_8));
-    Assert.assertEquals(expectedFileAString, fileALongString);
-
-    Assert.assertNull(tarArchiveInputStream.getNextTarEntry());
-  }
+    /**
+     * Helper method to verify that the files were archived correctly by reading {@code
+     * tarArchiveInputStream}.
+     */
+    private void verifyTarArchive(TarArchiveInputStream tarArchiveInputStream) throws IOException {
+        // Verifies fileA was archived correctly.
+        TarArchiveEntry headerFileA = tarArchiveInputStream.getNextTarEntry();
+        Assert.assertEquals("some/path/to/resourceFileA", headerFileA.getName());
+        String fileAString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream, StandardCharsets.UTF_8));
+        Assert.assertEquals(expectedFileAString, fileAString);
+        // Verifies fileB was archived correctly.
+        TarArchiveEntry headerFileB = tarArchiveInputStream.getNextTarEntry();
+        Assert.assertEquals("crepecake", headerFileB.getName());
+        String fileBString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream, StandardCharsets.UTF_8));
+        Assert.assertEquals(expectedFileBString, fileBString);
+        // Verifies directoryA was archived correctly.
+        TarArchiveEntry headerDirectoryA = tarArchiveInputStream.getNextTarEntry();
+        Assert.assertEquals("some/path/to/", headerDirectoryA.getName());
+        // Verifies the long file was archived correctly.
+        TarArchiveEntry headerFileALong = tarArchiveInputStream.getNextTarEntry();
+        Assert.assertEquals("some/really/long/path/that/exceeds/100/characters/abcdefghijklmnopqrstuvwxyz0123456789012345678901234567890", headerFileALong.getName());
+        String fileALongString = CharStreams.toString(new InputStreamReader(tarArchiveInputStream, StandardCharsets.UTF_8));
+        Assert.assertEquals(expectedFileAString, fileALongString);
+        Assert.assertNull(tarArchiveInputStream.getNextTarEntry());
+    }
 }

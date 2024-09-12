@@ -13,38 +13,41 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.api.client.http.HttpResponseException;
 
-/** Thrown when a registry request was unauthorized and therefore authentication is needed. */
+/**
+ * Thrown when a registry request was unauthorized and therefore authentication is needed.
+ */
 public class RegistryUnauthorizedException extends RegistryException {
 
-  private final String registry;
-  private final String repository;
+    private final String registry;
 
-  /** Identifies the image registry and repository that denied access. */
-  public RegistryUnauthorizedException(
-      String registry, String repository, HttpResponseException cause) {
-    super(cause);
-    this.registry = registry;
-    this.repository = repository;
-  }
+    private final String repository;
 
-  public String getRegistry() {
-    return registry;
-  }
+    /**
+     * Identifies the image registry and repository that denied access.
+     */
+    public RegistryUnauthorizedException(String registry, String repository, HttpResponseException cause) {
+        super(cause);
+        this.registry = registry;
+        this.repository = repository;
+    }
 
-  public String getRepository() {
-    return repository;
-  }
+    public String getRegistry() {
+        return registry;
+    }
 
-  public String getImageReference() {
-    return registry + "/" + repository;
-  }
+    public String getRepository() {
+        return repository;
+    }
 
-  public HttpResponseException getHttpResponseException() {
-    return (HttpResponseException) getCause();
-  }
+    public String getImageReference() {
+        return registry + "/" + repository;
+    }
+
+    public HttpResponseException getHttpResponseException() {
+        return (HttpResponseException) getCause();
+    }
 }

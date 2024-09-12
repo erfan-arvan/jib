@@ -13,45 +13,51 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-/** Static methods for {@link Blob}. */
+/**
+ * Static methods for {@link Blob}.
+ */
 public class Blobs {
 
-  public static Blob from(InputStream inputStream) {
-    return new InputStreamBlob(inputStream);
-  }
+    public static Blob from(InputStream inputStream) {
+        return new InputStreamBlob(inputStream);
+    }
 
-  public static Blob from(Path file) {
-    return new FileBlob(file);
-  }
+    public static Blob from(Path file) {
+        return new FileBlob(file);
+    }
 
-  public static Blob from(String content) {
-    return new StringBlob(content);
-  }
+    public static Blob from(String content) {
+        return new StringBlob(content);
+    }
 
-  public static Blob from(BlobWriter writer) {
-    return new WriterBlob(writer);
-  }
+    public static Blob from(BlobWriter writer) {
+        return new WriterBlob(writer);
+    }
 
-  /** Writes the BLOB to a string. */
-  public static String writeToString(Blob blob) throws IOException {
-    return new String(writeToByteArray(blob), StandardCharsets.UTF_8);
-  }
+    /**
+     * Writes the BLOB to a string.
+     */
+    public static String writeToString(Blob blob) throws IOException {
+        return new String(writeToByteArray(blob), StandardCharsets.UTF_8);
+    }
 
-  /** Writes the BLOB to a byte array. */
-  public static byte[] writeToByteArray(Blob blob) throws IOException {
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    blob.writeTo(byteArrayOutputStream);
-    return byteArrayOutputStream.toByteArray();
-  }
+    /**
+     * Writes the BLOB to a byte array.
+     */
+    public static byte[] writeToByteArray(Blob blob) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        blob.writeTo(byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
+    }
 
-  private Blobs() {}
+    private Blobs() {
+    }
 }

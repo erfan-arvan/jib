@@ -13,13 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Thrown when a pulled BLOB did not have the same digest as requested. */
+/**
+ * Thrown when a pulled BLOB did not have the same digest as requested.
+ */
 public class UnexpectedBlobDigestException extends RegistryException {
 
-  UnexpectedBlobDigestException(String message) {
-    super(message);
-  }
+    UnexpectedBlobDigestException(String message) {
+        super(message);
+    }
 }

@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.Command;
 import com.google.common.io.CharStreams;
 import java.io.IOException;

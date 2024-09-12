@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.image.DigestOnlyLayer;
@@ -28,63 +27,50 @@ import com.google.cloud.tools.jib.image.ReferenceNoDiffIdLayer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Translates {@link V21ManifestTemplate} and {@link V22ManifestTemplate} into {@link Image}. */
+/**
+ * Translates {@link V21ManifestTemplate} and {@link V22ManifestTemplate} into {@link Image}.
+ */
 public class JsonToImageTranslator {
 
-  /** Translates {@link V21ManifestTemplate} to {@link Image}. */
-  public static Image toImage(V21ManifestTemplate manifestTemplate)
-      throws LayerPropertyNotFoundException {
-    Image image = new Image();
-
-    for (DescriptorDigest digest : manifestTemplate.getLayerDigests()) {
-      Layer layer = new DigestOnlyLayer(digest);
-      image.addLayer(layer);
+    /**
+     * Translates {@link V21ManifestTemplate} to {@link Image}.
+     */
+    public static Image toImage(V21ManifestTemplate manifestTemplate) throws LayerPropertyNotFoundException {
+        Image image = new Image();
+        for (DescriptorDigest digest : manifestTemplate.getLayerDigests()) {
+            Layer layer = new DigestOnlyLayer(digest);
+            image.addLayer(layer);
+        }
+        return image;
     }
 
-    return image;
-  }
-
-  /**
-   * Translates {@link BuildableManifestTemplate} to {@link Image}. Uses the corresponding {@link
-   * ContainerConfigurationTemplate} to get the layer diff IDs.
-   */
-  public static Image toImage(
-      BuildableManifestTemplate manifestTemplate,
-      ContainerConfigurationTemplate containerConfigurationTemplate)
-      throws LayerCountMismatchException, LayerPropertyNotFoundException {
-    Image image = new Image();
-
-    List<ReferenceNoDiffIdLayer> layers = new ArrayList<>();
-    for (BuildableManifestTemplate.ContentDescriptorTemplate layerObjectTemplate :
-        manifestTemplate.getLayers()) {
-      layers.add(
-          new ReferenceNoDiffIdLayer(
-              new BlobDescriptor(layerObjectTemplate.getSize(), layerObjectTemplate.getDigest())));
+    /**
+     * Translates {@link BuildableManifestTemplate} to {@link Image}. Uses the corresponding {@link
+     * ContainerConfigurationTemplate} to get the layer diff IDs.
+     */
+    public static Image toImage(BuildableManifestTemplate manifestTemplate, ContainerConfigurationTemplate containerConfigurationTemplate) throws LayerCountMismatchException, LayerPropertyNotFoundException {
+        Image image = new Image();
+        List<ReferenceNoDiffIdLayer> layers = new ArrayList<>();
+        for (BuildableManifestTemplate.ContentDescriptorTemplate layerObjectTemplate : manifestTemplate.getLayers()) {
+            layers.add(new ReferenceNoDiffIdLayer(new BlobDescriptor(layerObjectTemplate.getSize(), layerObjectTemplate.getDigest())));
+        }
+        List<DescriptorDigest> diffIds = containerConfigurationTemplate.getDiffIds();
+        if (layers.size() != diffIds.size()) {
+            throw new LayerCountMismatchException("Mismatch between image manifest and container configuration");
+        }
+        for (int layerIndex = 0; layerIndex < layers.size(); layerIndex++) {
+            ReferenceNoDiffIdLayer noDiffIdLayer = layers.get(layerIndex);
+            DescriptorDigest diffId = diffIds.get(layerIndex);
+            Layer layer = new ReferenceLayer(noDiffIdLayer.getBlobDescriptor(), diffId);
+            image.addLayer(layer);
+        }
+        image.setEntrypoint(containerConfigurationTemplate.getContainerEntrypoint());
+        for (String environmentVariable : containerConfigurationTemplate.getContainerEnvironment()) {
+            image.addEnvironmentVariableDefinition(environmentVariable);
+        }
+        return image;
     }
 
-    List<DescriptorDigest> diffIds = containerConfigurationTemplate.getDiffIds();
-
-    if (layers.size() != diffIds.size()) {
-      throw new LayerCountMismatchException(
-          "Mismatch between image manifest and container configuration");
+    private JsonToImageTranslator() {
     }
-
-    for (int layerIndex = 0; layerIndex < layers.size(); layerIndex++) {
-      ReferenceNoDiffIdLayer noDiffIdLayer = layers.get(layerIndex);
-      DescriptorDigest diffId = diffIds.get(layerIndex);
-
-      Layer layer = new ReferenceLayer(noDiffIdLayer.getBlobDescriptor(), diffId);
-      image.addLayer(layer);
-    }
-
-    image.setEntrypoint(containerConfigurationTemplate.getContainerEntrypoint());
-
-    for (String environmentVariable : containerConfigurationTemplate.getContainerEnvironment()) {
-      image.addEnvironmentVariableDefinition(environmentVariable);
-    }
-
-    return image;
-  }
-
-  private JsonToImageTranslator() {}
 }

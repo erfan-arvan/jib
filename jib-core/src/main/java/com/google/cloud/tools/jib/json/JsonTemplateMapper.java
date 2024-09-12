@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.json;
-
+import javax.annotation.Nullable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.Blobs;

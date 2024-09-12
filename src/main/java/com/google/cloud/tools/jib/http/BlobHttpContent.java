@@ -13,44 +13,46 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.http;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.api.client.http.HttpContent;
 import com.google.cloud.tools.jib.blob.Blob;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** {@link Blob}-backed {@link HttpContent}. */
+/**
+ * {@link Blob}-backed {@link HttpContent}.
+ */
 public class BlobHttpContent implements HttpContent {
 
-  private final Blob blob;
-  private final String contentType;
+    private final Blob blob;
 
-  public BlobHttpContent(Blob blob, String contentType) {
-    this.blob = blob;
-    this.contentType = contentType;
-  }
+    private final String contentType;
 
-  @Override
-  public long getLength() {
-    // Returns negative value for unknown length.
-    return -1;
-  }
+    public BlobHttpContent(Blob blob, String contentType) {
+        this.blob = blob;
+        this.contentType = contentType;
+    }
 
-  @Override
-  public String getType() {
-    return contentType;
-  }
+    @Override
+    public long getLength() {
+        // Returns negative value for unknown length.
+        return -1;
+    }
 
-  @Override
-  public boolean retrySupported() {
-    return false;
-  }
+    @Override
+    public String getType() {
+        return contentType;
+    }
 
-  @Override
-  public void writeTo(OutputStream outputStream) throws IOException {
-    blob.writeTo(outputStream);
-    outputStream.flush();
-  }
+    @Override
+    public boolean retrySupported() {
+        return false;
+    }
+
+    @Override
+    public void writeTo(OutputStream outputStream) throws IOException {
+        blob.writeTo(outputStream);
+        outputStream.flush();
+    }
 }

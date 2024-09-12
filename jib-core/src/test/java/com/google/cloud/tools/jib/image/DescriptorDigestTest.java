@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image;
-
+import javax.annotation.Nullable;
 import java.security.DigestException;
 import java.util.HashMap;
 import java.util.Map;

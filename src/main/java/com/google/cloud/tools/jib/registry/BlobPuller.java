@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.api.client.http.HttpMethods;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.http.BlobHttpContent;
@@ -28,74 +27,63 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
-/** Pulls an image's BLOB (layer or container configuration). */
+/**
+ * Pulls an image's BLOB (layer or container configuration).
+ */
 class BlobPuller implements RegistryEndpointProvider<Void> {
 
-  private final RegistryEndpointProperties registryEndpointProperties;
+    private final RegistryEndpointProperties registryEndpointProperties;
 
-  /** The digest of the BLOB to pull. */
-  private final DescriptorDigest blobDigest;
+    /**
+     * The digest of the BLOB to pull.
+     */
+    private final DescriptorDigest blobDigest;
 
-  /**
-   * The {@link OutputStream} to write the BLOB to. Closes the {@link OutputStream} after writing.
-   */
-  private final OutputStream destinationOutputStream;
+    /**
+     * The {@link OutputStream} to write the BLOB to. Closes the {@link OutputStream} after writing.
+     */
+    private final OutputStream destinationOutputStream;
 
-  BlobPuller(
-      RegistryEndpointProperties registryEndpointProperties,
-      DescriptorDigest blobDigest,
-      OutputStream destinationOutputStream) {
-    this.registryEndpointProperties = registryEndpointProperties;
-    this.blobDigest = blobDigest;
-    this.destinationOutputStream = destinationOutputStream;
-  }
-
-  @Override
-  public Void handleResponse(Response response) throws IOException, UnexpectedBlobDigestException {
-    try (OutputStream outputStream = destinationOutputStream) {
-      BlobDescriptor receivedBlobDescriptor = response.getBody().writeTo(outputStream);
-
-      if (!blobDigest.equals(receivedBlobDescriptor.getDigest())) {
-        throw new UnexpectedBlobDigestException(
-            "The pulled BLOB has digest '"
-                + receivedBlobDescriptor.getDigest()
-                + "', but the request digest was '"
-                + blobDigest
-                + "'");
-      }
+    BlobPuller(RegistryEndpointProperties registryEndpointProperties, DescriptorDigest blobDigest, OutputStream destinationOutputStream) {
+        this.registryEndpointProperties = registryEndpointProperties;
+        this.blobDigest = blobDigest;
+        this.destinationOutputStream = destinationOutputStream;
     }
 
-    return null;
-  }
+    @Override
+    @Nullable()
+    public Void handleResponse(Response response) throws IOException, UnexpectedBlobDigestException {
+        try (OutputStream outputStream = destinationOutputStream) {
+            BlobDescriptor receivedBlobDescriptor = response.getBody().writeTo(outputStream);
+            if (!blobDigest.equals(receivedBlobDescriptor.getDigest())) {
+                throw new UnexpectedBlobDigestException("The pulled BLOB has digest '" + receivedBlobDescriptor.getDigest() + "', but the request digest was '" + blobDigest + "'");
+            }
+        }
+        return null;
+    }
 
-  @Override
-  public BlobHttpContent getContent() {
-    return null;
-  }
+    @Override
+    public BlobHttpContent getContent() {
+        return null;
+    }
 
-  @Override
-  public List<String> getAccept() {
-    return Collections.emptyList();
-  }
+    @Override
+    public List<String> getAccept() {
+        return Collections.emptyList();
+    }
 
-  @Override
-  public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
-    return new URL(
-        apiRouteBase + registryEndpointProperties.getImageName() + "/blobs/" + blobDigest);
-  }
+    @Override
+    public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
+        return new URL(apiRouteBase + registryEndpointProperties.getImageName() + "/blobs/" + blobDigest);
+    }
 
-  @Override
-  public String getHttpMethod() {
-    return HttpMethods.GET;
-  }
+    @Override
+    public String getHttpMethod() {
+        return HttpMethods.GET;
+    }
 
-  @Override
-  public String getActionDescription() {
-    return "pull BLOB for "
-        + registryEndpointProperties.getServerUrl()
-        + "/"
-        + registryEndpointProperties.getImageName()
-        + " with digest "
-        + blobDigest;
-  }
+    @Override
+    public String getActionDescription() {
+        return "pull BLOB for " + registryEndpointProperties.getServerUrl() + "/" + registryEndpointProperties.getImageName() + " with digest " + blobDigest;
+    }
 }

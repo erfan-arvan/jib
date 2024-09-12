@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.builder;
-
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;

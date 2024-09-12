@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
@@ -57,60 +56,62 @@ import java.util.List;
  */
 public class V21ManifestTemplate implements ManifestTemplate {
 
-  public static final String MEDIA_TYPE = "application/vnd.docker.distribution.manifest.v1+json";
+    public static final String MEDIA_TYPE = "application/vnd.docker.distribution.manifest.v1+json";
 
-  private final int schemaVersion = 1;
+    private final int schemaVersion = 1;
 
-  /** The list of layer references. */
-  private final List<LayerObjectTemplate> fsLayers = new ArrayList<>();
+    /**
+     * The list of layer references.
+     */
+    private final List<LayerObjectTemplate> fsLayers = new ArrayList<>();
 
-  private final List<V1CompatibilityTemplate> history = new ArrayList<>();
+    private final List<V1CompatibilityTemplate> history = new ArrayList<>();
 
-  /**
-   * Template for inner JSON object representing a layer as part of the list of layer references.
-   */
-  static class LayerObjectTemplate implements JsonTemplate {
+    /**
+     * Template for inner JSON object representing a layer as part of the list of layer references.
+     */
+    static class LayerObjectTemplate implements JsonTemplate {
 
-    private DescriptorDigest blobSum;
+        private DescriptorDigest blobSum;
 
-    DescriptorDigest getDigest() {
-      return blobSum;
-    }
-  }
-
-  /** Template for inner JSON object representing the V1-compatible format for a layer. */
-  private static class V1CompatibilityTemplate implements JsonTemplate {
-
-    // TODO: Change to its own JSON template that can extract the layer diff ID.
-    private String v1Compatibility;
-  }
-
-  public List<DescriptorDigest> getLayerDigests() {
-    List<DescriptorDigest> layerDigests = new ArrayList<>();
-
-    for (LayerObjectTemplate layerObjectTemplate : fsLayers) {
-      layerDigests.add(layerObjectTemplate.blobSum);
+        DescriptorDigest getDigest() {
+            return blobSum;
+        }
     }
 
-    return layerDigests;
-  }
+    /**
+     * Template for inner JSON object representing the V1-compatible format for a layer.
+     */
+    private static class V1CompatibilityTemplate implements JsonTemplate {
 
-  @Override
-  public int getSchemaVersion() {
-    return schemaVersion;
-  }
+        // TODO: Change to its own JSON template that can extract the layer diff ID.
+        private String v1Compatibility;
+    }
 
-  public List<LayerObjectTemplate> getFsLayers() {
-    return Collections.unmodifiableList(fsLayers);
-  }
+    public List<DescriptorDigest> getLayerDigests() {
+        List<DescriptorDigest> layerDigests = new ArrayList<>();
+        for (LayerObjectTemplate layerObjectTemplate : fsLayers) {
+            layerDigests.add(layerObjectTemplate.blobSum);
+        }
+        return layerDigests;
+    }
 
-  @VisibleForTesting
-  DescriptorDigest getLayerDigest(int index) {
-    return fsLayers.get(index).blobSum;
-  }
+    @Override
+    public int getSchemaVersion() {
+        return schemaVersion;
+    }
 
-  @VisibleForTesting
-  String getV1Compatibility(int index) {
-    return history.get(index).v1Compatibility;
-  }
+    public List<LayerObjectTemplate> getFsLayers() {
+        return Collections.unmodifiableList(fsLayers);
+    }
+
+    @VisibleForTesting
+    DescriptorDigest getLayerDigest(int index) {
+        return fsLayers.get(index).blobSum;
+    }
+
+    @VisibleForTesting
+    String getV1Compatibility(int index) {
+        return history.get(index).v1Compatibility;
+    }
 }

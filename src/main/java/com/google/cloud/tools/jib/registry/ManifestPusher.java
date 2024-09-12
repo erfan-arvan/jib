@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.api.client.http.HttpMethods;
 import com.google.cloud.tools.jib.http.BlobHttpContent;
 import com.google.cloud.tools.jib.http.Response;
@@ -26,56 +25,50 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
-/** Pushes an image's manifest. */
+/**
+ * Pushes an image's manifest.
+ */
 class ManifestPusher implements RegistryEndpointProvider<Void> {
 
-  private final RegistryEndpointProperties registryEndpointProperties;
-  private final BuildableManifestTemplate manifestTemplate;
-  private final String imageTag;
+    private final RegistryEndpointProperties registryEndpointProperties;
 
-  ManifestPusher(
-      RegistryEndpointProperties registryEndpointProperties,
-      BuildableManifestTemplate manifestTemplate,
-      String imageTag) {
-    this.registryEndpointProperties = registryEndpointProperties;
-    this.manifestTemplate = manifestTemplate;
-    this.imageTag = imageTag;
-  }
+    private final BuildableManifestTemplate manifestTemplate;
 
-  @Override
-  public BlobHttpContent getContent() {
-    return new BlobHttpContent(
-        JsonTemplateMapper.toBlob(manifestTemplate), manifestTemplate.getManifestMediaType());
-  }
+    private final String imageTag;
 
-  @Override
-  public List<String> getAccept() {
-    return Collections.emptyList();
-  }
+    ManifestPusher(RegistryEndpointProperties registryEndpointProperties, BuildableManifestTemplate manifestTemplate, String imageTag) {
+        this.registryEndpointProperties = registryEndpointProperties;
+        this.manifestTemplate = manifestTemplate;
+        this.imageTag = imageTag;
+    }
 
-  @Override
-  public Void handleResponse(Response response) {
-    return null;
-  }
+    @Override
+    public BlobHttpContent getContent() {
+        return new BlobHttpContent(JsonTemplateMapper.toBlob(manifestTemplate), manifestTemplate.getManifestMediaType());
+    }
 
-  @Override
-  public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
-    return new URL(
-        apiRouteBase + registryEndpointProperties.getImageName() + "/manifests/" + imageTag);
-  }
+    @Override
+    public List<String> getAccept() {
+        return Collections.emptyList();
+    }
 
-  @Override
-  public String getHttpMethod() {
-    return HttpMethods.PUT;
-  }
+    @Override
+    public Void handleResponse(@Nullable() Response response) {
+        return null;
+    }
 
-  @Override
-  public String getActionDescription() {
-    return "push image manifest for "
-        + registryEndpointProperties.getServerUrl()
-        + "/"
-        + registryEndpointProperties.getImageName()
-        + ":"
-        + imageTag;
-  }
+    @Override
+    public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
+        return new URL(apiRouteBase + registryEndpointProperties.getImageName() + "/manifests/" + imageTag);
+    }
+
+    @Override
+    public String getHttpMethod() {
+        return HttpMethods.PUT;
+    }
+
+    @Override
+    public String getActionDescription() {
+        return "push image manifest for " + registryEndpointProperties.getServerUrl() + "/" + registryEndpointProperties.getImageName() + ":" + imageTag;
+    }
 }

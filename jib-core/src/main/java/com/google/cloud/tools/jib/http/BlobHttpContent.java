@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.http;
-
+import javax.annotation.Nullable;
 import com.google.api.client.http.HttpContent;
 import com.google.cloud.tools.jib.blob.Blob;
 import java.io.IOException;

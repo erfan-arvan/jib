@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.nio.file.Path;
 
 /**
@@ -24,16 +23,17 @@ import java.nio.file.Path;
  */
 public class CacheDirectoryNotOwnedException extends Exception {
 
-  private final Path cacheDirectory;
+    private final Path cacheDirectory;
 
-  /** Initializes with the cache directory that was unsafe to use. */
-  CacheDirectoryNotOwnedException(Path cacheDirectory) {
-    super();
+    /**
+     * Initializes with the cache directory that was unsafe to use.
+     */
+    CacheDirectoryNotOwnedException(Path cacheDirectory) {
+        super();
+        this.cacheDirectory = cacheDirectory;
+    }
 
-    this.cacheDirectory = cacheDirectory;
-  }
-
-  public Path getCacheDirectory() {
-    return cacheDirectory;
-  }
+    public Path getCacheDirectory() {
+        return cacheDirectory;
+    }
 }

@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry.credentials;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.http.Authorization;
 import com.google.cloud.tools.jib.http.Authorizations;
 import com.google.cloud.tools.jib.json.JsonTemplateMapper;
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.annotation.Nullable;
 
 /**
  * Retrieves registry credentials from the Docker config.

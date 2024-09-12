@@ -13,29 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.common.io.Resources;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/** Test utility for using platform-specific test resources. */
+/**
+ * Test utility for using platform-specific test resources.
+ */
 public class PlatformSpecificMetadataJson {
 
-  /**
-   * Retrieves a sample metadata JSON file. A separate version for Windows is used to account for
-   * the different path separator.
-   */
-  public static Path getMetadataJsonFile() throws URISyntaxException {
-    String metadataResourceFilename = "json/metadata.json";
-    if (System.getProperty("os.name").toLowerCase().contains("win")) {
-      metadataResourceFilename = "json/metadata_windows.json";
+    /**
+     * Retrieves a sample metadata JSON file. A separate version for Windows is used to account for
+     * the different path separator.
+     */
+    public static Path getMetadataJsonFile() throws URISyntaxException {
+        String metadataResourceFilename = "json/metadata.json";
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            metadataResourceFilename = "json/metadata_windows.json";
+        }
+        // Loads the expected JSON string.
+        return Paths.get(Resources.getResource(metadataResourceFilename).toURI());
     }
-    // Loads the expected JSON string.
-    return Paths.get(Resources.getResource(metadataResourceFilename).toURI());
-  }
 
-  private PlatformSpecificMetadataJson() {}
+    private PlatformSpecificMetadataJson() {
+    }
 }

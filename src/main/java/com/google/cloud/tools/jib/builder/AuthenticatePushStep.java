@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.Timer;
 import com.google.cloud.tools.jib.http.Authorization;
 import com.google.cloud.tools.jib.registry.RegistryAuthenticationFailedException;
@@ -26,7 +25,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nullable;
 
 /**
  * Authenticates push to a target registry using Docker Token Authentication.
@@ -36,38 +34,29 @@ import javax.annotation.Nullable;
  */
 class AuthenticatePushStep implements Callable<Authorization> {
 
-  private static final String DESCRIPTION = "Authenticating with push to %s";
+    private static final String DESCRIPTION = "Authenticating with push to %s";
 
-  private final BuildConfiguration buildConfiguration;
-  private final ListenableFuture<Authorization> registryCredentialsFuture;
+    private final BuildConfiguration buildConfiguration;
 
-  AuthenticatePushStep(
-      BuildConfiguration buildConfiguration,
-      ListenableFuture<Authorization> registryCredentialsFuture) {
-    this.buildConfiguration = buildConfiguration;
-    this.registryCredentialsFuture = registryCredentialsFuture;
-  }
+    private final ListenableFuture<Authorization> registryCredentialsFuture;
 
-  /** Depends on {@link RetrieveRegistryCredentialsStep}. */
-  @Override
-  
-  public Authorization call()
-      throws ExecutionException, InterruptedException, RegistryAuthenticationFailedException,
-          IOException, RegistryException {
-    try (Timer ignored =
-        new Timer(
-            buildConfiguration.getBuildLogger(),
-            String.format(DESCRIPTION, buildConfiguration.getTargetRegistry()))) {
-      Authorization registryCredentials = NonBlockingFutures.get(registryCredentialsFuture);
-      RegistryAuthenticator registryAuthenticator =
-          RegistryAuthenticators.forOther(
-              buildConfiguration.getTargetRegistry(), buildConfiguration.getTargetRepository());
-      if (registryAuthenticator == null) {
-        return registryCredentials;
-      }
-      return registryAuthenticator
-          .setAuthorization(NonBlockingFutures.get(registryCredentialsFuture))
-          .authenticatePush();
+    AuthenticatePushStep(BuildConfiguration buildConfiguration, ListenableFuture<Authorization> registryCredentialsFuture) {
+        this.buildConfiguration = buildConfiguration;
+        this.registryCredentialsFuture = registryCredentialsFuture;
     }
-  }
+
+    /**
+     * Depends on {@link RetrieveRegistryCredentialsStep}.
+     */
+    @Override
+    public Authorization call() throws ExecutionException, InterruptedException, RegistryAuthenticationFailedException, IOException, RegistryException {
+        try (Timer ignored = new Timer(buildConfiguration.getBuildLogger(), String.format(DESCRIPTION, buildConfiguration.getTargetRegistry()))) {
+            Authorization registryCredentials = NonBlockingFutures.get(registryCredentialsFuture);
+            RegistryAuthenticator registryAuthenticator = RegistryAuthenticators.forOther(buildConfiguration.getTargetRegistry(), buildConfiguration.getTargetRepository());
+            if (registryAuthenticator == null) {
+                return registryCredentials;
+            }
+            return registryAuthenticator.setAuthorization(NonBlockingFutures.get(registryCredentialsFuture)).authenticatePush();
+        }
+    }
 }

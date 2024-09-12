@@ -13,17 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Constants relating to the Jib project. */
+/**
+ * Constants relating to the Jib project.
+ */
 public class ProjectInfo {
 
-  /** Link to the GitHub repository. */
-  public static final String GITHUB_URL = "https://github.com/google/jib";
+    /**
+     * Link to the GitHub repository.
+     */
+    public static final String GITHUB_URL = "https://github.com/google/jib";
 
-  /** Link to file an issue against the GitHub repository. */
-  public static final String GITHUB_NEW_ISSUE_URL = GITHUB_URL + "/issues/new";
+    /**
+     * Link to file an issue against the GitHub repository.
+     */
+    public static final String GITHUB_NEW_ISSUE_URL = GITHUB_URL + "/issues/new";
 
-  private ProjectInfo() {}
+    private ProjectInfo() {
+    }
 }

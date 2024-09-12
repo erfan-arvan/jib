@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache;
-
+import javax.annotation.Nullable;
 import com.google.common.io.Resources;
 import java.net.URISyntaxException;
 import java.nio.file.Path;

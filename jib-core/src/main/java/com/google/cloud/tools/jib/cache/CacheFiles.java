@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.nio.file.Path;
 

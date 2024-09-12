@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.json.JsonTemplate;
@@ -52,71 +51,87 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContainerConfigurationTemplate implements JsonTemplate {
 
-  /** The CPU architecture to run the binaries in this container. */
-  private String architecture = "amd64";
-
-  /** The operating system to run the container on. */
-  private String os = "linux";
-
-  /** Execution parameters that should be used as a base when running the container. */
-  private final ConfigurationObjectTemplate config = new ConfigurationObjectTemplate();
-
-  /** Layer content digests that are used to build the container filesystem. */
-  private final RootFilesystemObjectTemplate rootfs = new RootFilesystemObjectTemplate();
-
-  /** Template for inner JSON object representing the configuration for running the container. */
-  @JsonIgnoreProperties(ignoreUnknown = true)
-  private static class ConfigurationObjectTemplate implements JsonTemplate {
-
-    /** Environment variables in the format {@code VARNAME=VARVALUE}. */
-    private List<String> Env;
-
-    /** Command to run when container starts. */
-    private List<String> Entrypoint;
-  }
-
-  /**
-   * Template for inner JSON object representing the filesystem changesets used to build the
-   * container filesystem.
-   */
-  private static class RootFilesystemObjectTemplate implements JsonTemplate {
-
-    /** The type must always be {@code "layers"}. */
-    private final String type = "layers";
+    /**
+     * The CPU architecture to run the binaries in this container.
+     */
+    private String architecture = "amd64";
 
     /**
-     * The in-order list of layer content digests (hashes of the uncompressed partial filesystem
-     * changeset).
+     * The operating system to run the container on.
      */
-    private final List<DescriptorDigest> diff_ids = new ArrayList<>();
-  }
+    private String os = "linux";
 
-  public void setContainerEnvironment(List<String> environment) {
-    config.Env = environment;
-  }
+    /**
+     * Execution parameters that should be used as a base when running the container.
+     */
+    private final ConfigurationObjectTemplate config = new ConfigurationObjectTemplate();
 
-  public void setContainerEntrypoint(List<String> command) {
-    config.Entrypoint = command;
-  }
+    /**
+     * Layer content digests that are used to build the container filesystem.
+     */
+    private final RootFilesystemObjectTemplate rootfs = new RootFilesystemObjectTemplate();
 
-  public void addLayerDiffId(DescriptorDigest diffId) {
-    rootfs.diff_ids.add(diffId);
-  }
+    /**
+     * Template for inner JSON object representing the configuration for running the container.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class ConfigurationObjectTemplate implements JsonTemplate {
 
-  List<DescriptorDigest> getDiffIds() {
-    return rootfs.diff_ids;
-  }
+        /**
+         * Environment variables in the format {@code VARNAME=VARVALUE}.
+         */
+        private List<String> Env;
 
-  List<String> getContainerEnvironment() {
-    return config.Env;
-  }
+        /**
+         * Command to run when container starts.
+         */
+        private List<String> Entrypoint;
+    }
 
-  List<String> getContainerEntrypoint() {
-    return config.Entrypoint;
-  }
+    /**
+     * Template for inner JSON object representing the filesystem changesets used to build the
+     * container filesystem.
+     */
+    private static class RootFilesystemObjectTemplate implements JsonTemplate {
 
-  @VisibleForTesting
-  DescriptorDigest getLayerDiffId(int index) {
-    return rootfs.diff_ids.get(index);
-  }
+        /**
+         * The type must always be {@code "layers"}.
+         */
+        private final String type = "layers";
+
+        /**
+         * The in-order list of layer content digests (hashes of the uncompressed partial filesystem
+         * changeset).
+         */
+        private final List<DescriptorDigest> diff_ids = new ArrayList<>();
+    }
+
+    public void setContainerEnvironment(List<String> environment) {
+        config.Env = environment;
+    }
+
+    public void setContainerEntrypoint(List<String> command) {
+        config.Entrypoint = command;
+    }
+
+    public void addLayerDiffId(DescriptorDigest diffId) {
+        rootfs.diff_ids.add(diffId);
+    }
+
+    List<DescriptorDigest> getDiffIds() {
+        return rootfs.diff_ids;
+    }
+
+    List<String> getContainerEnvironment() {
+        return config.Env;
+    }
+
+    List<String> getContainerEntrypoint() {
+        return config.Entrypoint;
+    }
+
+    @VisibleForTesting
+    DescriptorDigest getLayerDiffId(int index) {
+        return rootfs.diff_ids.get(index);
+    }
 }

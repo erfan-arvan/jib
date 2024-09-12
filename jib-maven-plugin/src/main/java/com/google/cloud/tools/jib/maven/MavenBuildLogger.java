@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.maven;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.builder.BuildLogger;
 import org.apache.maven.plugin.logging.Log;
 

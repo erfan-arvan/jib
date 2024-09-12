@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image;
-
+import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import org.junit.Assert;

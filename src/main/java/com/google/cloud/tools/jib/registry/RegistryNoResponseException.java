@@ -13,13 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Thrown when a registry did not respond. */
+/**
+ * Thrown when a registry did not respond.
+ */
 public class RegistryNoResponseException extends RegistryException {
 
-  RegistryNoResponseException(Throwable cause) {
-    super(cause);
-  }
+    RegistryNoResponseException(Throwable cause) {
+        super(cause);
+    }
 }

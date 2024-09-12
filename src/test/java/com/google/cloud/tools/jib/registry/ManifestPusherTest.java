@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.http.BlobHttpContent;
 import com.google.cloud.tools.jib.http.Response;
 import com.google.cloud.tools.jib.image.json.V22ManifestTemplate;
@@ -37,68 +36,58 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-/** Tests for {@link ManifestPusher}. */
+/**
+ * Tests for {@link ManifestPusher}.
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ManifestPusherTest {
 
-  private Path v22manifestJsonFile;
-  private V22ManifestTemplate fakeManifestTemplate;
-  private ManifestPusher testManifestPusher;
+    private Path v22manifestJsonFile;
 
-  @Before
-  public void setUp() throws URISyntaxException, IOException {
-    v22manifestJsonFile = Paths.get(Resources.getResource("json/v22manifest.json").toURI());
-    fakeManifestTemplate =
-        JsonTemplateMapper.readJsonFromFile(v22manifestJsonFile, V22ManifestTemplate.class);
+    private V22ManifestTemplate fakeManifestTemplate;
 
-    testManifestPusher =
-        new ManifestPusher(
-            new RegistryEndpointProperties("someServerUrl", "someImageName"),
-            fakeManifestTemplate,
-            "test-image-tag");
-  }
+    private ManifestPusher testManifestPusher;
 
-  @Test
-  public void testGetContent() throws IOException {
-    BlobHttpContent body = testManifestPusher.getContent();
+    @Before
+    public void setUp() throws URISyntaxException, IOException {
+        v22manifestJsonFile = Paths.get(Resources.getResource("json/v22manifest.json").toURI());
+        fakeManifestTemplate = JsonTemplateMapper.readJsonFromFile(v22manifestJsonFile, V22ManifestTemplate.class);
+        testManifestPusher = new ManifestPusher(new RegistryEndpointProperties("someServerUrl", "someImageName"), fakeManifestTemplate, "test-image-tag");
+    }
 
-    Assert.assertNotNull(body);
-    Assert.assertEquals(V22ManifestTemplate.MANIFEST_MEDIA_TYPE, body.getType());
+    @Test
+    public void testGetContent() throws IOException {
+        BlobHttpContent body = testManifestPusher.getContent();
+        Assert.assertNotNull(body);
+        Assert.assertEquals(V22ManifestTemplate.MANIFEST_MEDIA_TYPE, body.getType());
+        ByteArrayOutputStream bodyCaptureStream = new ByteArrayOutputStream();
+        body.writeTo(bodyCaptureStream);
+        String v22manifestJson = new String(Files.readAllBytes(v22manifestJsonFile), StandardCharsets.UTF_8);
+        Assert.assertEquals(v22manifestJson, new String(bodyCaptureStream.toByteArray(), StandardCharsets.UTF_8));
+    }
 
-    ByteArrayOutputStream bodyCaptureStream = new ByteArrayOutputStream();
-    body.writeTo(bodyCaptureStream);
-    String v22manifestJson =
-        new String(Files.readAllBytes(v22manifestJsonFile), StandardCharsets.UTF_8);
-    Assert.assertEquals(
-        v22manifestJson, new String(bodyCaptureStream.toByteArray(), StandardCharsets.UTF_8));
-  }
+    @Test
+    public void testHandleResponse() {
+        Assert.assertNull(testManifestPusher.handleResponse(Mockito.mock(Response.class)));
+    }
 
-  @Test
-  public void testHandleResponse() {
-    Assert.assertNull(testManifestPusher.handleResponse(Mockito.mock(Response.class)));
-  }
+    @Test
+    public void testApiRoute() throws MalformedURLException {
+        Assert.assertEquals(new URL("http://someApiBase/someImageName/manifests/test-image-tag"), testManifestPusher.getApiRoute("http://someApiBase/"));
+    }
 
-  @Test
-  public void testApiRoute() throws MalformedURLException {
-    Assert.assertEquals(
-        new URL("http://someApiBase/someImageName/manifests/test-image-tag"),
-        testManifestPusher.getApiRoute("http://someApiBase/"));
-  }
+    @Test
+    public void testGetHttpMethod() {
+        Assert.assertEquals("PUT", testManifestPusher.getHttpMethod());
+    }
 
-  @Test
-  public void testGetHttpMethod() {
-    Assert.assertEquals("PUT", testManifestPusher.getHttpMethod());
-  }
+    @Test
+    public void testGetActionDescription() {
+        Assert.assertEquals("push image manifest for someServerUrl/someImageName:test-image-tag", testManifestPusher.getActionDescription());
+    }
 
-  @Test
-  public void testGetActionDescription() {
-    Assert.assertEquals(
-        "push image manifest for someServerUrl/someImageName:test-image-tag",
-        testManifestPusher.getActionDescription());
-  }
-
-  @Test
-  public void testGetAccept() {
-    Assert.assertEquals(0, testManifestPusher.getAccept().size());
-  }
+    @Test
+    public void testGetAccept() {
+        Assert.assertEquals(0, testManifestPusher.getAccept().size());
+    }
 }

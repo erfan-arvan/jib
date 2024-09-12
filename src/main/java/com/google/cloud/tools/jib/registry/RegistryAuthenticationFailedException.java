@@ -13,19 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Thrown because registry authentication failed. */
+/**
+ * Thrown because registry authentication failed.
+ */
 public class RegistryAuthenticationFailedException extends Exception {
 
-  private static final String REASON_PREFIX = "Failed to authenticate with the registry because: ";
+    private static final String REASON_PREFIX = "Failed to authenticate with the registry because: ";
 
-  RegistryAuthenticationFailedException(Throwable cause) {
-    super(REASON_PREFIX + cause.getMessage(), cause);
-  }
+    RegistryAuthenticationFailedException(Throwable cause) {
+        super(REASON_PREFIX + cause.getMessage(), cause);
+    }
 
-  RegistryAuthenticationFailedException(String reason) {
-    super(REASON_PREFIX + reason);
-  }
+    RegistryAuthenticationFailedException(String reason) {
+        super(REASON_PREFIX + reason);
+    }
 }

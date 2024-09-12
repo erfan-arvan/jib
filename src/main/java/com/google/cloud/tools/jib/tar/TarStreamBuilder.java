@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.tar;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.Blobs;
 import com.google.common.io.ByteStreams;
@@ -30,41 +29,45 @@ import java.util.List;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
-/** Builds a tarball archive. */
+/**
+ * Builds a tarball archive.
+ */
 public class TarStreamBuilder {
 
-  /** Holds the entries added to the archive. */
-  private final List<TarArchiveEntry> entries = new ArrayList<>();
+    /**
+     * Holds the entries added to the archive.
+     */
+    private final List<TarArchiveEntry> entries = new ArrayList<>();
 
-  /** Writes each entry in the filesystem to the tarball archive stream. */
-  private static void writeEntriesAsTarArchive(
-      List<TarArchiveEntry> entries, OutputStream tarByteStream) throws IOException {
-
-    try (TarArchiveOutputStream tarArchiveOutputStream =
-        new TarArchiveOutputStream(tarByteStream)) {
-      // Enables PAX extended headers to support long file names.
-      tarArchiveOutputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-
-      for (TarArchiveEntry entry : entries) {
-        tarArchiveOutputStream.putArchiveEntry(entry);
-        if (entry.isFile()) {
-          InputStream contentStream = new BufferedInputStream(new FileInputStream(entry.getFile()));
-          ByteStreams.copy(contentStream, tarArchiveOutputStream);
+    /**
+     * Writes each entry in the filesystem to the tarball archive stream.
+     */
+    private static void writeEntriesAsTarArchive(List<TarArchiveEntry> entries, OutputStream tarByteStream) throws IOException {
+        try (TarArchiveOutputStream tarArchiveOutputStream = new TarArchiveOutputStream(tarByteStream)) {
+            // Enables PAX extended headers to support long file names.
+            tarArchiveOutputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+            for (TarArchiveEntry entry : entries) {
+                tarArchiveOutputStream.putArchiveEntry(entry);
+                if (entry.isFile()) {
+                    InputStream contentStream = new BufferedInputStream(new FileInputStream(entry.getFile()));
+                    ByteStreams.copy(contentStream, tarArchiveOutputStream);
+                }
+                tarArchiveOutputStream.closeArchiveEntry();
+            }
         }
-        tarArchiveOutputStream.closeArchiveEntry();
-      }
     }
-  }
 
-  /** Adds an entry to the archive. */
-  public void addEntry(TarArchiveEntry entry) {
-    entries.add(entry);
-  }
+    /**
+     * Adds an entry to the archive.
+     */
+    public void addEntry(TarArchiveEntry entry) {
+        entries.add(entry);
+    }
 
-  /** Builds a {@link Blob} that can stream the uncompressed tarball archive BLOB. */
-  public Blob toBlob() {
-    return Blobs.from(
-        outputStream ->
-            writeEntriesAsTarArchive(Collections.unmodifiableList(entries), outputStream));
-  }
+    /**
+     * Builds a {@link Blob} that can stream the uncompressed tarball archive BLOB.
+     */
+    public Blob toBlob() {
+        return Blobs.from(outputStream -> writeEntriesAsTarArchive(Collections.unmodifiableList(entries), outputStream));
+    }
 }

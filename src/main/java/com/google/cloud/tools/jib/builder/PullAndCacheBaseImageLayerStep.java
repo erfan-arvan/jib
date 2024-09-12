@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.Timer;
 import com.google.cloud.tools.jib.cache.Cache;
 import com.google.cloud.tools.jib.cache.CacheReader;
@@ -32,50 +31,44 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/** Pulls and caches a single base image layer. */
+/**
+ * Pulls and caches a single base image layer.
+ */
 class PullAndCacheBaseImageLayerStep implements Callable<CachedLayer> {
 
-  private static final String DESCRIPTION = "Pulling base image layer %s";
+    private static final String DESCRIPTION = "Pulling base image layer %s";
 
-  private final BuildConfiguration buildConfiguration;
-  private final Cache cache;
-  private final DescriptorDigest layerDigest;
-  private final Future<Authorization> pullAuthorizationFuture;
+    private final BuildConfiguration buildConfiguration;
 
-  PullAndCacheBaseImageLayerStep(
-      BuildConfiguration buildConfiguration,
-      Cache cache,
-      DescriptorDigest layerDigest,
-      Future<Authorization> pullAuthorizationFuture) {
-    this.buildConfiguration = buildConfiguration;
-    this.cache = cache;
-    this.layerDigest = layerDigest;
-    this.pullAuthorizationFuture = pullAuthorizationFuture;
-  }
+    private final Cache cache;
 
-  /** Depends on {@code pullAuthorizationFuture}. */
-  @Override
-  public CachedLayer call()
-      throws IOException, RegistryException, LayerPropertyNotFoundException, ExecutionException,
-          InterruptedException {
-    try (Timer ignored =
-        new Timer(buildConfiguration.getBuildLogger(), String.format(DESCRIPTION, layerDigest))) {
-      RegistryClient registryClient =
-          new RegistryClient(
-              pullAuthorizationFuture.get(),
-              buildConfiguration.getBaseImageRegistry(),
-              buildConfiguration.getBaseImageRepository());
+    private final DescriptorDigest layerDigest;
 
-      // Checks if the layer already exists in the cache.
-      CachedLayer cachedLayer = new CacheReader(cache).getLayer(layerDigest);
-      if (cachedLayer != null) {
-        return cachedLayer;
-      }
+    private final Future<Authorization> pullAuthorizationFuture;
 
-      CacheWriter cacheWriter = new CacheWriter(cache);
-      CountingOutputStream layerOutputStream = cacheWriter.getLayerOutputStream(layerDigest);
-      registryClient.pullBlob(layerDigest, layerOutputStream);
-      return cacheWriter.getCachedLayer(layerDigest, layerOutputStream);
+    PullAndCacheBaseImageLayerStep(BuildConfiguration buildConfiguration, Cache cache, DescriptorDigest layerDigest, Future<Authorization> pullAuthorizationFuture) {
+        this.buildConfiguration = buildConfiguration;
+        this.cache = cache;
+        this.layerDigest = layerDigest;
+        this.pullAuthorizationFuture = pullAuthorizationFuture;
     }
-  }
+
+    /**
+     * Depends on {@code pullAuthorizationFuture}.
+     */
+    @Override
+    public CachedLayer call() throws IOException, RegistryException, LayerPropertyNotFoundException, ExecutionException, InterruptedException {
+        try (Timer ignored = new Timer(buildConfiguration.getBuildLogger(), String.format(DESCRIPTION, layerDigest))) {
+            RegistryClient registryClient = new RegistryClient(pullAuthorizationFuture.get(), buildConfiguration.getBaseImageRegistry(), buildConfiguration.getBaseImageRepository());
+            // Checks if the layer already exists in the cache.
+            CachedLayer cachedLayer = new CacheReader(cache).getLayer(layerDigest);
+            if (cachedLayer != null) {
+                return cachedLayer;
+            }
+            CacheWriter cacheWriter = new CacheWriter(cache);
+            CountingOutputStream layerOutputStream = cacheWriter.getLayerOutputStream(layerDigest);
+            registryClient.pullBlob(layerDigest, layerOutputStream);
+            return cacheWriter.getCachedLayer(layerDigest, layerOutputStream);
+        }
+    }
 }

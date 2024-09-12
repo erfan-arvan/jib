@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.cache.json;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.cache.PlatformSpecificMetadataJson;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.json.JsonTemplateMapper;

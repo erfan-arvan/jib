@@ -15,11 +15,10 @@
  */
 
 package com.google.cloud.tools.jib.cache.json;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.image.Layer;
 import com.google.cloud.tools.jib.json.JsonTemplate;
-import javax.annotation.Nullable;
 
 /**
  * Inner JSON template for storing metadata about a layer in the cache as part of {@link

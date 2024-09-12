@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -26,5 +25,5 @@ import java.io.OutputStream;
 @FunctionalInterface
 public interface BlobWriter {
 
-  void writeTo(OutputStream outputStream) throws IOException;
+    void writeTo(@Nullable() OutputStream outputStream) throws IOException;
 }

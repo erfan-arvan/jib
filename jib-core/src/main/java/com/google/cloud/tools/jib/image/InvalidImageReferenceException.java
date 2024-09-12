@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image;
-
+import javax.annotation.Nullable;
 /** Thrown when attempting to parse an invalid image reference. */
 public class InvalidImageReferenceException extends Exception {
 

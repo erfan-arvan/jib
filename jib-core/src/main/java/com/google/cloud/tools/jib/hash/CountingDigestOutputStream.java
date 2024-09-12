@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.hash;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.io.IOException;

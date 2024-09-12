@@ -13,13 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Exception thrown when the number of layers found did not match expectations. */
+/**
+ * Exception thrown when the number of layers found did not match expectations.
+ */
 public class LayerCountMismatchException extends Exception {
 
-  public LayerCountMismatchException(String message) {
-    super(message);
-  }
+    public LayerCountMismatchException(String message) {
+        super(message);
+    }
 }

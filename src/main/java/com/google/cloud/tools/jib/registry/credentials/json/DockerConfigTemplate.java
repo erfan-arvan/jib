@@ -13,14 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry.credentials.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Template for a Docker config file.
@@ -59,64 +57,70 @@ import javax.annotation.Nullable;
  */
 public class DockerConfigTemplate implements JsonTemplate {
 
-  /** Template for an {@code auth} defined for a registry under {@code auths}. */
-  private static class AuthTemplate implements JsonTemplate {
+    /**
+     * Template for an {@code auth} defined for a registry under {@code auths}.
+     */
+    private static class AuthTemplate implements JsonTemplate {
 
-    private String auth;
-  }
-
-  /** Maps from registry to its {@link AuthTemplate}. */
-  private final Map<String, AuthTemplate> auths = new HashMap<>();
-
-  private String credsStore;
-
-  /** Maps from registry to credential helper name. */
-  private final Map<String, String> credHelpers = new HashMap<>();
-
-  /**
-   * @return the base64-encoded {@code Basic} authorization for {@code registry}, or {@code null} if
-   *     none exists
-   */
-  
-  public String getAuthFor(String registry) {
-    if (!auths.containsKey(registry)) {
-      return null;
+        private String auth;
     }
-    return auths.get(registry).auth;
-  }
 
-  /**
-   * @return {@code credsStore} if {@code registry} is present in {@code auths}; otherwise, searches
-   *     {@code credHelpers}; otherwise, {@code null} if not found
-   */
-  
-  public String getCredentialHelperFor(String registry) {
-    if (credsStore != null && auths.containsKey(registry)) {
-      return credsStore;
+    /**
+     * Maps from registry to its {@link AuthTemplate}.
+     */
+    private final Map<String, AuthTemplate> auths = new HashMap<>();
+
+    @Nullable
+    private String credsStore;
+
+    /**
+     * Maps from registry to credential helper name.
+     */
+    private final Map<String, String> credHelpers = new HashMap<>();
+
+    /**
+     * @return the base64-encoded {@code Basic} authorization for {@code registry}, or {@code null} if
+     *     none exists
+     */
+    public String getAuthFor(String registry) {
+        if (!auths.containsKey(registry)) {
+            return null;
+        }
+        return auths.get(registry).auth;
     }
-    if (credHelpers.containsKey(registry)) {
-      return credHelpers.get(registry);
+
+    /**
+     * @return {@code credsStore} if {@code registry} is present in {@code auths}; otherwise, searches
+     *     {@code credHelpers}; otherwise, {@code null} if not found
+     */
+    @Nullable()
+    public String getCredentialHelperFor(String registry) {
+        if (credsStore != null && auths.containsKey(registry)) {
+            return credsStore;
+        }
+        if (credHelpers.containsKey(registry)) {
+            return credHelpers.get(registry);
+        }
+        return null;
     }
-    return null;
-  }
 
-  @VisibleForTesting
-  DockerConfigTemplate addAuth(String registry,  String auth) {
-    AuthTemplate authTemplate = new AuthTemplate();
-    authTemplate.auth = auth;
-    auths.put(registry, authTemplate);
-    return this;
-  }
+    @VisibleForTesting
+    DockerConfigTemplate addAuth(String registry, String auth) {
+        AuthTemplate authTemplate = new AuthTemplate();
+        authTemplate.auth = auth;
+        auths.put(registry, authTemplate);
+        return this;
+    }
 
-  @VisibleForTesting
-  DockerConfigTemplate setCredsStore(String credsStore) {
-    this.credsStore = credsStore;
-    return this;
-  }
+    @VisibleForTesting
+    DockerConfigTemplate setCredsStore(String credsStore) {
+        this.credsStore = credsStore;
+        return this;
+    }
 
-  @VisibleForTesting
-  DockerConfigTemplate addCredHelper(String registry, String credHelper) {
-    credHelpers.put(registry, credHelper);
-    return this;
-  }
+    @VisibleForTesting
+    DockerConfigTemplate addCredHelper(String registry, String credHelper) {
+        credHelpers.put(registry, credHelper);
+        return this;
+    }
 }

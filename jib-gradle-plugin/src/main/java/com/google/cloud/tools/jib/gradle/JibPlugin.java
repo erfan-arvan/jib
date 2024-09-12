@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.gradle;
-
+import javax.annotation.Nullable;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 

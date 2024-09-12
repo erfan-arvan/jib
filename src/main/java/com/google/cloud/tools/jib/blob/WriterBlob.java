@@ -13,28 +13,28 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.hash.CountingDigestOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** A {@link Blob} that writes with a {@link BlobWriter} function and hashes the bytes. */
+/**
+ * A {@link Blob} that writes with a {@link BlobWriter} function and hashes the bytes.
+ */
 class WriterBlob implements Blob {
 
-  private final BlobWriter writer;
+    private final BlobWriter writer;
 
-  WriterBlob(BlobWriter writer) {
-    this.writer = writer;
-  }
+    WriterBlob(BlobWriter writer) {
+        this.writer = writer;
+    }
 
-  @Override
-  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
-    CountingDigestOutputStream countingDigestOutputStream =
-        new CountingDigestOutputStream(outputStream);
-    writer.writeTo(countingDigestOutputStream);
-    countingDigestOutputStream.flush();
-    return countingDigestOutputStream.toBlobDescriptor();
-  }
+    @Override
+    public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
+        CountingDigestOutputStream countingDigestOutputStream = new CountingDigestOutputStream(outputStream);
+        writer.writeTo(countingDigestOutputStream);
+        countingDigestOutputStream.flush();
+        return countingDigestOutputStream.toBlobDescriptor();
+    }
 }

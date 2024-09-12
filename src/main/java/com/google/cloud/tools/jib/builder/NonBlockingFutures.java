@@ -13,21 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/** Static utility for ensuring {@link Future#get} does not block. */
+/**
+ * Static utility for ensuring {@link Future#get} does not block.
+ */
 class NonBlockingFutures {
 
-  static <T> T get(Future<T> future) throws ExecutionException, InterruptedException {
-    if (!future.isDone()) {
-      throw new IllegalStateException("get() called before done");
+    static <T> T get(Future<T> future) throws ExecutionException, InterruptedException {
+        if (!future.isDone()) {
+            throw new IllegalStateException("get() called before done");
+        }
+        return future.get();
     }
-    return future.get();
-  }
 
-  private NonBlockingFutures() {}
+    private NonBlockingFutures() {
+    }
 }

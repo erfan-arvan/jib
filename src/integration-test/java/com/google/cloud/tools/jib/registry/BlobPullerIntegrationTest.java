@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.hash.CountingDigestOutputStream;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.image.json.V21ManifestTemplate;
@@ -31,46 +30,38 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
-/** Integration tests for {@link BlobPuller}. */
+/**
+ * Integration tests for {@link BlobPuller}.
+ */
 public class BlobPullerIntegrationTest {
 
-  @ClassRule public static LocalRegistry localRegistry = new LocalRegistry(5000);
+    @ClassRule
+    public static LocalRegistry localRegistry = new LocalRegistry(5000);
 
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-  @Test
-  public void testPull() throws IOException, RegistryException {
-    // Pulls the busybox image.
-    RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
-    V21ManifestTemplate manifestTemplate =
-        registryClient.pullManifest("latest", V21ManifestTemplate.class);
-
-    DescriptorDigest realDigest = manifestTemplate.getLayerDigests().get(0);
-
-    // Pulls a layer BLOB of the busybox image.
-    CountingDigestOutputStream layerOutputStream =
-        new CountingDigestOutputStream(ByteStreams.nullOutputStream());
-    registryClient.pullBlob(realDigest, layerOutputStream);
-
-    Assert.assertEquals(realDigest, layerOutputStream.toBlobDescriptor().getDigest());
-  }
-
-  @Test
-  public void testPull_unknownBlob() throws RegistryException, IOException, DigestException {
-    DescriptorDigest nonexistentDigest =
-        DescriptorDigest.fromHash(
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
-    try {
-      RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
-      registryClient.pullBlob(nonexistentDigest, Mockito.mock(OutputStream.class));
-      Assert.fail("Trying to pull nonexistent blob should have errored");
-
-    } catch (RegistryErrorException ex) {
-      Assert.assertThat(
-          ex.getMessage(),
-          CoreMatchers.containsString(
-              "pull BLOB for localhost:5000/busybox with digest " + nonexistentDigest));
+    @Test
+    public void testPull() throws IOException, RegistryException {
+        // Pulls the busybox image.
+        RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
+        V21ManifestTemplate manifestTemplate = registryClient.pullManifest("latest", V21ManifestTemplate.class);
+        DescriptorDigest realDigest = manifestTemplate.getLayerDigests().get(0);
+        // Pulls a layer BLOB of the busybox image.
+        CountingDigestOutputStream layerOutputStream = new CountingDigestOutputStream(ByteStreams.nullOutputStream());
+        registryClient.pullBlob(realDigest, layerOutputStream);
+        Assert.assertEquals(realDigest, layerOutputStream.toBlobDescriptor().getDigest());
     }
-  }
+
+    @Test
+    public void testPull_unknownBlob() throws RegistryException, IOException, DigestException {
+        DescriptorDigest nonexistentDigest = DescriptorDigest.fromHash("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        try {
+            RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
+            registryClient.pullBlob(nonexistentDigest, Mockito.mock(OutputStream.class));
+            Assert.fail("Trying to pull nonexistent blob should have errored");
+        } catch (RegistryErrorException ex) {
+            Assert.assertThat(ex.getMessage(), CoreMatchers.containsString("pull BLOB for localhost:5000/busybox with digest " + nonexistentDigest));
+        }
+    }
 }

@@ -13,25 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
-
-/** A {@link CachedLayer} with a last modified time. */
+/**
+ * A {@link CachedLayer} with a last modified time.
+ */
 class CachedLayerWithMetadata extends CachedLayer {
 
-  /** Extra layer properties for application layers. */
-   private final LayerMetadata metadata;
+    /**
+     * Extra layer properties for application layers.
+     */
+    private final LayerMetadata metadata;
 
-  CachedLayerWithMetadata(CachedLayer cachedLayer,  LayerMetadata metadata) {
-    super(cachedLayer.getContentFile(), cachedLayer.getBlobDescriptor(), cachedLayer.getDiffId());
+    CachedLayerWithMetadata(CachedLayer cachedLayer, LayerMetadata metadata) {
+        super(cachedLayer.getContentFile(), cachedLayer.getBlobDescriptor(), cachedLayer.getDiffId());
+        this.metadata = metadata;
+    }
 
-    this.metadata = metadata;
-  }
-
-  
-  LayerMetadata getMetadata() {
-    return metadata;
-  }
+    LayerMetadata getMetadata() {
+        return metadata;
+    }
 }

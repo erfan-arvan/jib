@@ -13,76 +13,56 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.junit.Assert;
 import org.junit.Test;
 
-/** Tests for {@link RegistryAuthenticator}. */
+/**
+ * Tests for {@link RegistryAuthenticator}.
+ */
 public class RegistryAuthenticatorTest {
 
-  @Test
-  public void testFromAuthenticationMethod_bearer()
-      throws MalformedURLException, RegistryAuthenticationFailedException {
-    RegistryAuthenticator registryAuthenticator =
-        RegistryAuthenticator.fromAuthenticationMethod(
-            "Bearer realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"",
-            "someimage");
-    Assert.assertEquals(
-        new URL("https://somerealm?service=someservice&scope=repository:someimage:scope"),
-        registryAuthenticator.getAuthenticationUrl("scope"));
-  }
-
-  @Test
-  public void testFromAuthenticationMethod_basic()
-      throws MalformedURLException, RegistryAuthenticationFailedException {
-    Assert.assertNull(
-        RegistryAuthenticator.fromAuthenticationMethod(
-            "Basic realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"",
-            "someimage"));
-  }
-
-  @Test
-  public void testFromAuthenticationMethod_noBearer() throws MalformedURLException {
-    try {
-      RegistryAuthenticator.fromAuthenticationMethod(
-          "realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"", "someimage");
-      Assert.fail("Authentication method without 'Bearer ' or 'Basic ' should fail");
-
-    } catch (RegistryAuthenticationFailedException ex) {
-      Assert.assertEquals(
-          "Failed to authenticate with the registry because: 'Bearer' was not found in the 'WWW-Authenticate' header, tried to parse: realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"",
-          ex.getMessage());
+    @Test
+    public void testFromAuthenticationMethod_bearer() throws MalformedURLException, RegistryAuthenticationFailedException {
+        RegistryAuthenticator registryAuthenticator = RegistryAuthenticator.fromAuthenticationMethod("Bearer realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"", "someimage");
+        Assert.assertEquals(new URL("https://somerealm?service=someservice&scope=repository:someimage:scope"), registryAuthenticator.getAuthenticationUrl("scope"));
     }
-  }
 
-  @Test
-  public void testFromAuthenticationMethod_noRealm() throws MalformedURLException {
-    try {
-      RegistryAuthenticator.fromAuthenticationMethod("Bearer scope=\"somescope\"", "someimage");
-      Assert.fail("Authentication method without 'realm' should fail");
-
-    } catch (RegistryAuthenticationFailedException ex) {
-      Assert.assertEquals(
-          "Failed to authenticate with the registry because: 'realm' was not found in the 'WWW-Authenticate' header, tried to parse: Bearer scope=\"somescope\"",
-          ex.getMessage());
+    @Test
+    public void testFromAuthenticationMethod_basic() throws MalformedURLException, RegistryAuthenticationFailedException {
+        Assert.assertNull(RegistryAuthenticator.fromAuthenticationMethod("Basic realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"", "someimage"));
     }
-  }
 
-  @Test
-  public void testFromAuthenticationMethod_noService() throws MalformedURLException {
-    try {
-      RegistryAuthenticator.fromAuthenticationMethod(
-          "Bearer realm=\"https://somerealm\"", "someimage");
-      Assert.fail("Authentication method without 'service' should fail");
-
-    } catch (RegistryAuthenticationFailedException ex) {
-      Assert.assertEquals(
-          "Failed to authenticate with the registry because: 'service' was not found in the 'WWW-Authenticate' header, tried to parse: Bearer realm=\"https://somerealm\"",
-          ex.getMessage());
+    @Test
+    public void testFromAuthenticationMethod_noBearer() throws MalformedURLException {
+        try {
+            RegistryAuthenticator.fromAuthenticationMethod("realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"", "someimage");
+            Assert.fail("Authentication method without 'Bearer ' or 'Basic ' should fail");
+        } catch (RegistryAuthenticationFailedException ex) {
+            Assert.assertEquals("Failed to authenticate with the registry because: 'Bearer' was not found in the 'WWW-Authenticate' header, tried to parse: realm=\"https://somerealm\",service=\"someservice\",scope=\"somescope\"", ex.getMessage());
+        }
     }
-  }
+
+    @Test
+    public void testFromAuthenticationMethod_noRealm() throws MalformedURLException {
+        try {
+            RegistryAuthenticator.fromAuthenticationMethod("Bearer scope=\"somescope\"", "someimage");
+            Assert.fail("Authentication method without 'realm' should fail");
+        } catch (RegistryAuthenticationFailedException ex) {
+            Assert.assertEquals("Failed to authenticate with the registry because: 'realm' was not found in the 'WWW-Authenticate' header, tried to parse: Bearer scope=\"somescope\"", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testFromAuthenticationMethod_noService() throws MalformedURLException {
+        try {
+            RegistryAuthenticator.fromAuthenticationMethod("Bearer realm=\"https://somerealm\"", "someimage");
+            Assert.fail("Authentication method without 'service' should fail");
+        } catch (RegistryAuthenticationFailedException ex) {
+            Assert.assertEquals("Failed to authenticate with the registry because: 'service' was not found in the 'WWW-Authenticate' header, tried to parse: Bearer realm=\"https://somerealm\"", ex.getMessage());
+        }
+    }
 }

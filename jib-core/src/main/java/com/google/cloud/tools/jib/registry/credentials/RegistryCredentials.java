@@ -15,13 +15,12 @@
  */
 
 package com.google.cloud.tools.jib.registry.credentials;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.http.Authorization;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Stores retrieved registry credentials.

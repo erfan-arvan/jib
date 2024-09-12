@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.json;
-
+import javax.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 

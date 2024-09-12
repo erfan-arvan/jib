@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,52 +54,62 @@ import java.util.List;
  */
 public class OCIManifestTemplate implements BuildableManifestTemplate {
 
-  /** The OCI manifest media type. */
-  public static final String MANIFEST_MEDIA_TYPE = "application/vnd.oci.image.manifest.v1+json";
+    /**
+     * The OCI manifest media type.
+     */
+    public static final String MANIFEST_MEDIA_TYPE = "application/vnd.oci.image.manifest.v1+json";
 
-  /** The OCI container configuration media type. */
-  private static final String CONTAINER_CONFIGURATION_MEDIA_TYPE =
-      "application/vnd.oci.image.config.v1+json";
+    /**
+     * The OCI container configuration media type.
+     */
+    private static final String CONTAINER_CONFIGURATION_MEDIA_TYPE = "application/vnd.oci.image.config.v1+json";
 
-  /** The OCI layer media type. */
-  private static final String LAYER_MEDIA_TYPE = "application/vnd.oci.image.layer.v1.tar+gzip";
+    /**
+     * The OCI layer media type.
+     */
+    private static final String LAYER_MEDIA_TYPE = "application/vnd.oci.image.layer.v1.tar+gzip";
 
-  private final int schemaVersion = 2;
-  private final String mediaType = MANIFEST_MEDIA_TYPE;
+    private final int schemaVersion = 2;
 
-  /** The container configuration reference. */
-  private ContentDescriptorTemplate config;
+    private final String mediaType = MANIFEST_MEDIA_TYPE;
 
-  /** The list of layer references. */
-  private final List<ContentDescriptorTemplate> layers = new ArrayList<>();
+    /**
+     * The container configuration reference.
+     */
+    private ContentDescriptorTemplate config;
 
-  @Override
-  public int getSchemaVersion() {
-    return schemaVersion;
-  }
+    /**
+     * The list of layer references.
+     */
+    private final List<ContentDescriptorTemplate> layers = new ArrayList<>();
 
-  @Override
-  public String getManifestMediaType() {
-    return MANIFEST_MEDIA_TYPE;
-  }
+    @Override
+    public int getSchemaVersion() {
+        return schemaVersion;
+    }
 
-  @Override
-  public ContentDescriptorTemplate getContainerConfiguration() {
-    return config;
-  }
+    @Override
+    public String getManifestMediaType() {
+        return MANIFEST_MEDIA_TYPE;
+    }
 
-  @Override
-  public List<ContentDescriptorTemplate> getLayers() {
-    return Collections.unmodifiableList(layers);
-  }
+    @Override
+    public ContentDescriptorTemplate getContainerConfiguration() {
+        return config;
+    }
 
-  @Override
-  public void setContainerConfiguration(long size, DescriptorDigest digest) {
-    config = new ContentDescriptorTemplate(CONTAINER_CONFIGURATION_MEDIA_TYPE, size, digest);
-  }
+    @Override
+    public List<ContentDescriptorTemplate> getLayers() {
+        return Collections.unmodifiableList(layers);
+    }
 
-  @Override
-  public void addLayer(long size, DescriptorDigest digest) {
-    layers.add(new ContentDescriptorTemplate(LAYER_MEDIA_TYPE, size, digest));
-  }
+    @Override
+    public void setContainerConfiguration(long size, DescriptorDigest digest) {
+        config = new ContentDescriptorTemplate(CONTAINER_CONFIGURATION_MEDIA_TYPE, size, digest);
+    }
+
+    @Override
+    public void addLayer(long size, DescriptorDigest digest) {
+        layers.add(new ContentDescriptorTemplate(LAYER_MEDIA_TYPE, size, digest));
+    }
 }

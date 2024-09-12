@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 /** Thrown when interacting with a registry. */
 public class RegistryException extends Exception {
 

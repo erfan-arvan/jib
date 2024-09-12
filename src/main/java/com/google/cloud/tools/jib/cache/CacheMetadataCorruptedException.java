@@ -13,8 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Exception thrown when the cache metadata failed to load correctly, indicating that it is probably
@@ -22,11 +22,11 @@ package com.google.cloud.tools.jib.cache;
  */
 public class CacheMetadataCorruptedException extends Exception {
 
-  CacheMetadataCorruptedException(Throwable cause) {
-    super(cause);
-  }
+    CacheMetadataCorruptedException(Throwable cause) {
+        super(cause);
+    }
 
-  public CacheMetadataCorruptedException(String message) {
-    super(message);
-  }
+    public CacheMetadataCorruptedException(String message) {
+        super(message);
+    }
 }

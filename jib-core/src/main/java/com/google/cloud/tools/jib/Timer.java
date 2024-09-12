@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.builder.BuildLogger;
 import java.io.Closeable;
 

@@ -1,0 +1,4 @@
+org.gradle.api.plugins.buildcomparison.outcome.internal.tooling.ToolingRegistrationAction
+org.gradle.buildinit.plugins.internal.action.BuildInitAutoApplyAction
+org.gradle.buildinit.plugins.internal.action.WrapperPluginAutoApplyAction
+org.gradle.api.plugins.internal.HelpTasksAutoApplyAction

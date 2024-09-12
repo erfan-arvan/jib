@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.image.json;
-
+import javax.annotation.Nullable;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;

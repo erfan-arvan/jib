@@ -13,29 +13,32 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.nio.file.Path;
 
-/** Methods for getting static cache filename properties. */
+/**
+ * Methods for getting static cache filename properties.
+ */
 class CacheFiles {
 
-  static final String METADATA_FILENAME = "metadata.json";
-  private static final String LAYER_FILE_EXTENSION = ".tar.gz";
+    static final String METADATA_FILENAME = "metadata.json";
 
-  static Path getMetadataFile(Path cacheDirectory) {
-    return cacheDirectory.resolve(METADATA_FILENAME);
-  }
+    private static final String LAYER_FILE_EXTENSION = ".tar.gz";
 
-  /**
-   * Gets the path to the file for a layer digest. The file is {@code [cache directory]/[layer
-   * hash].tar.gz}.
-   */
-  static Path getLayerFile(Path cacheDirectory, DescriptorDigest layerDigest) {
-    return cacheDirectory.resolve(layerDigest.getHash() + LAYER_FILE_EXTENSION);
-  }
+    static Path getMetadataFile(Path cacheDirectory) {
+        return cacheDirectory.resolve(METADATA_FILENAME);
+    }
 
-  private CacheFiles() {}
+    /**
+     * Gets the path to the file for a layer digest. The file is {@code [cache directory]/[layer
+     * hash].tar.gz}.
+     */
+    static Path getLayerFile(Path cacheDirectory, DescriptorDigest layerDigest) {
+        return cacheDirectory.resolve(layerDigest.getHash() + LAYER_FILE_EXTENSION);
+    }
+
+    private CacheFiles() {
+    }
 }

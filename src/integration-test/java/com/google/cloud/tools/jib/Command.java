@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,44 +22,46 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 
-/** Test utility to run shell commands for integration tests. */
+/**
+ * Test utility to run shell commands for integration tests.
+ */
 public class Command {
 
-  private final List<String> command;
+    private final List<String> command;
 
-  /** Instantiate with a command. */
-  public Command(String... command) {
-    this.command = Arrays.asList(command);
-  }
-
-  /** Runs the command. */
-  public String run() throws IOException, InterruptedException {
-    return run(null);
-  }
-
-  /** Runs the command and pipes in {@code stdin}. */
-  public String run( byte[] stdin) throws IOException, InterruptedException {
-    Process process = new ProcessBuilder(command).start();
-
-    if (stdin != null) {
-      // Write out stdin.
-      try (OutputStream outputStream = process.getOutputStream()) {
-        outputStream.write(stdin);
-      }
+    /**
+     * Instantiate with a command.
+     */
+    public Command(String... command) {
+        this.command = Arrays.asList(command);
     }
 
-    // Read in stdout.
-    try (InputStreamReader inputStreamReader =
-        new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
-      String output = CharStreams.toString(inputStreamReader);
-
-      if (process.waitFor() != 0) {
-        throw new RuntimeException("Command '" + String.join(" ", command) + "' failed");
-      }
-
-      return output;
+    /**
+     * Runs the command.
+     */
+    public String run() throws IOException, InterruptedException {
+        return run(null);
     }
-  }
+
+    /**
+     * Runs the command and pipes in {@code stdin}.
+     */
+    public String run(byte[] stdin) throws IOException, InterruptedException {
+        Process process = new ProcessBuilder(command).start();
+        if (stdin != null) {
+            // Write out stdin.
+            try (OutputStream outputStream = process.getOutputStream()) {
+                outputStream.write(stdin);
+            }
+        }
+        // Read in stdout.
+        try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
+            String output = CharStreams.toString(inputStreamReader);
+            if (process.waitFor() != 0) {
+                throw new RuntimeException("Command '" + String.join(" ", command) + "' failed");
+            }
+            return output;
+        }
+    }
 }

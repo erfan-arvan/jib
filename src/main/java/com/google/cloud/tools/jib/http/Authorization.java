@@ -13,8 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.http;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Holds the credentials for an HTTP {@code Authorization} header.
@@ -25,25 +25,28 @@ package com.google.cloud.tools.jib.http;
  */
 public class Authorization {
 
-  private final String scheme;
-  private final String token;
+    private final String scheme;
 
-  Authorization(String scheme, String token) {
-    this.scheme = scheme;
-    this.token = token;
-  }
+    private final String token;
 
-  public String getScheme() {
-    return scheme;
-  }
+    Authorization(String scheme, String token) {
+        this.scheme = scheme;
+        this.token = token;
+    }
 
-  public String getToken() {
-    return token;
-  }
+    public String getScheme() {
+        return scheme;
+    }
 
-  /** Return the HTTP {@link Authorization} header value. */
-  @Override
-  public String toString() {
-    return scheme + " " + token;
-  }
+    public String getToken() {
+        return token;
+    }
+
+    /**
+     * Return the HTTP {@link Authorization} header value.
+     */
+    @Override
+    public String toString() {
+        return scheme + " " + token;
+    }
 }

@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.cache.CachedLayer;
@@ -26,26 +25,30 @@ import com.google.cloud.tools.jib.cache.CachedLayer;
  */
 public class UnwrittenLayer implements Layer {
 
-  private final Blob uncompressedBlob;
+    private final Blob uncompressedBlob;
 
-  /** Initializes with the uncompressed {@link Blob} of the layer content. */
-  public UnwrittenLayer(Blob uncompressedBlob) {
-    this.uncompressedBlob = uncompressedBlob;
-  }
+    /**
+     * Initializes with the uncompressed {@link Blob} of the layer content.
+     */
+    public UnwrittenLayer(Blob uncompressedBlob) {
+        this.uncompressedBlob = uncompressedBlob;
+    }
 
-  /** Gets the uncompressed layer content BLOB. */
-  @Override
-  public Blob getBlob() {
-    return uncompressedBlob;
-  }
+    /**
+     * Gets the uncompressed layer content BLOB.
+     */
+    @Override
+    public Blob getBlob() {
+        return uncompressedBlob;
+    }
 
-  @Override
-  public BlobDescriptor getBlobDescriptor() throws LayerPropertyNotFoundException {
-    throw new LayerPropertyNotFoundException("Blob descriptor not available for unwritten layer");
-  }
+    @Override
+    public BlobDescriptor getBlobDescriptor() throws LayerPropertyNotFoundException {
+        throw new LayerPropertyNotFoundException("Blob descriptor not available for unwritten layer");
+    }
 
-  @Override
-  public DescriptorDigest getDiffId() throws LayerPropertyNotFoundException {
-    throw new LayerPropertyNotFoundException("Diff ID not available for unwritten layer");
-  }
+    @Override
+    public DescriptorDigest getDiffId() throws LayerPropertyNotFoundException {
+        throw new LayerPropertyNotFoundException("Diff ID not available for unwritten layer");
+    }
 }

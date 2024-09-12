@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry;
-
+import javax.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.junit.Assert;

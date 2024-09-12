@@ -13,21 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Thrown when interacting with a registry. */
+/**
+ * Thrown when interacting with a registry.
+ */
 public class RegistryException extends Exception {
 
-  public RegistryException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public RegistryException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public RegistryException(String message) {
-    super(message);
-  }
+    public RegistryException(String message) {
+        super(message);
+    }
 
-  public RegistryException(Throwable cause) {
-    super(cause);
-  }
+    public RegistryException(Throwable cause) {
+        super(cause);
+    }
 }

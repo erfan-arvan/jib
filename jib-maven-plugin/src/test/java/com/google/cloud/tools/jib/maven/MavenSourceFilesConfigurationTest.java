@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.maven;
-
+import javax.annotation.Nullable;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URISyntaxException;

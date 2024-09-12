@@ -13,16 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface BuildLogger {
 
-  void debug(CharSequence message);
+    void debug(@Nullable() CharSequence message);
 
-  void info(CharSequence message);
+    void info(@Nullable() CharSequence message);
 
-  void warn(CharSequence message);
+    void warn(@Nullable() CharSequence message);
 
-  void error(CharSequence message);
+    void error(@Nullable() CharSequence message);
 }

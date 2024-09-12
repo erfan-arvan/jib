@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.filesystem;
-
+import javax.annotation.Nullable;
 import com.google.common.annotations.VisibleForTesting;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib;
-
+import javax.annotation.Nullable;
 /** Constants relating to the Jib project. */
 public class ProjectInfo {
 

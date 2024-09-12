@@ -15,12 +15,11 @@
  */
 
 package com.google.cloud.tools.jib.registry.credentials.json;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Template for a Docker config file.

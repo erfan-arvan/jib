@@ -15,7 +15,7 @@
  */
 
 package com.google.cloud.tools.jib.registry.credentials.json;
-
+import javax.annotation.Nullable;
 import com.google.cloud.tools.jib.json.JsonTemplateMapper;
 import com.google.common.io.Resources;
 import java.io.ByteArrayOutputStream;
