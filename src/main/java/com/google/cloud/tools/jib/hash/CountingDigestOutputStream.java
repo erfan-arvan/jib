@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.hash;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.io.IOException;
@@ -25,59 +24,65 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/** A {@link DigestOutputStream} that also keeps track of the total number of bytes written. */
+/**
+ * A {@link DigestOutputStream} that also keeps track of the total number of bytes written.
+ */
 public class CountingDigestOutputStream extends DigestOutputStream {
 
-  private static final String SHA_256_ALGORITHM = "SHA-256";
+    private static final String SHA_256_ALGORITHM = "SHA-256";
 
-  /** Keeps track of the total number of bytes appended. */
-  private long totalBytes = 0;
+    /**
+     * Keeps track of the total number of bytes appended.
+     */
+    private long totalBytes = 0;
 
-  /** Wraps the {@code outputStream}. */
-  public CountingDigestOutputStream(OutputStream outputStream) {
-    super(outputStream, null);
-    try {
-      setMessageDigest(MessageDigest.getInstance(SHA_256_ALGORITHM));
-    } catch (NoSuchAlgorithmException ex) {
-      throw new RuntimeException(
-          "SHA-256 algorithm implementation not found - might be a broken JVM");
+    /**
+     * Wraps the {@code outputStream}.
+     */
+    public CountingDigestOutputStream(OutputStream outputStream) {
+        super(outputStream, null);
+        try {
+            setMessageDigest(MessageDigest.getInstance(SHA_256_ALGORITHM));
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException("SHA-256 algorithm implementation not found - might be a broken JVM");
+        }
     }
-  }
 
-  /** Builds a {@link BlobDescriptor} with the hash and size of the bytes written. */
-  public BlobDescriptor toBlobDescriptor() {
-    try {
-      byte[] hashedBytes = digest.digest();
-
-      // Encodes each hashed byte into 2-character hexadecimal representation.
-      StringBuilder stringBuilder = new StringBuilder(2 * hashedBytes.length);
-      for (byte b : hashedBytes) {
-        stringBuilder.append(String.format("%02x", b));
-      }
-      String hash = stringBuilder.toString();
-
-      DescriptorDigest digest = DescriptorDigest.fromHash(hash);
-      return new BlobDescriptor(totalBytes, digest);
-
-    } catch (DigestException ex) {
-      throw new RuntimeException("SHA-256 algorithm produced invalid hash: " + ex.getMessage(), ex);
+    /**
+     * Builds a {@link BlobDescriptor} with the hash and size of the bytes written.
+     */
+    public BlobDescriptor toBlobDescriptor() {
+        try {
+            byte[] hashedBytes = digest.digest();
+            // Encodes each hashed byte into 2-character hexadecimal representation.
+            StringBuilder stringBuilder = new StringBuilder(2 * hashedBytes.length);
+            for (byte b : hashedBytes) {
+                stringBuilder.append(String.format("%02x", b));
+            }
+            String hash = stringBuilder.toString();
+            DescriptorDigest digest = DescriptorDigest.fromHash(hash);
+            return new BlobDescriptor(totalBytes, digest);
+        } catch (DigestException ex) {
+            throw new RuntimeException("SHA-256 algorithm produced invalid hash: " + ex.getMessage(), ex);
+        }
     }
-  }
 
-  /** @return the total number of bytes that were hashed */
-  public long getTotalBytes() {
-    return totalBytes;
-  }
+    /**
+     * @return the total number of bytes that were hashed
+     */
+    public long getTotalBytes() {
+        return totalBytes;
+    }
 
-  @Override
-  public void write(byte[] data, int offset, int length) throws IOException {
-    super.write(data, offset, length);
-    totalBytes += length;
-  }
+    @Override
+    public void write(byte[] data, int offset, int length) throws IOException {
+        super.write(data, offset, length);
+        totalBytes += length;
+    }
 
-  @Override
-  public void write(int singleByte) throws IOException {
-    super.write(singleByte);
-    totalBytes++;
-  }
+    @Override
+    public void write(int singleByte) throws IOException {
+        super.write(singleByte);
+        totalBytes++;
+    }
 }

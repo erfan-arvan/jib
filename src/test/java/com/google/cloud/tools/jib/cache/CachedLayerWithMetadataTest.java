@@ -13,21 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/** Tests for {@link CachedLayerWithMetadata}. */
+/**
+ * Tests for {@link CachedLayerWithMetadata}.
+ */
 public class CachedLayerWithMetadataTest {
 
-  @Test
-  public void testNew() {
-    LayerMetadata mockLayerMetadata = Mockito.mock(LayerMetadata.class);
-    CachedLayerWithMetadata cachedLayerWithMetadata =
-        new CachedLayerWithMetadata(Mockito.mock(CachedLayer.class), mockLayerMetadata);
-    Assert.assertEquals(mockLayerMetadata, cachedLayerWithMetadata.getMetadata());
-  }
+    @Test
+    public void testNew() {
+        LayerMetadata mockLayerMetadata = Mockito.mock(LayerMetadata.class);
+        CachedLayerWithMetadata cachedLayerWithMetadata = new CachedLayerWithMetadata(Mockito.mock(CachedLayer.class), mockLayerMetadata);
+        Assert.assertEquals(mockLayerMetadata, cachedLayerWithMetadata.getMetadata());
+    }
 }

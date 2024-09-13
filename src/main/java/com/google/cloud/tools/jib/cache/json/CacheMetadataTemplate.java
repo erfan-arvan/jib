@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,14 +55,14 @@ import java.util.List;
  */
 public class CacheMetadataTemplate implements JsonTemplate {
 
-  private final List<CacheMetadataLayerObjectTemplate> layers = new ArrayList<>();
+    private final List<CacheMetadataLayerObjectTemplate> layers = new ArrayList<>();
 
-  public List<CacheMetadataLayerObjectTemplate> getLayers() {
-    return layers;
-  }
+    public List<CacheMetadataLayerObjectTemplate> getLayers() {
+        return layers;
+    }
 
-  public CacheMetadataTemplate addLayer(CacheMetadataLayerObjectTemplate layer) {
-    layers.add(layer);
-    return this;
-  }
+    public CacheMetadataTemplate addLayer(CacheMetadataLayerObjectTemplate layer) {
+        layers.add(layer);
+        return this;
+    }
 }

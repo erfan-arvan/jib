@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 
@@ -25,28 +24,30 @@ import com.google.cloud.tools.jib.blob.BlobDescriptor;
  */
 public class ReferenceNoDiffIdLayer implements Layer {
 
-  /** The {@link BlobDescriptor} of the compressed layer content. */
-  private final BlobDescriptor blobDescriptor;
+    /**
+     * The {@link BlobDescriptor} of the compressed layer content.
+     */
+    private final BlobDescriptor blobDescriptor;
 
-  /** Instantiate with a {@link BlobDescriptor} and diff ID. */
-  public ReferenceNoDiffIdLayer(BlobDescriptor blobDescriptor) {
-    this.blobDescriptor = blobDescriptor;
-  }
+    /**
+     * Instantiate with a {@link BlobDescriptor} and diff ID.
+     */
+    public ReferenceNoDiffIdLayer(BlobDescriptor blobDescriptor) {
+        this.blobDescriptor = blobDescriptor;
+    }
 
-  @Override
-  public Blob getBlob() throws LayerPropertyNotFoundException {
-    throw new LayerPropertyNotFoundException(
-        "Blob not available for reference layer without diff ID");
-  }
+    @Override
+    public Blob getBlob() throws LayerPropertyNotFoundException {
+        throw new LayerPropertyNotFoundException("Blob not available for reference layer without diff ID");
+    }
 
-  @Override
-  public BlobDescriptor getBlobDescriptor() {
-    return blobDescriptor;
-  }
+    @Override
+    public BlobDescriptor getBlobDescriptor() {
+        return blobDescriptor;
+    }
 
-  @Override
-  public DescriptorDigest getDiffId() throws LayerPropertyNotFoundException {
-    throw new LayerPropertyNotFoundException(
-        "Diff ID not available for reference layer without diff ID");
-  }
+    @Override
+    public DescriptorDigest getDiffId() throws LayerPropertyNotFoundException {
+        throw new LayerPropertyNotFoundException("Diff ID not available for reference layer without diff ID");
+    }
 }

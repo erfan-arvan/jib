@@ -13,15 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.registry.RegistryException;
 
-/** Exception thrown when trying to parse an unknown image manifest format. */
+/**
+ * Exception thrown when trying to parse an unknown image manifest format.
+ */
 public class UnknownManifestFormatException extends RegistryException {
 
-  public UnknownManifestFormatException(String message) {
-    super(message);
-  }
+    public UnknownManifestFormatException(String message) {
+        super(message);
+    }
 }

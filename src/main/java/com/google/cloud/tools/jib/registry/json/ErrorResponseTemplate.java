@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
@@ -41,15 +40,15 @@ import java.util.List;
  */
 public class ErrorResponseTemplate implements JsonTemplate {
 
-  private final List<ErrorEntryTemplate> errors = new ArrayList<>();
+    private final List<ErrorEntryTemplate> errors = new ArrayList<>();
 
-  public List<ErrorEntryTemplate> getErrors() {
-    return Collections.unmodifiableList(errors);
-  }
+    public List<ErrorEntryTemplate> getErrors() {
+        return Collections.unmodifiableList(errors);
+    }
 
-  @VisibleForTesting
-  public ErrorResponseTemplate addError(ErrorEntryTemplate errorEntryTemplate) {
-    errors.add(errorEntryTemplate);
-    return this;
-  }
+    @VisibleForTesting
+    public ErrorResponseTemplate addError(ErrorEntryTemplate errorEntryTemplate) {
+        errors.add(errorEntryTemplate);
+        return this;
+    }
 }

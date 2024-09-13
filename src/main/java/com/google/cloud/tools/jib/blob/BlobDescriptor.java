@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.hash.CountingDigestOutputStream;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.common.io.ByteStreams;
@@ -23,74 +22,77 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/** Contains properties describing a BLOB, including its digest and possibly its size (in bytes). */
+/**
+ * Contains properties describing a BLOB, including its digest and possibly its size (in bytes).
+ */
 public class BlobDescriptor {
 
-  private final DescriptorDigest digest;
+    private final DescriptorDigest digest;
 
-  /** The size of the BLOB (in bytes). Negative if unknown. */
-  private final long size;
+    /**
+     * The size of the BLOB (in bytes). Negative if unknown.
+     */
+    private final long size;
 
-  /**
-   * Creates a new {@link BlobDescriptor} from the contents of an {@link InputStream} while piping
-   * to an {@link OutputStream}. Does not close either streams.
-   */
-  static BlobDescriptor fromPipe(InputStream inputStream, OutputStream outputStream)
-      throws IOException {
-    CountingDigestOutputStream countingDigestOutputStream =
-        new CountingDigestOutputStream(outputStream);
-    ByteStreams.copy(inputStream, countingDigestOutputStream);
-    countingDigestOutputStream.flush();
-    return countingDigestOutputStream.toBlobDescriptor();
-  }
-
-  public BlobDescriptor(long size, DescriptorDigest digest) {
-    this.size = size;
-    this.digest = digest;
-  }
-
-  /** Initialize with just digest. */
-  public BlobDescriptor(DescriptorDigest digest) {
-    this(-1, digest);
-  }
-
-  public boolean hasSize() {
-    return size >= 0;
-  }
-
-  public DescriptorDigest getDigest() {
-    return digest;
-  }
-
-  public long getSize() {
-    return size;
-  }
-
-  /**
-   * Two {@link BlobDescriptor} objects are equal if their
-   *
-   * <ol>
-   *   <li>{@code digest}s are not null and equal, and
-   *   <li>{@code size}s are non-negative and equal
-   * </ol>
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == this) {
-      return true;
-    }
-    if (size < 0 || !(obj instanceof BlobDescriptor)) {
-      return false;
+    /**
+     * Creates a new {@link BlobDescriptor} from the contents of an {@link InputStream} while piping
+     * to an {@link OutputStream}. Does not close either streams.
+     */
+    static BlobDescriptor fromPipe(InputStream inputStream, OutputStream outputStream) throws IOException {
+        CountingDigestOutputStream countingDigestOutputStream = new CountingDigestOutputStream(outputStream);
+        ByteStreams.copy(inputStream, countingDigestOutputStream);
+        countingDigestOutputStream.flush();
+        return countingDigestOutputStream.toBlobDescriptor();
     }
 
-    BlobDescriptor other = (BlobDescriptor) obj;
-    return size == other.getSize() && digest.equals(other.getDigest());
-  }
+    public BlobDescriptor(long size, DescriptorDigest digest) {
+        this.size = size;
+        this.digest = digest;
+    }
 
-  @Override
-  public int hashCode() {
-    int result = digest.hashCode();
-    result = 31 * result + (int) (size ^ (size >>> 32));
-    return result;
-  }
+    /**
+     * Initialize with just digest.
+     */
+    public BlobDescriptor(DescriptorDigest digest) {
+        this(-1, digest);
+    }
+
+    public boolean hasSize() {
+        return size >= 0;
+    }
+
+    public DescriptorDigest getDigest() {
+        return digest;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    /**
+     * Two {@link BlobDescriptor} objects are equal if their
+     *
+     * <ol>
+     *   <li>{@code digest}s are not null and equal, and
+     *   <li>{@code size}s are non-negative and equal
+     * </ol>
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (size < 0 || !(obj instanceof BlobDescriptor)) {
+            return false;
+        }
+        BlobDescriptor other = (BlobDescriptor) obj;
+        return size == other.getSize() && digest.equals(other.getDigest());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = digest.hashCode();
+        result = 31 * result + (int) (size ^ (size >>> 32));
+        return result;
+    }
 }

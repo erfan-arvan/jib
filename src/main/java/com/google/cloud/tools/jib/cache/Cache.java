@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.cache.json.CacheMetadataTemplate;
 import com.google.cloud.tools.jib.image.LayerPropertyNotFoundException;
 import com.google.cloud.tools.jib.json.JsonTemplateMapper;
@@ -27,86 +26,86 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
-import javax.annotation.Nullable;
 
-/** Manages a cache. Implementation is thread-safe. */
+/**
+ * Manages a cache. Implementation is thread-safe.
+ */
 public class Cache implements Closeable {
 
-  /** The path to the root of the cache. */
-  private final Path cacheDirectory;
+    /**
+     * The path to the root of the cache.
+     */
+    private final Path cacheDirectory;
 
-  /** The metadata that corresponds to the cache at {@link #cacheDirectory}. */
-  private final CacheMetadata cacheMetadata;
+    /**
+     * The metadata that corresponds to the cache at {@link #cacheDirectory}.
+     */
+    private final CacheMetadata cacheMetadata;
 
-  /**
-   * Initializes a cache with a directory. This also loads the cache metadata if it exists in the
-   * directory.
-   */
-  public static Cache init(Path cacheDirectory)
-      throws NotDirectoryException, CacheMetadataCorruptedException {
-    if (!Files.isDirectory(cacheDirectory)) {
-      throw new NotDirectoryException("The cache can only write to a directory");
-    }
-    CacheMetadata cacheMetadata = loadCacheMetadata(cacheDirectory);
-
-    return new Cache(cacheDirectory, cacheMetadata);
-  }
-
-  private static CacheMetadata loadCacheMetadata(Path cacheDirectory)
-      throws CacheMetadataCorruptedException {
-    Path cacheMetadataJsonFile = cacheDirectory.resolve(CacheFiles.METADATA_FILENAME);
-
-    if (!Files.exists(cacheMetadataJsonFile)) {
-      return new CacheMetadata();
+    /**
+     * Initializes a cache with a directory. This also loads the cache metadata if it exists in the
+     * directory.
+     */
+    public static Cache init(Path cacheDirectory) throws NotDirectoryException, CacheMetadataCorruptedException {
+        if (!Files.isDirectory(cacheDirectory)) {
+            throw new NotDirectoryException("The cache can only write to a directory");
+        }
+        CacheMetadata cacheMetadata = loadCacheMetadata(cacheDirectory);
+        return new Cache(cacheDirectory, cacheMetadata);
     }
 
-    try {
-      CacheMetadataTemplate cacheMetadataJson =
-          JsonTemplateMapper.readJsonFromFile(cacheMetadataJsonFile, CacheMetadataTemplate.class);
-      return CacheMetadataTranslator.fromTemplate(cacheMetadataJson, cacheDirectory);
-
-    } catch (IOException ex) {
-      // The cache metadata is probably corrupted.
-      throw new CacheMetadataCorruptedException(ex);
+    private static CacheMetadata loadCacheMetadata(Path cacheDirectory) throws CacheMetadataCorruptedException {
+        Path cacheMetadataJsonFile = cacheDirectory.resolve(CacheFiles.METADATA_FILENAME);
+        if (!Files.exists(cacheMetadataJsonFile)) {
+            return new CacheMetadata();
+        }
+        try {
+            CacheMetadataTemplate cacheMetadataJson = JsonTemplateMapper.readJsonFromFile(cacheMetadataJsonFile, CacheMetadataTemplate.class);
+            return CacheMetadataTranslator.fromTemplate(cacheMetadataJson, cacheDirectory);
+        } catch (IOException ex) {
+            // The cache metadata is probably corrupted.
+            throw new CacheMetadataCorruptedException(ex);
+        }
     }
-  }
 
-  private Cache(Path cacheDirectory, CacheMetadata cacheMetadata) {
-    this.cacheDirectory = cacheDirectory;
-    this.cacheMetadata = cacheMetadata;
-  }
-
-  /** Finishes the use of the cache by flushing any unsaved changes. */
-  @Override
-  public void close() throws IOException {
-    saveCacheMetadata(cacheDirectory);
-  }
-
-  /** Adds the cached layer to the cache metadata. */
-  void addLayerToMetadata(CachedLayer cachedLayer,  LayerMetadata layerMetadata)
-      throws LayerPropertyNotFoundException {
-    cacheMetadata.addLayer(new CachedLayerWithMetadata(cachedLayer, layerMetadata));
-  }
-
-  @VisibleForTesting
-  Path getCacheDirectory() {
-    return cacheDirectory;
-  }
-
-  @VisibleForTesting
-  CacheMetadata getMetadata() {
-    return cacheMetadata;
-  }
-
-  /** Saves the updated cache metadata back to the cache. */
-  private void saveCacheMetadata(Path cacheDirectory) throws IOException {
-    Path cacheMetadataJsonFile = cacheDirectory.resolve(CacheFiles.METADATA_FILENAME);
-
-    CacheMetadataTemplate cacheMetadataJson = CacheMetadataTranslator.toTemplate(cacheMetadata);
-
-    try (OutputStream fileOutputStream =
-        new BufferedOutputStream(Files.newOutputStream(cacheMetadataJsonFile))) {
-      JsonTemplateMapper.toBlob(cacheMetadataJson).writeTo(fileOutputStream);
+    private Cache(Path cacheDirectory, CacheMetadata cacheMetadata) {
+        this.cacheDirectory = cacheDirectory;
+        this.cacheMetadata = cacheMetadata;
     }
-  }
+
+    /**
+     * Finishes the use of the cache by flushing any unsaved changes.
+     */
+    @Override
+    public void close() throws IOException {
+        saveCacheMetadata(cacheDirectory);
+    }
+
+    /**
+     * Adds the cached layer to the cache metadata.
+     */
+    void addLayerToMetadata(CachedLayer cachedLayer, LayerMetadata layerMetadata) throws LayerPropertyNotFoundException {
+        cacheMetadata.addLayer(new CachedLayerWithMetadata(cachedLayer, layerMetadata));
+    }
+
+    @VisibleForTesting
+    Path getCacheDirectory() {
+        return cacheDirectory;
+    }
+
+    @VisibleForTesting
+    CacheMetadata getMetadata() {
+        return cacheMetadata;
+    }
+
+    /**
+     * Saves the updated cache metadata back to the cache.
+     */
+    private void saveCacheMetadata(Path cacheDirectory) throws IOException {
+        Path cacheMetadataJsonFile = cacheDirectory.resolve(CacheFiles.METADATA_FILENAME);
+        CacheMetadataTemplate cacheMetadataJson = CacheMetadataTranslator.toTemplate(cacheMetadata);
+        try (OutputStream fileOutputStream = new BufferedOutputStream(Files.newOutputStream(cacheMetadataJsonFile))) {
+            JsonTemplateMapper.toBlob(cacheMetadataJson).writeTo(fileOutputStream);
+        }
+    }
 }

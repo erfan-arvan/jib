@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.image.json.V22ManifestTemplate;
 import java.io.IOException;
@@ -24,28 +23,26 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-/** Integration tests for {@link BlobChecker}. */
+/**
+ * Integration tests for {@link BlobChecker}.
+ */
 public class BlobCheckerIntegrationTest {
 
-  @ClassRule public static LocalRegistry localRegistry = new LocalRegistry(5000);
+    @ClassRule
+    public static LocalRegistry localRegistry = new LocalRegistry(5000);
 
-  @Test
-  public void testCheck_exists() throws IOException, RegistryException {
-    RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
-    V22ManifestTemplate manifestTemplate =
-        registryClient.pullManifest("latest", V22ManifestTemplate.class);
-    DescriptorDigest blobDigest = manifestTemplate.getLayers().get(0).getDigest();
+    @Test
+    public void testCheck_exists() throws IOException, RegistryException {
+        RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
+        V22ManifestTemplate manifestTemplate = registryClient.pullManifest("latest", V22ManifestTemplate.class);
+        DescriptorDigest blobDigest = manifestTemplate.getLayers().get(0).getDigest();
+        Assert.assertEquals(blobDigest, registryClient.checkBlob(blobDigest).getDigest());
+    }
 
-    Assert.assertEquals(blobDigest, registryClient.checkBlob(blobDigest).getDigest());
-  }
-
-  @Test
-  public void testCheck_doesNotExist() throws IOException, RegistryException, DigestException {
-    RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
-    DescriptorDigest fakeBlobDigest =
-        DescriptorDigest.fromHash(
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
-    Assert.assertEquals(null, registryClient.checkBlob(fakeBlobDigest));
-  }
+    @Test
+    public void testCheck_doesNotExist() throws IOException, RegistryException, DigestException {
+        RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "busybox");
+        DescriptorDigest fakeBlobDigest = DescriptorDigest.fromHash("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        Assert.assertEquals(null, registryClient.checkBlob(fakeBlobDigest));
+    }
 }

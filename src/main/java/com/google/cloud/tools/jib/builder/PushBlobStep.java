@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.Timer;
 import com.google.cloud.tools.jib.cache.CachedLayer;
 import com.google.cloud.tools.jib.http.Authorization;
@@ -27,49 +26,40 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/** Pushes a BLOB to the target registry. */
+/**
+ * Pushes a BLOB to the target registry.
+ */
 class PushBlobStep implements Callable<Void> {
 
-  private static final String DESCRIPTION = "Pushing BLOB ";
+    private static final String DESCRIPTION = "Pushing BLOB ";
 
-  private final BuildConfiguration buildConfiguration;
-  private final Future<Authorization> pushAuthorizationFuture;
-  private final Future<CachedLayer> pullLayerFuture;
+    private final BuildConfiguration buildConfiguration;
 
-  PushBlobStep(
-      BuildConfiguration buildConfiguration,
-      Future<Authorization> pushAuthorizationFuture,
-      Future<CachedLayer> pullLayerFuture) {
-    this.buildConfiguration = buildConfiguration;
-    this.pushAuthorizationFuture = pushAuthorizationFuture;
-    this.pullLayerFuture = pullLayerFuture;
-  }
+    private final Future<Authorization> pushAuthorizationFuture;
 
-  /** Depends on {@code pushAuthorizationFuture} and {@code pullLayerFuture}. */
-  @Override
-  public Void call()
-      throws IOException, RegistryException, ExecutionException, InterruptedException {
-    CachedLayer layer = pullLayerFuture.get();
-    DescriptorDigest layerDigest = layer.getBlobDescriptor().getDigest();
+    private final Future<CachedLayer> pullLayerFuture;
 
-    try (Timer timer = new Timer(buildConfiguration.getBuildLogger(), DESCRIPTION + layerDigest)) {
-      RegistryClient registryClient =
-          new RegistryClient(
-                  pushAuthorizationFuture.get(),
-                  buildConfiguration.getTargetRegistry(),
-                  buildConfiguration.getTargetRepository())
-              .setTimer(timer);
-
-      if (registryClient.checkBlob(layerDigest) != null) {
-        buildConfiguration
-            .getBuildLogger()
-            .info("BLOB : " + layerDigest + " already exists on registry");
-        return null;
-      }
-
-      registryClient.pushBlob(layerDigest, layer.getBlob());
-
-      return null;
+    PushBlobStep(BuildConfiguration buildConfiguration, Future<Authorization> pushAuthorizationFuture, Future<CachedLayer> pullLayerFuture) {
+        this.buildConfiguration = buildConfiguration;
+        this.pushAuthorizationFuture = pushAuthorizationFuture;
+        this.pullLayerFuture = pullLayerFuture;
     }
-  }
+
+    /**
+     * Depends on {@code pushAuthorizationFuture} and {@code pullLayerFuture}.
+     */
+    @Override
+    public Void call() throws IOException, RegistryException, ExecutionException, InterruptedException {
+        CachedLayer layer = pullLayerFuture.get();
+        DescriptorDigest layerDigest = layer.getBlobDescriptor().getDigest();
+        try (Timer timer = new Timer(buildConfiguration.getBuildLogger(), DESCRIPTION + layerDigest)) {
+            RegistryClient registryClient = new RegistryClient(pushAuthorizationFuture.get(), buildConfiguration.getTargetRegistry(), buildConfiguration.getTargetRepository()).setTimer(timer);
+            if (registryClient.checkBlob(layerDigest) != null) {
+                buildConfiguration.getBuildLogger().info("BLOB : " + layerDigest + " already exists on registry");
+                return null;
+            }
+            registryClient.pushBlob(layerDigest, layer.getBlob());
+            return null;
+        }
+    }
 }

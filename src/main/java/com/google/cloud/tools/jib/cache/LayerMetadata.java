@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.common.annotations.VisibleForTesting;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -28,35 +27,39 @@ import java.util.List;
  */
 class LayerMetadata {
 
-  static LayerMetadata from(List<Path> sourceFiles, FileTime lastModifiedTime) {
-    List<String> sourceFilesStrings = new ArrayList<>(sourceFiles.size());
-    for (Path sourceFile : sourceFiles) {
-      sourceFilesStrings.add(sourceFile.toString());
+    static LayerMetadata from(List<Path> sourceFiles, FileTime lastModifiedTime) {
+        List<String> sourceFilesStrings = new ArrayList<>(sourceFiles.size());
+        for (Path sourceFile : sourceFiles) {
+            sourceFilesStrings.add(sourceFile.toString());
+        }
+        return new LayerMetadata(sourceFilesStrings, lastModifiedTime);
     }
-    return new LayerMetadata(sourceFilesStrings, lastModifiedTime);
-  }
 
-  /** The paths to the source files that the layer was constructed from. */
-  private List<String> sourceFiles;
+    /**
+     * The paths to the source files that the layer was constructed from.
+     */
+    private List<String> sourceFiles;
 
-  /** The last time the layer was constructed. */
-  private final FileTime lastModifiedTime;
+    /**
+     * The last time the layer was constructed.
+     */
+    private final FileTime lastModifiedTime;
 
-  LayerMetadata(List<String> sourceFiles, FileTime lastModifiedTime) {
-    this.sourceFiles = sourceFiles;
-    this.lastModifiedTime = lastModifiedTime;
-  }
+    LayerMetadata(List<String> sourceFiles, FileTime lastModifiedTime) {
+        this.sourceFiles = sourceFiles;
+        this.lastModifiedTime = lastModifiedTime;
+    }
 
-  List<String> getSourceFiles() {
-    return sourceFiles;
-  }
+    List<String> getSourceFiles() {
+        return sourceFiles;
+    }
 
-  public FileTime getLastModifiedTime() {
-    return lastModifiedTime;
-  }
+    public FileTime getLastModifiedTime() {
+        return lastModifiedTime;
+    }
 
-  @VisibleForTesting
-  void setSourceFiles(List<String> sourceFiles) {
-    this.sourceFiles = sourceFiles;
-  }
+    @VisibleForTesting
+    void setSourceFiles(List<String> sourceFiles) {
+        this.sourceFiles = sourceFiles;
+    }
 }

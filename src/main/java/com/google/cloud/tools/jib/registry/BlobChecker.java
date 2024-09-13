@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpStatusCodes;
@@ -31,7 +30,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Checks if an image's BLOB exists on a registry, and retrieves its {@link BlobDescriptor} if it
@@ -39,99 +37,83 @@ import javax.annotation.Nullable;
  */
 class BlobChecker implements RegistryEndpointProvider<BlobDescriptor> {
 
-  private final RegistryEndpointProperties registryEndpointProperties;
-  private final DescriptorDigest blobDigest;
+    private final RegistryEndpointProperties registryEndpointProperties;
 
-  BlobChecker(RegistryEndpointProperties registryEndpointProperties, DescriptorDigest blobDigest) {
-    this.registryEndpointProperties = registryEndpointProperties;
-    this.blobDigest = blobDigest;
-  }
+    private final DescriptorDigest blobDigest;
 
-  /** @return the BLOB's content descriptor */
-  @Override
-  public BlobDescriptor handleResponse(Response response) throws RegistryErrorException {
-    long contentLength = response.getContentLength();
-    if (contentLength < 0) {
-      throw new RegistryErrorExceptionBuilder(getActionDescription())
-          .addReason("Did not receive Content-Length header")
-          .build();
+    BlobChecker(RegistryEndpointProperties registryEndpointProperties, DescriptorDigest blobDigest) {
+        this.registryEndpointProperties = registryEndpointProperties;
+        this.blobDigest = blobDigest;
     }
 
-    return new BlobDescriptor(contentLength, blobDigest);
-  }
-
-  @Override
-  
-  public BlobDescriptor handleHttpResponseException(HttpResponseException httpResponseException)
-      throws RegistryErrorException, HttpResponseException {
-    if (httpResponseException.getStatusCode() != HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
-      throw httpResponseException;
-    }
-
-    // Finds a BLOB_UNKNOWN error response code.
-    String errorContent = httpResponseException.getContent();
-    if (errorContent == null) {
-      // TODO: The Google HTTP client gives null content for HEAD requests. Make the content never
-      // be null, even for HEAD requests.
-      return null;
-
-    } else {
-      try {
-        ErrorResponseTemplate errorResponse =
-            JsonTemplateMapper.readJson(errorContent, ErrorResponseTemplate.class);
-        List<ErrorEntryTemplate> errors = errorResponse.getErrors();
-        if (errors.size() == 1) {
-          String errorCodeString = errors.get(0).getCode();
-          if (errorCodeString == null) {
-            // Did not get an error code back.
-            throw httpResponseException;
-          }
-          ErrorCodes errorCode = ErrorCodes.valueOf(errorCodeString);
-          if (errorCode.equals(ErrorCodes.BLOB_UNKNOWN)) {
-            return null;
-          }
+    /**
+     * @return the BLOB's content descriptor
+     */
+    @Override
+    public BlobDescriptor handleResponse(Response response) throws RegistryErrorException {
+        long contentLength = response.getContentLength();
+        if (contentLength < 0) {
+            throw new RegistryErrorExceptionBuilder(getActionDescription()).addReason("Did not receive Content-Length header").build();
         }
-
-      } catch (IOException ex) {
-        throw new RegistryErrorExceptionBuilder(getActionDescription(), ex)
-            .addReason("Failed to parse registry error response body")
-            .build();
-      }
+        return new BlobDescriptor(contentLength, blobDigest);
     }
 
-    // BLOB_UNKNOWN was not found as a error response code.
-    throw httpResponseException;
-  }
+    @Override
+    public BlobDescriptor handleHttpResponseException(HttpResponseException httpResponseException) throws RegistryErrorException, HttpResponseException {
+        if (httpResponseException.getStatusCode() != HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
+            throw httpResponseException;
+        }
+        // Finds a BLOB_UNKNOWN error response code.
+        String errorContent = httpResponseException.getContent();
+        if (errorContent == null) {
+            // TODO: The Google HTTP client gives null content for HEAD requests. Make the content never
+            // be null, even for HEAD requests.
+            return null;
+        } else {
+            try {
+                ErrorResponseTemplate errorResponse = JsonTemplateMapper.readJson(errorContent, ErrorResponseTemplate.class);
+                List<ErrorEntryTemplate> errors = errorResponse.getErrors();
+                if (errors.size() == 1) {
+                    String errorCodeString = errors.get(0).getCode();
+                    if (errorCodeString == null) {
+                        // Did not get an error code back.
+                        throw httpResponseException;
+                    }
+                    ErrorCodes errorCode = ErrorCodes.valueOf(errorCodeString);
+                    if (errorCode.equals(ErrorCodes.BLOB_UNKNOWN)) {
+                        return null;
+                    }
+                }
+            } catch (IOException ex) {
+                throw new RegistryErrorExceptionBuilder(getActionDescription(), ex).addReason("Failed to parse registry error response body").build();
+            }
+        }
+        // BLOB_UNKNOWN was not found as a error response code.
+        throw httpResponseException;
+    }
 
-  @Override
-  public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
-    return new URL(
-        apiRouteBase + registryEndpointProperties.getImageName() + "/blobs/" + blobDigest);
-  }
+    @Override
+    public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
+        return new URL(apiRouteBase + registryEndpointProperties.getImageName() + "/blobs/" + blobDigest);
+    }
 
-  
-  @Override
-  public BlobHttpContent getContent() {
-    return null;
-  }
+    @Override
+    public BlobHttpContent getContent() {
+        return null;
+    }
 
-  @Override
-  public List<String> getAccept() {
-    return Collections.emptyList();
-  }
+    @Override
+    public List<String> getAccept() {
+        return Collections.emptyList();
+    }
 
-  @Override
-  public String getHttpMethod() {
-    return HttpMethods.HEAD;
-  }
+    @Override
+    public String getHttpMethod() {
+        return HttpMethods.HEAD;
+    }
 
-  @Override
-  public String getActionDescription() {
-    return "check BLOB exists for "
-        + registryEndpointProperties.getServerUrl()
-        + "/"
-        + registryEndpointProperties.getImageName()
-        + " with digest "
-        + blobDigest;
-  }
+    @Override
+    public String getActionDescription() {
+        return "check BLOB exists for " + registryEndpointProperties.getServerUrl() + "/" + registryEndpointProperties.getImageName() + " with digest " + blobDigest;
+    }
 }

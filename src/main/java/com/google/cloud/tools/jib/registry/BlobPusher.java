@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpStatusCodes;
@@ -29,7 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Pushes an image's BLOB (layer or container configuration).
@@ -44,216 +42,206 @@ import javax.annotation.Nullable;
  */
 class BlobPusher {
 
-  private final RegistryEndpointProperties registryEndpointProperties;
-  private final DescriptorDigest blobDigest;
-  private final Blob blob;
+    private final RegistryEndpointProperties registryEndpointProperties;
 
-  /** Initializes the BLOB upload. */
-  private class Initializer implements RegistryEndpointProvider<String> {
+    private final DescriptorDigest blobDigest;
 
-    
-    @Override
-    public BlobHttpContent getContent() {
-      return null;
-    }
+    private final Blob blob;
 
-    @Override
-    public List<String> getAccept() {
-      return Collections.emptyList();
+    /**
+     * Initializes the BLOB upload.
+     */
+    private class Initializer implements RegistryEndpointProvider<String> {
+
+        @Override
+        public BlobHttpContent getContent() {
+            return null;
+        }
+
+        @Override
+        public List<String> getAccept() {
+            return Collections.emptyList();
+        }
+
+        /**
+         * @return a URL to continue pushing the BLOB to, or {@code null} if the BLOB already exists on
+         *     the registry
+         */
+        @Override
+        public String handleResponse(Response response) throws RegistryErrorException {
+            switch(response.getStatusCode()) {
+                case HttpStatusCodes.STATUS_CODE_CREATED:
+                    // The BLOB exists in the registry.
+                    return null;
+                case HttpURLConnection.HTTP_ACCEPTED:
+                    return extractLocationHeader(response);
+                default:
+                    throw buildRegistryErrorException("Received unrecognized status code " + response.getStatusCode());
+            }
+        }
+
+        @Override
+        public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
+            return new URL(apiRouteBase + registryEndpointProperties.getImageName() + "/blobs/uploads/?mount=" + blobDigest);
+        }
+
+        @Override
+        public String getHttpMethod() {
+            return HttpMethods.POST;
+        }
+
+        @Override
+        public String getActionDescription() {
+            return BlobPusher.this.getActionDescription();
+        }
     }
 
     /**
-     * @return a URL to continue pushing the BLOB to, or {@code null} if the BLOB already exists on
-     *     the registry
+     * Writes the BLOB content to the upload location.
      */
-    
-    @Override
-    public String handleResponse(Response response) throws RegistryErrorException {
-      switch (response.getStatusCode()) {
-        case HttpStatusCodes.STATUS_CODE_CREATED:
-          // The BLOB exists in the registry.
-          return null;
+    private class Writer implements RegistryEndpointProvider<String> {
 
-        case HttpURLConnection.HTTP_ACCEPTED:
-          return extractLocationHeader(response);
+        private final URL location;
 
-        default:
-          throw buildRegistryErrorException(
-              "Received unrecognized status code " + response.getStatusCode());
-      }
+        @Override
+        public BlobHttpContent getContent() {
+            return new BlobHttpContent(blob, MediaType.OCTET_STREAM.toString());
+        }
+
+        @Override
+        public List<String> getAccept() {
+            return Collections.emptyList();
+        }
+
+        /**
+         * @return a URL to continue pushing the BLOB to
+         */
+        @Override
+        public String handleResponse(Response response) throws RegistryException {
+            // TODO: Handle 204 No Content
+            return extractLocationHeader(response);
+        }
+
+        @Override
+        public URL getApiRoute(@Nullable() String apiRouteBase) {
+            return location;
+        }
+
+        @Override
+        public String getHttpMethod() {
+            return HttpMethods.PATCH;
+        }
+
+        @Override
+        public String getActionDescription() {
+            return BlobPusher.this.getActionDescription();
+        }
+
+        private Writer(URL location) {
+            this.location = location;
+        }
     }
 
-    @Override
-    public URL getApiRoute(String apiRouteBase) throws MalformedURLException {
-      return new URL(
-          apiRouteBase
-              + registryEndpointProperties.getImageName()
-              + "/blobs/uploads/?mount="
-              + blobDigest);
+    /**
+     * Commits the written BLOB.
+     */
+    private class Committer implements RegistryEndpointProvider<Void> {
+
+        private final URL location;
+
+        @Override
+        public BlobHttpContent getContent() {
+            return null;
+        }
+
+        @Override
+        public List<String> getAccept() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public Void handleResponse(@Nullable() Response response) {
+            return null;
+        }
+
+        /**
+         * @return {@code location} with query parameter 'digest' set to the BLOB's digest
+         */
+        @Override
+        public URL getApiRoute(@Nullable() String apiRouteBase) {
+            return new GenericUrl(location).set("digest", blobDigest).toURL();
+        }
+
+        @Override
+        public String getHttpMethod() {
+            return HttpMethods.PUT;
+        }
+
+        @Override
+        public String getActionDescription() {
+            return BlobPusher.this.getActionDescription();
+        }
+
+        private Committer(URL location) {
+            this.location = location;
+        }
     }
 
-    @Override
-    public String getHttpMethod() {
-      return HttpMethods.POST;
+    BlobPusher(RegistryEndpointProperties registryEndpointProperties, DescriptorDigest blobDigest, Blob blob) {
+        this.registryEndpointProperties = registryEndpointProperties;
+        this.blobDigest = blobDigest;
+        this.blob = blob;
     }
 
-    @Override
-    public String getActionDescription() {
-      return BlobPusher.this.getActionDescription();
-    }
-  }
-
-  /** Writes the BLOB content to the upload location. */
-  private class Writer implements RegistryEndpointProvider<String> {
-
-    private final URL location;
-
-    
-    @Override
-    public BlobHttpContent getContent() {
-      return new BlobHttpContent(blob, MediaType.OCTET_STREAM.toString());
+    /**
+     * @return a {@link RegistryEndpointProvider} for initializing the BLOB upload with an existence
+     *     check
+     */
+    RegistryEndpointProvider<String> initializer() {
+        return new Initializer();
     }
 
-    @Override
-    public List<String> getAccept() {
-      return Collections.emptyList();
+    /**
+     * @param location the upload URL
+     * @return a {@link RegistryEndpointProvider} for writing the BLOB to an upload location
+     */
+    RegistryEndpointProvider<String> writer(URL location) {
+        return new Writer(location);
     }
 
-    /** @return a URL to continue pushing the BLOB to */
-    @Override
-    public String handleResponse(Response response) throws RegistryException {
-      // TODO: Handle 204 No Content
-      return extractLocationHeader(response);
+    /**
+     * @param location the upload URL
+     * @return a {@link RegistryEndpointProvider} for committing the written BLOB with its digest
+     */
+    RegistryEndpointProvider<Void> committer(URL location) {
+        return new Committer(location);
     }
 
-    @Override
-    public URL getApiRoute(String apiRouteBase) {
-      return location;
+    private RegistryErrorException buildRegistryErrorException(String reason) {
+        RegistryErrorExceptionBuilder registryErrorExceptionBuilder = new RegistryErrorExceptionBuilder(getActionDescription());
+        registryErrorExceptionBuilder.addReason(reason);
+        return registryErrorExceptionBuilder.build();
     }
 
-    @Override
-    public String getHttpMethod() {
-      return HttpMethods.PATCH;
+    /**
+     * @return the common action description for {@link Initializer}, {@link Writer}, and {@link
+     *     Committer}
+     */
+    private String getActionDescription() {
+        return "push BLOB for " + registryEndpointProperties.getServerUrl() + "/" + registryEndpointProperties.getImageName() + " with digest " + blobDigest;
     }
 
-    @Override
-    public String getActionDescription() {
-      return BlobPusher.this.getActionDescription();
+    /**
+     * @param response the response to extract the 'Location' header from
+     * @return the value of the 'Location' header
+     * @throws RegistryErrorException if there was not a single 'Location' header
+     */
+    private String extractLocationHeader(Response response) throws RegistryErrorException {
+        // Extracts and returns the 'Location' header.
+        List<String> locationHeaders = response.getHeader("Location");
+        if (locationHeaders.size() != 1) {
+            throw buildRegistryErrorException("Expected 1 'Location' header, but found " + locationHeaders.size());
+        }
+        return locationHeaders.get(0);
     }
-
-    private Writer(URL location) {
-      this.location = location;
-    }
-  }
-
-  /** Commits the written BLOB. */
-  private class Committer implements RegistryEndpointProvider<Void> {
-
-    private final URL location;
-
-    
-    @Override
-    public BlobHttpContent getContent() {
-      return null;
-    }
-
-    @Override
-    public List<String> getAccept() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public Void handleResponse(Response response) {
-      return null;
-    }
-
-    /** @return {@code location} with query parameter 'digest' set to the BLOB's digest */
-    @Override
-    public URL getApiRoute(String apiRouteBase) {
-      return new GenericUrl(location).set("digest", blobDigest).toURL();
-    }
-
-    @Override
-    public String getHttpMethod() {
-      return HttpMethods.PUT;
-    }
-
-    @Override
-    public String getActionDescription() {
-      return BlobPusher.this.getActionDescription();
-    }
-
-    private Committer(URL location) {
-      this.location = location;
-    }
-  }
-
-  BlobPusher(
-      RegistryEndpointProperties registryEndpointProperties,
-      DescriptorDigest blobDigest,
-      Blob blob) {
-    this.registryEndpointProperties = registryEndpointProperties;
-    this.blobDigest = blobDigest;
-    this.blob = blob;
-  }
-
-  /**
-   * @return a {@link RegistryEndpointProvider} for initializing the BLOB upload with an existence
-   *     check
-   */
-  RegistryEndpointProvider<String> initializer() {
-    return new Initializer();
-  }
-
-  /**
-   * @param location the upload URL
-   * @return a {@link RegistryEndpointProvider} for writing the BLOB to an upload location
-   */
-  RegistryEndpointProvider<String> writer(URL location) {
-    return new Writer(location);
-  }
-
-  /**
-   * @param location the upload URL
-   * @return a {@link RegistryEndpointProvider} for committing the written BLOB with its digest
-   */
-  RegistryEndpointProvider<Void> committer(URL location) {
-    return new Committer(location);
-  }
-
-  private RegistryErrorException buildRegistryErrorException(String reason) {
-    RegistryErrorExceptionBuilder registryErrorExceptionBuilder =
-        new RegistryErrorExceptionBuilder(getActionDescription());
-    registryErrorExceptionBuilder.addReason(reason);
-    return registryErrorExceptionBuilder.build();
-  }
-
-  /**
-   * @return the common action description for {@link Initializer}, {@link Writer}, and {@link
-   *     Committer}
-   */
-  private String getActionDescription() {
-    return "push BLOB for "
-        + registryEndpointProperties.getServerUrl()
-        + "/"
-        + registryEndpointProperties.getImageName()
-        + " with digest "
-        + blobDigest;
-  }
-
-  /**
-   * @param response the response to extract the 'Location' header from
-   * @return the value of the 'Location' header
-   * @throws RegistryErrorException if there was not a single 'Location' header
-   */
-  private String extractLocationHeader(Response response) throws RegistryErrorException {
-    // Extracts and returns the 'Location' header.
-    List<String> locationHeaders = response.getHeader("Location");
-    if (locationHeaders.size() != 1) {
-      throw buildRegistryErrorException(
-          "Expected 1 'Location' header, but found " + locationHeaders.size());
-    }
-
-    return locationHeaders.get(0);
-  }
 }

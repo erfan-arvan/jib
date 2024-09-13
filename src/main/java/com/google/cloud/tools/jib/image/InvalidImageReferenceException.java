@@ -13,13 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Thrown when attempting to parse an invalid image reference. */
+/**
+ * Thrown when attempting to parse an invalid image reference.
+ */
 public class InvalidImageReferenceException extends Exception {
 
-  public InvalidImageReferenceException(String reference) {
-    super("Invalid image reference: " + reference);
-  }
+    public InvalidImageReferenceException(String reference) {
+        super("Invalid image reference: " + reference);
+    }
 }

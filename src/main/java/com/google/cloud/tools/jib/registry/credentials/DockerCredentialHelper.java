@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry.credentials;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.cloud.tools.jib.http.Authorization;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
 
 /**
  * Retrieves Docker credentials with a Docker credential helper.
@@ -37,96 +35,80 @@ import javax.annotation.Nullable;
  */
 public class DockerCredentialHelper {
 
-  private final String serverUrl;
-  private final String credentialHelperSuffix;
+    private final String serverUrl;
 
-  /** Template for a Docker credential helper output. */
-  @JsonIgnoreProperties(ignoreUnknown = true)
-  private static class DockerCredentialsTemplate implements JsonTemplate {
+    private final String credentialHelperSuffix;
 
-     private String Username;
-     private String Secret;
-  }
+    /**
+     * Template for a Docker credential helper output.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class DockerCredentialsTemplate implements JsonTemplate {
 
-  /**
-   * Construct with {@link DockerCredentialHelperFactory}.
-   *
-   * @param serverUrl the server URL to pass into the credential helper
-   * @param credentialHelperSuffix the credential helper CLI suffix
-   */
-  DockerCredentialHelper(String serverUrl, String credentialHelperSuffix) {
-    this.serverUrl = serverUrl;
-    this.credentialHelperSuffix = credentialHelperSuffix;
-  }
+        private String Username;
 
-  /**
-   * Retrieves the Docker credentials by calling the corresponding CLI.
-   *
-   * <p>The credential helper CLI is called in the form:
-   *
-   * <pre>{@code
-   * echo -n <server URL> | docker-credential-<credential helper suffix> get
-   * }</pre>
-   */
-  public Authorization retrieve()
-      throws IOException, NonexistentServerUrlDockerCredentialHelperException,
-          NonexistentDockerCredentialHelperException {
-    try {
-      String credentialHelper = "docker-credential-" + credentialHelperSuffix;
-      String[] credentialHelperCommand = {credentialHelper, "get"};
-
-      Process process = new ProcessBuilder(credentialHelperCommand).start();
-      try (OutputStream processStdin = process.getOutputStream()) {
-        processStdin.write(serverUrl.getBytes(StandardCharsets.UTF_8));
-      }
-
-      try (InputStreamReader processStdoutReader =
-          new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
-        String output = CharStreams.toString(processStdoutReader);
-
-        // Throws an exception if the credential store does not have credentials for serverUrl.
-        if (output.contains("credentials not found in native keychain")) {
-          throw new NonexistentServerUrlDockerCredentialHelperException(
-              credentialHelper, serverUrl, output);
-        }
-        if (output.isEmpty()) {
-          try (InputStreamReader processStderrReader =
-              new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8)) {
-            String errorOutput = CharStreams.toString(processStderrReader);
-            throw new NonexistentServerUrlDockerCredentialHelperException(
-                credentialHelper, serverUrl, errorOutput);
-          }
-        }
-
-        try {
-          DockerCredentialsTemplate dockerCredentials =
-              JsonTemplateMapper.readJson(output, DockerCredentialsTemplate.class);
-          if (dockerCredentials.Username == null || dockerCredentials.Secret == null) {
-            throw new NonexistentServerUrlDockerCredentialHelperException(
-                credentialHelper, serverUrl, output);
-          }
-
-          return Authorizations.withBasicCredentials(
-              dockerCredentials.Username, dockerCredentials.Secret);
-
-        } catch (JsonProcessingException ex) {
-          throw new NonexistentServerUrlDockerCredentialHelperException(
-              credentialHelper, serverUrl, output);
-        }
-      }
-
-    } catch (IOException ex) {
-      if (ex.getMessage() == null) {
-        throw ex;
-      }
-
-      // Checks if the failure is due to a nonexistent credential helper CLI.
-      if (ex.getMessage().contains("No such file or directory")
-          || ex.getMessage().contains("cannot find the file")) {
-        throw new NonexistentDockerCredentialHelperException(credentialHelperSuffix, ex);
-      }
-
-      throw ex;
+        private String Secret;
     }
-  }
+
+    /**
+     * Construct with {@link DockerCredentialHelperFactory}.
+     *
+     * @param serverUrl the server URL to pass into the credential helper
+     * @param credentialHelperSuffix the credential helper CLI suffix
+     */
+    DockerCredentialHelper(String serverUrl, String credentialHelperSuffix) {
+        this.serverUrl = serverUrl;
+        this.credentialHelperSuffix = credentialHelperSuffix;
+    }
+
+    /**
+     * Retrieves the Docker credentials by calling the corresponding CLI.
+     *
+     * <p>The credential helper CLI is called in the form:
+     *
+     * <pre>{@code
+     * echo -n <server URL> | docker-credential-<credential helper suffix> get
+     * }</pre>
+     */
+    public Authorization retrieve() throws IOException, NonexistentServerUrlDockerCredentialHelperException, NonexistentDockerCredentialHelperException {
+        try {
+            String credentialHelper = "docker-credential-" + credentialHelperSuffix;
+            String[] credentialHelperCommand = { credentialHelper, "get" };
+            Process process = new ProcessBuilder(credentialHelperCommand).start();
+            try (OutputStream processStdin = process.getOutputStream()) {
+                processStdin.write(serverUrl.getBytes(StandardCharsets.UTF_8));
+            }
+            try (InputStreamReader processStdoutReader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
+                String output = CharStreams.toString(processStdoutReader);
+                // Throws an exception if the credential store does not have credentials for serverUrl.
+                if (output.contains("credentials not found in native keychain")) {
+                    throw new NonexistentServerUrlDockerCredentialHelperException(credentialHelper, serverUrl, output);
+                }
+                if (output.isEmpty()) {
+                    try (InputStreamReader processStderrReader = new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8)) {
+                        String errorOutput = CharStreams.toString(processStderrReader);
+                        throw new NonexistentServerUrlDockerCredentialHelperException(credentialHelper, serverUrl, errorOutput);
+                    }
+                }
+                try {
+                    DockerCredentialsTemplate dockerCredentials = JsonTemplateMapper.readJson(output, DockerCredentialsTemplate.class);
+                    if (dockerCredentials.Username == null || dockerCredentials.Secret == null) {
+                        throw new NonexistentServerUrlDockerCredentialHelperException(credentialHelper, serverUrl, output);
+                    }
+                    return Authorizations.withBasicCredentials(dockerCredentials.Username, dockerCredentials.Secret);
+                } catch (JsonProcessingException ex) {
+                    throw new NonexistentServerUrlDockerCredentialHelperException(credentialHelper, serverUrl, output);
+                }
+            }
+        } catch (IOException ex) {
+            if (ex.getMessage() == null) {
+                throw ex;
+            }
+            // Checks if the failure is due to a nonexistent credential helper CLI.
+            if (ex.getMessage().contains("No such file or directory") || ex.getMessage().contains("cannot find the file")) {
+                throw new NonexistentDockerCredentialHelperException(credentialHelperSuffix, ex);
+            }
+            throw ex;
+        }
+    }
 }

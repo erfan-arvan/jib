@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import com.google.cloud.tools.jib.json.JsonTemplateMapper;
 import com.google.common.io.Resources;
@@ -27,23 +26,18 @@ import java.security.DigestException;
 import org.junit.Assert;
 import org.junit.Test;
 
-/** Tests for {@link V21ManifestTemplate}. */
+/**
+ * Tests for {@link V21ManifestTemplate}.
+ */
 public class V21ManifestTemplateTest {
 
-  @Test
-  public void testFromJson() throws URISyntaxException, IOException, DigestException {
-    // Loads the JSON string.
-    Path jsonFile = Paths.get(Resources.getResource("json/v21manifest.json").toURI());
-
-    // Deserializes into a manifest JSON object.
-    V21ManifestTemplate manifestJson =
-        JsonTemplateMapper.readJsonFromFile(jsonFile, V21ManifestTemplate.class);
-
-    Assert.assertEquals(
-        DescriptorDigest.fromDigest(
-            "sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad"),
-        manifestJson.getFsLayers().get(0).getDigest());
-
-    Assert.assertEquals("some v1-compatible object", manifestJson.getV1Compatibility(0));
-  }
+    @Test
+    public void testFromJson() throws URISyntaxException, IOException, DigestException {
+        // Loads the JSON string.
+        Path jsonFile = Paths.get(Resources.getResource("json/v21manifest.json").toURI());
+        // Deserializes into a manifest JSON object.
+        V21ManifestTemplate manifestJson = JsonTemplateMapper.readJsonFromFile(jsonFile, V21ManifestTemplate.class);
+        Assert.assertEquals(DescriptorDigest.fromDigest("sha256:8c662931926fa990b41da3c9f42663a537ccd498130030f9149173a0493832ad"), manifestJson.getFsLayers().get(0).getDigest());
+        Assert.assertEquals("some v1-compatible object", manifestJson.getV1Compatibility(0));
+    }
 }

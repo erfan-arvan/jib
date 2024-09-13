@@ -13,10 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Thrown when an HTTP request to a registry endpoint failed with errors as defined in {@link
@@ -24,7 +22,7 @@ import javax.annotation.Nullable;
  */
 public class RegistryErrorException extends RegistryException {
 
-  RegistryErrorException(String message,  Throwable cause) {
-    super(message, cause);
-  }
+    RegistryErrorException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

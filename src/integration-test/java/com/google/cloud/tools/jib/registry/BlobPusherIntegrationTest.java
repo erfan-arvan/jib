@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.Blobs;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
@@ -25,20 +24,20 @@ import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-/** Integration tests for {@link BlobPusher}. */
+/**
+ * Integration tests for {@link BlobPusher}.
+ */
 public class BlobPusherIntegrationTest {
 
-  @ClassRule public static LocalRegistry localRegistry = new LocalRegistry(5000);
+    @ClassRule
+    public static LocalRegistry localRegistry = new LocalRegistry(5000);
 
-  @Test
-  public void testPush() throws DigestException, IOException, RegistryException {
-    Blob testBlob = Blobs.from("crepecake");
-    // Known digest for 'crepecake'
-    DescriptorDigest testBlobDigest =
-        DescriptorDigest.fromHash(
-            "52a9e4d4ba4333ce593707f98564fee1e6d898db0d3602408c0b2a6a424d357c");
-
-    RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "testimage");
-    Assert.assertFalse(registryClient.pushBlob(testBlobDigest, testBlob));
-  }
+    @Test
+    public void testPush() throws DigestException, IOException, RegistryException {
+        Blob testBlob = Blobs.from("crepecake");
+        // Known digest for 'crepecake'
+        DescriptorDigest testBlobDigest = DescriptorDigest.fromHash("52a9e4d4ba4333ce593707f98564fee1e6d898db0d3602408c0b2a6a424d357c");
+        RegistryClient registryClient = new RegistryClient(null, "localhost:5000", "testimage");
+        Assert.assertFalse(registryClient.pushBlob(testBlobDigest, testBlob));
+    }
 }

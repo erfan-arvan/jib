@@ -13,20 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** Holds a BLOB source for writing to an {@link OutputStream}. */
+/**
+ * Holds a BLOB source for writing to an {@link OutputStream}.
+ */
 public interface Blob {
 
-  /**
-   * Writes the BLOB to an {@link OutputStream}. Does not close the {@code outputStream}.
-   *
-   * @param outputStream the {@link OutputStream} to write to
-   * @return the {@link BlobDescriptor} of the written BLOB
-   */
-  BlobDescriptor writeTo(OutputStream outputStream) throws IOException;
+    /**
+     * Writes the BLOB to an {@link OutputStream}. Does not close the {@code outputStream}.
+     *
+     * @param outputStream the {@link OutputStream} to write to
+     * @return the {@link BlobDescriptor} of the written BLOB
+     */
+    BlobDescriptor writeTo(@Nullable() OutputStream outputStream) throws IOException;
 }

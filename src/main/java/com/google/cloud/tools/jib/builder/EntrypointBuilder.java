@@ -13,37 +13,36 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Builds an image entrypoint for the Java application. */
+/**
+ * Builds an image entrypoint for the Java application.
+ */
 public class EntrypointBuilder {
 
-  /**
-   * Builds the container entrypoint.
-   *
-   * <p>The entrypoint is {@code java [jvm flags] -cp [classpaths] [main class]}.
-   */
-  public static List<String> makeEntrypoint(
-      SourceFilesConfiguration sourceFilesConfiguration, List<String> jvmFlags, String mainClass) {
-    List<String> classPaths = new ArrayList<>();
-    classPaths.add(sourceFilesConfiguration.getDependenciesPathOnImage() + "*");
-    classPaths.add(sourceFilesConfiguration.getResourcesPathOnImage());
-    classPaths.add(sourceFilesConfiguration.getClassesPathOnImage());
+    /**
+     * Builds the container entrypoint.
+     *
+     * <p>The entrypoint is {@code java [jvm flags] -cp [classpaths] [main class]}.
+     */
+    public static List<String> makeEntrypoint(SourceFilesConfiguration sourceFilesConfiguration, List<String> jvmFlags, String mainClass) {
+        List<String> classPaths = new ArrayList<>();
+        classPaths.add(sourceFilesConfiguration.getDependenciesPathOnImage() + "*");
+        classPaths.add(sourceFilesConfiguration.getResourcesPathOnImage());
+        classPaths.add(sourceFilesConfiguration.getClassesPathOnImage());
+        String classPathsString = String.join(":", classPaths);
+        List<String> entrypoint = new ArrayList<>(4 + jvmFlags.size());
+        entrypoint.add("java");
+        entrypoint.addAll(jvmFlags);
+        entrypoint.add("-cp");
+        entrypoint.add(classPathsString);
+        entrypoint.add(mainClass);
+        return entrypoint;
+    }
 
-    String classPathsString = String.join(":", classPaths);
-
-    List<String> entrypoint = new ArrayList<>(4 + jvmFlags.size());
-    entrypoint.add("java");
-    entrypoint.addAll(jvmFlags);
-    entrypoint.add("-cp");
-    entrypoint.add(classPathsString);
-    entrypoint.add(mainClass);
-    return entrypoint;
-  }
-
-  private EntrypointBuilder() {}
+    private EntrypointBuilder() {
+    }
 }

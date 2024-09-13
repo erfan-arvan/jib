@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.cloud.tools.jib.image.json.DescriptorDigestDeserializer;
@@ -34,63 +33,74 @@ import java.security.DigestException;
 @JsonDeserialize(using = DescriptorDigestDeserializer.class)
 public class DescriptorDigest {
 
-  /** Pattern matches a SHA-256 hash - 32 bytes in lowercase hexadecimal. */
-  private static final String HASH_REGEX = "[a-f0-9]{64}";
+    /**
+     * Pattern matches a SHA-256 hash - 32 bytes in lowercase hexadecimal.
+     */
+    private static final String HASH_REGEX = "[a-f0-9]{64}";
 
-  /** The algorithm prefix for the digest string. */
-  private static final String DIGEST_PREFIX = "sha256:";
+    /**
+     * The algorithm prefix for the digest string.
+     */
+    private static final String DIGEST_PREFIX = "sha256:";
 
-  /** Pattern matches a SHA-256 digest - a SHA-256 hash prefixed with "sha256:". */
-  static final String DIGEST_REGEX = DIGEST_PREFIX + HASH_REGEX;
+    /**
+     * Pattern matches a SHA-256 digest - a SHA-256 hash prefixed with "sha256:".
+     */
+    static final String DIGEST_REGEX = DIGEST_PREFIX + HASH_REGEX;
 
-  private final String hash;
+    private final String hash;
 
-  /** Creates a new instance from a valid hash string. */
-  public static DescriptorDigest fromHash(String hash) throws DigestException {
-    if (!hash.matches(HASH_REGEX)) {
-      throw new DigestException("Invalid hash: " + hash);
+    /**
+     * Creates a new instance from a valid hash string.
+     */
+    public static DescriptorDigest fromHash(String hash) throws DigestException {
+        if (!hash.matches(HASH_REGEX)) {
+            throw new DigestException("Invalid hash: " + hash);
+        }
+        return new DescriptorDigest(hash);
     }
 
-    return new DescriptorDigest(hash);
-  }
-
-  /** Creates a new instance from a valid digest string. */
-  public static DescriptorDigest fromDigest(String digest) throws DigestException {
-    if (!digest.matches(DIGEST_REGEX)) {
-      throw new DigestException("Invalid digest: " + digest);
+    /**
+     * Creates a new instance from a valid digest string.
+     */
+    public static DescriptorDigest fromDigest(String digest) throws DigestException {
+        if (!digest.matches(DIGEST_REGEX)) {
+            throw new DigestException("Invalid digest: " + digest);
+        }
+        // Extracts the hash portion of the digest.
+        String hash = digest.substring(DIGEST_PREFIX.length());
+        return new DescriptorDigest(hash);
     }
 
-    // Extracts the hash portion of the digest.
-    String hash = digest.substring(DIGEST_PREFIX.length());
-    return new DescriptorDigest(hash);
-  }
-
-  private DescriptorDigest(String hash) {
-    this.hash = hash;
-  }
-
-  public String getHash() {
-    return hash;
-  }
-
-  @Override
-  public String toString() {
-    return "sha256:" + hash;
-  }
-
-  /** Pass-through hash code of the digest string. */
-  @Override
-  public int hashCode() {
-    return hash.hashCode();
-  }
-
-  /** Two digest objects are equal if their digest strings are equal. */
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof DescriptorDigest) {
-      return hash.equals(((DescriptorDigest) obj).hash);
+    private DescriptorDigest(String hash) {
+        this.hash = hash;
     }
 
-    return false;
-  }
+    public String getHash() {
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return "sha256:" + hash;
+    }
+
+    /**
+     * Pass-through hash code of the digest string.
+     */
+    @Override
+    public int hashCode() {
+        return hash.hashCode();
+    }
+
+    /**
+     * Two digest objects are equal if their digest strings are equal.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DescriptorDigest) {
+            return hash.equals(((DescriptorDigest) obj).hash);
+        }
+        return false;
+    }
 }

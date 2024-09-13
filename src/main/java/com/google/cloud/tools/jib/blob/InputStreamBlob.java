@@ -13,36 +13,38 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/** A {@link Blob} that holds an {@link InputStream}. */
+/**
+ * A {@link Blob} that holds an {@link InputStream}.
+ */
 class InputStreamBlob implements Blob {
 
-  private final InputStream inputStream;
+    private final InputStream inputStream;
 
-  /** Indicates if the {@link Blob} has already been written or not. */
-  private boolean isWritten = false;
+    /**
+     * Indicates if the {@link Blob} has already been written or not.
+     */
+    private boolean isWritten = false;
 
-  InputStreamBlob(InputStream inputStream) {
-    this.inputStream = inputStream;
-  }
-
-  @Override
-  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
-    // Cannot rewrite.
-    if (isWritten) {
-      throw new IllegalStateException("Cannot rewrite Blob backed by an InputStream");
+    InputStreamBlob(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
-    try (InputStream inputStream = this.inputStream) {
-      return BlobDescriptor.fromPipe(inputStream, outputStream);
 
-    } finally {
-      isWritten = true;
+    @Override
+    public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
+        // Cannot rewrite.
+        if (isWritten) {
+            throw new IllegalStateException("Cannot rewrite Blob backed by an InputStream");
+        }
+        try (InputStream inputStream = this.inputStream) {
+            return BlobDescriptor.fromPipe(inputStream, outputStream);
+        } finally {
+            isWritten = true;
+        }
     }
-  }
 }

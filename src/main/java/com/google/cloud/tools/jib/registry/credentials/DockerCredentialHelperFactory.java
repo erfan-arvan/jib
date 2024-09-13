@@ -13,23 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry.credentials;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Factory class for constructing {@link DockerCredentialHelper}. */
+/**
+ * Factory class for constructing {@link DockerCredentialHelper}.
+ */
 public class DockerCredentialHelperFactory {
 
-  private final String registry;
+    private final String registry;
 
-  public DockerCredentialHelperFactory(String registry) {
-    this.registry = registry;
-  }
+    public DockerCredentialHelperFactory(String registry) {
+        this.registry = registry;
+    }
 
-  /**
-   * @return a {@link DockerCredentialHelper} that uses the {@code
-   *     docker-credential-[credentialHelperSuffix]} command
-   */
-  public DockerCredentialHelper withCredentialHelperSuffix(String credentialHelperSuffix) {
-    return new DockerCredentialHelper(registry, credentialHelperSuffix);
-  }
+    /**
+     * @return a {@link DockerCredentialHelper} that uses the {@code
+     *     docker-credential-[credentialHelperSuffix]} command
+     */
+    public DockerCredentialHelper withCredentialHelperSuffix(String credentialHelperSuffix) {
+        return new DockerCredentialHelper(registry, credentialHelperSuffix);
+    }
 }

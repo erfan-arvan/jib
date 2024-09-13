@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.blob;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,19 +22,21 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** A {@link Blob} that holds a {@link Path}. */
+/**
+ * A {@link Blob} that holds a {@link Path}.
+ */
 class FileBlob implements Blob {
 
-  private final Path file;
+    private final Path file;
 
-  FileBlob(Path file) {
-    this.file = file;
-  }
-
-  @Override
-  public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
-    try (InputStream fileStream = new BufferedInputStream(Files.newInputStream(file))) {
-      return BlobDescriptor.fromPipe(fileStream, outputStream);
+    FileBlob(Path file) {
+        this.file = file;
     }
-  }
+
+    @Override
+    public BlobDescriptor writeTo(OutputStream outputStream) throws IOException {
+        try (InputStream fileStream = new BufferedInputStream(Files.newInputStream(file))) {
+            return BlobDescriptor.fromPipe(fileStream, outputStream);
+        }
+    }
 }

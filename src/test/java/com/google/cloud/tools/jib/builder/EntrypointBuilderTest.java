@@ -13,45 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-/** Tests for {@link EntrypointBuilder}. */
+/**
+ * Tests for {@link EntrypointBuilder}.
+ */
 public class EntrypointBuilderTest {
 
-  @Test
-  public void testMakeEntrypoint() {
-    String expectedDependenciesPath = "/app/libs/";
-    String expectedResourcesPath = "/app/resources/";
-    String expectedClassesPath = "/app/classes/";
-    List<String> expectedJvmFlags = Arrays.asList("-flag", "anotherFlag");
-    String expectedMainClass = "SomeMainClass";
-
-    SourceFilesConfiguration mockSourceFilesConfiguration =
-        Mockito.mock(SourceFilesConfiguration.class);
-
-    Mockito.when(mockSourceFilesConfiguration.getDependenciesPathOnImage())
-        .thenReturn(expectedDependenciesPath);
-    Mockito.when(mockSourceFilesConfiguration.getResourcesPathOnImage())
-        .thenReturn(expectedResourcesPath);
-    Mockito.when(mockSourceFilesConfiguration.getClassesPathOnImage())
-        .thenReturn(expectedClassesPath);
-
-    Assert.assertEquals(
-        Arrays.asList(
-            "java",
-            "-flag",
-            "anotherFlag",
-            "-cp",
-            "/app/libs/*:/app/resources/:/app/classes/",
-            "SomeMainClass"),
-        EntrypointBuilder.makeEntrypoint(
-            mockSourceFilesConfiguration, expectedJvmFlags, expectedMainClass));
-  }
+    @Test
+    public void testMakeEntrypoint() {
+        String expectedDependenciesPath = "/app/libs/";
+        String expectedResourcesPath = "/app/resources/";
+        String expectedClassesPath = "/app/classes/";
+        List<String> expectedJvmFlags = Arrays.asList("-flag", "anotherFlag");
+        String expectedMainClass = "SomeMainClass";
+        SourceFilesConfiguration mockSourceFilesConfiguration = Mockito.mock(SourceFilesConfiguration.class);
+        Mockito.when(mockSourceFilesConfiguration.getDependenciesPathOnImage()).thenReturn(expectedDependenciesPath);
+        Mockito.when(mockSourceFilesConfiguration.getResourcesPathOnImage()).thenReturn(expectedResourcesPath);
+        Mockito.when(mockSourceFilesConfiguration.getClassesPathOnImage()).thenReturn(expectedClassesPath);
+        Assert.assertEquals(Arrays.asList("java", "-flag", "anotherFlag", "-cp", "/app/libs/*:/app/resources/:/app/classes/", "SomeMainClass"), EntrypointBuilder.makeEntrypoint(mockSourceFilesConfiguration, expectedJvmFlags, expectedMainClass));
+    }
 }

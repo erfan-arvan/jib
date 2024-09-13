@@ -13,16 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.ImageLayers;
 import com.google.cloud.tools.jib.image.LayerPropertyNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * The cache stores all the layer BLOBs as separate files and the cache metadata contains
@@ -30,67 +28,70 @@ import javax.annotation.Nullable;
  */
 class CacheMetadata {
 
-  private final ImageLayers<CachedLayerWithMetadata> layers = new ImageLayers<>();
+    private final ImageLayers<CachedLayerWithMetadata> layers = new ImageLayers<>();
 
-  /** Can be used to filter layers in the metadata. */
-  static class LayerFilter {
+    /**
+     * Can be used to filter layers in the metadata.
+     */
+    static class LayerFilter {
 
-    private final ImageLayers<CachedLayerWithMetadata> layers;
+        private final ImageLayers<CachedLayerWithMetadata> layers;
 
-     private List<Path> sourceFiles;
+        @Nullable
+        private List<Path> sourceFiles;
 
-    private LayerFilter(ImageLayers<CachedLayerWithMetadata> layers) {
-      this.layers = layers;
-    }
-
-    /** Filters to a certain list of source files. */
-    LayerFilter bySourceFiles(List<Path> sourceFiles) {
-      this.sourceFiles = sourceFiles;
-      return this;
-    }
-
-    /** Applies the filters to the metadata layers. */
-    ImageLayers<CachedLayerWithMetadata> filter() throws CacheMetadataCorruptedException {
-      try {
-        ImageLayers<CachedLayerWithMetadata> filteredLayers = new ImageLayers<>();
-
-        for (CachedLayerWithMetadata layer : layers) {
-          if (sourceFiles != null) {
-            if (layer.getMetadata() == null) {
-              continue;
-            }
-            List<String> cachedLayerSourceFilePaths = layer.getMetadata().getSourceFiles();
-            if (cachedLayerSourceFilePaths != null) {
-              List<Path> cachedLayerSourceFiles = new ArrayList<>();
-              for (String sourceFile : cachedLayerSourceFilePaths) {
-                cachedLayerSourceFiles.add(Paths.get(sourceFile));
-              }
-              if (!cachedLayerSourceFiles.equals(sourceFiles)) {
-                continue;
-              }
-            }
-          }
-
-          filteredLayers.add(layer);
+        private LayerFilter(ImageLayers<CachedLayerWithMetadata> layers) {
+            this.layers = layers;
         }
 
-        return filteredLayers;
+        /**
+         * Filters to a certain list of source files.
+         */
+        LayerFilter bySourceFiles(List<Path> sourceFiles) {
+            this.sourceFiles = sourceFiles;
+            return this;
+        }
 
-      } catch (LayerPropertyNotFoundException ex) {
-        throw new CacheMetadataCorruptedException(ex);
-      }
+        /**
+         * Applies the filters to the metadata layers.
+         */
+        ImageLayers<CachedLayerWithMetadata> filter() throws CacheMetadataCorruptedException {
+            try {
+                ImageLayers<CachedLayerWithMetadata> filteredLayers = new ImageLayers<>();
+                for (CachedLayerWithMetadata layer : layers) {
+                    if (sourceFiles != null) {
+                        if (layer.getMetadata() == null) {
+                            continue;
+                        }
+                        List<String> cachedLayerSourceFilePaths = layer.getMetadata().getSourceFiles();
+                        if (cachedLayerSourceFilePaths != null) {
+                            List<Path> cachedLayerSourceFiles = new ArrayList<>();
+                            for (String sourceFile : cachedLayerSourceFilePaths) {
+                                cachedLayerSourceFiles.add(Paths.get(sourceFile));
+                            }
+                            if (!cachedLayerSourceFiles.equals(sourceFiles)) {
+                                continue;
+                            }
+                        }
+                    }
+                    filteredLayers.add(layer);
+                }
+                return filteredLayers;
+            } catch (LayerPropertyNotFoundException ex) {
+                throw new CacheMetadataCorruptedException(ex);
+            }
+        }
     }
-  }
 
-  ImageLayers<CachedLayerWithMetadata> getLayers() {
-    return layers;
-  }
+    ImageLayers<CachedLayerWithMetadata> getLayers() {
+        return layers;
+    }
 
-  synchronized void addLayer(CachedLayerWithMetadata layer) throws LayerPropertyNotFoundException {
-    layers.add(layer);
-  }
+    synchronized void addLayer(CachedLayerWithMetadata layer) throws LayerPropertyNotFoundException {
+        layers.add(layer);
+    }
 
-  LayerFilter filterLayers() {
-    return new LayerFilter(layers);
-  }
+    LayerFilter filterLayers() {
+        return new LayerFilter(layers);
+    }
 }

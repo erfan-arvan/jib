@@ -13,13 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Exception thrown when accessing non-existent properties of layers. */
+/**
+ * Exception thrown when accessing non-existent properties of layers.
+ */
 public class LayerPropertyNotFoundException extends Exception {
 
-  LayerPropertyNotFoundException(String message) {
-    super(message);
-  }
+    LayerPropertyNotFoundException(String message) {
+        super(message);
+    }
 }

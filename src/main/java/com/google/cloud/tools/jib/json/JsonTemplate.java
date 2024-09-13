@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -25,10 +24,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * <p>Json fields should be private fields and fields that are {@code null} will not be serialized.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonAutoDetect(
-  fieldVisibility = JsonAutoDetect.Visibility.ANY,
-  getterVisibility = JsonAutoDetect.Visibility.NONE,
-  setterVisibility = JsonAutoDetect.Visibility.NONE,
-  creatorVisibility = JsonAutoDetect.Visibility.NONE
-)
-public interface JsonTemplate {}
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE, creatorVisibility = JsonAutoDetect.Visibility.NONE)
+public interface JsonTemplate {
+}

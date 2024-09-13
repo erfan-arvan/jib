@@ -13,22 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.cloud.tools.jib.image.DescriptorDigest;
 import java.io.IOException;
 
-/** Serializes a {@link DescriptorDigest} into JSON element. */
+/**
+ * Serializes a {@link DescriptorDigest} into JSON element.
+ */
 public class DescriptorDigestSerializer extends JsonSerializer<DescriptorDigest> {
 
-  @Override
-  public void serialize(
-      DescriptorDigest value, JsonGenerator jsonGenerator, SerializerProvider ignored)
-      throws IOException {
-    jsonGenerator.writeString(value.toString());
-  }
+    @Override
+    public void serialize(DescriptorDigest value, JsonGenerator jsonGenerator, SerializerProvider ignored) throws IOException {
+        jsonGenerator.writeString(value.toString());
+    }
 }

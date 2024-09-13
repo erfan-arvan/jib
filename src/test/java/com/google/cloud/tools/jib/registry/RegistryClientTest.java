@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.http.Authorization;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,34 +29,32 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class RegistryClientTest {
 
-  @Mock private Authorization mockAuthorization;
+    @Mock
+    private Authorization mockAuthorization;
 
-  private RegistryClient testRegistryClient;
+    private RegistryClient testRegistryClient;
 
-  @Before
-  public void setUp() {
-    testRegistryClient =
-        new RegistryClient(mockAuthorization, "some.server.url", "some image name");
-  }
+    @Before
+    public void setUp() {
+        testRegistryClient = new RegistryClient(mockAuthorization, "some.server.url", "some image name");
+    }
 
-  @Test
-  public void testGetUserAgent_null() {
-    Assert.assertTrue(RegistryClient.getUserAgent().startsWith("jib"));
+    @Test
+    public void testGetUserAgent_null() {
+        Assert.assertTrue(RegistryClient.getUserAgent().startsWith("jib"));
+        RegistryClient.setUserAgentSuffix(null);
+        Assert.assertTrue(RegistryClient.getUserAgent().startsWith("jib"));
+    }
 
-    RegistryClient.setUserAgentSuffix(null);
-    Assert.assertTrue(RegistryClient.getUserAgent().startsWith("jib"));
-  }
+    @Test
+    public void testGetUserAgent() {
+        RegistryClient.setUserAgentSuffix("some user agent suffix");
+        Assert.assertTrue(RegistryClient.getUserAgent().startsWith("jib "));
+        Assert.assertTrue(RegistryClient.getUserAgent().endsWith(" some user agent suffix"));
+    }
 
-  @Test
-  public void testGetUserAgent() {
-    RegistryClient.setUserAgentSuffix("some user agent suffix");
-
-    Assert.assertTrue(RegistryClient.getUserAgent().startsWith("jib "));
-    Assert.assertTrue(RegistryClient.getUserAgent().endsWith(" some user agent suffix"));
-  }
-
-  @Test
-  public void testGetApiRouteBase() {
-    Assert.assertEquals("https://some.server.url/v2/", testRegistryClient.getApiRouteBase());
-  }
+    @Test
+    public void testGetApiRouteBase() {
+        Assert.assertEquals("https://some.server.url/v2/", testRegistryClient.getApiRouteBase());
+    }
 }

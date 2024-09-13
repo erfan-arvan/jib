@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.cache.Cache;
 import com.google.cloud.tools.jib.cache.CacheMetadataCorruptedException;
 import com.google.cloud.tools.jib.cache.CacheReader;
@@ -37,70 +36,41 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-/** Tests for {@link BuildAndCacheApplicationLayersStep}. */
+/**
+ * Tests for {@link BuildAndCacheApplicationLayersStep}.
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class BuildAndCacheApplicationLayersStepTest {
 
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-  @Mock private BuildConfiguration mockBuildConfiguration;
+    @Mock
+    private BuildConfiguration mockBuildConfiguration;
 
-  @Test
-  public void testRun()
-      throws LayerPropertyNotFoundException, IOException, CacheMetadataCorruptedException,
-          URISyntaxException, ExecutionException, InterruptedException {
-    Mockito.when(mockBuildConfiguration.getBuildLogger()).thenReturn(new TestBuildLogger());
-    TestSourceFilesConfiguration testSourceFilesConfiguration = new TestSourceFilesConfiguration();
-    Path temporaryCacheDirectory = temporaryFolder.newFolder().toPath();
-
-    ImageLayers<CachedLayer> applicationLayers = new ImageLayers<>();
-
-    try (Cache cache = Cache.init(temporaryCacheDirectory)) {
-      BuildAndCacheApplicationLayersStep buildAndCacheApplicationLayersStep =
-          new BuildAndCacheApplicationLayersStep(
-              mockBuildConfiguration,
-              testSourceFilesConfiguration,
-              cache,
-              MoreExecutors.newDirectExecutorService());
-
-      for (ListenableFuture<CachedLayer> applicationLayerFuture :
-          buildAndCacheApplicationLayersStep.call()) {
-        applicationLayers.add(applicationLayerFuture.get());
-      }
-
-      Assert.assertEquals(3, applicationLayers.size());
+    @Test
+    public void testRun() throws LayerPropertyNotFoundException, IOException, CacheMetadataCorruptedException, URISyntaxException, ExecutionException, InterruptedException {
+        Mockito.when(mockBuildConfiguration.getBuildLogger()).thenReturn(new TestBuildLogger());
+        TestSourceFilesConfiguration testSourceFilesConfiguration = new TestSourceFilesConfiguration();
+        Path temporaryCacheDirectory = temporaryFolder.newFolder().toPath();
+        ImageLayers<CachedLayer> applicationLayers = new ImageLayers<>();
+        try (Cache cache = Cache.init(temporaryCacheDirectory)) {
+            BuildAndCacheApplicationLayersStep buildAndCacheApplicationLayersStep = new BuildAndCacheApplicationLayersStep(mockBuildConfiguration, testSourceFilesConfiguration, cache, MoreExecutors.newDirectExecutorService());
+            for (ListenableFuture<CachedLayer> applicationLayerFuture : buildAndCacheApplicationLayersStep.call()) {
+                applicationLayers.add(applicationLayerFuture.get());
+            }
+            Assert.assertEquals(3, applicationLayers.size());
+        }
+        // Re-initialize cache with the updated metadata.
+        Cache cache = Cache.init(temporaryCacheDirectory);
+        // Verifies that the cached layers are up-to-date.
+        CacheReader cacheReader = new CacheReader(cache);
+        Assert.assertEquals(applicationLayers.get(0).getBlobDescriptor(), cacheReader.getUpToDateLayerBySourceFiles(testSourceFilesConfiguration.getDependenciesFiles()).getBlobDescriptor());
+        Assert.assertEquals(applicationLayers.get(1).getBlobDescriptor(), cacheReader.getUpToDateLayerBySourceFiles(testSourceFilesConfiguration.getResourcesFiles()).getBlobDescriptor());
+        Assert.assertEquals(applicationLayers.get(2).getBlobDescriptor(), cacheReader.getUpToDateLayerBySourceFiles(testSourceFilesConfiguration.getClassesFiles()).getBlobDescriptor());
+        // Verifies that the cache reader gets the same layers as the newest application layers.
+        Assert.assertEquals(applicationLayers.get(0).getContentFile(), cacheReader.getLayerFile(testSourceFilesConfiguration.getDependenciesFiles()));
+        Assert.assertEquals(applicationLayers.get(1).getContentFile(), cacheReader.getLayerFile(testSourceFilesConfiguration.getResourcesFiles()));
+        Assert.assertEquals(applicationLayers.get(2).getContentFile(), cacheReader.getLayerFile(testSourceFilesConfiguration.getClassesFiles()));
     }
-
-    // Re-initialize cache with the updated metadata.
-    Cache cache = Cache.init(temporaryCacheDirectory);
-
-    // Verifies that the cached layers are up-to-date.
-    CacheReader cacheReader = new CacheReader(cache);
-    Assert.assertEquals(
-        applicationLayers.get(0).getBlobDescriptor(),
-        cacheReader
-            .getUpToDateLayerBySourceFiles(testSourceFilesConfiguration.getDependenciesFiles())
-            .getBlobDescriptor());
-    Assert.assertEquals(
-        applicationLayers.get(1).getBlobDescriptor(),
-        cacheReader
-            .getUpToDateLayerBySourceFiles(testSourceFilesConfiguration.getResourcesFiles())
-            .getBlobDescriptor());
-    Assert.assertEquals(
-        applicationLayers.get(2).getBlobDescriptor(),
-        cacheReader
-            .getUpToDateLayerBySourceFiles(testSourceFilesConfiguration.getClassesFiles())
-            .getBlobDescriptor());
-
-    // Verifies that the cache reader gets the same layers as the newest application layers.
-    Assert.assertEquals(
-        applicationLayers.get(0).getContentFile(),
-        cacheReader.getLayerFile(testSourceFilesConfiguration.getDependenciesFiles()));
-    Assert.assertEquals(
-        applicationLayers.get(1).getContentFile(),
-        cacheReader.getLayerFile(testSourceFilesConfiguration.getResourcesFiles()));
-    Assert.assertEquals(
-        applicationLayers.get(2).getContentFile(),
-        cacheReader.getLayerFile(testSourceFilesConfiguration.getClassesFiles()));
-  }
 }

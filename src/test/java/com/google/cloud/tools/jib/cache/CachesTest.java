@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,50 +23,42 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-/** Tests for {@link Caches}. */
+/**
+ * Tests for {@link Caches}.
+ */
 public class CachesTest {
 
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-  @Test
-  public void testInitializer()
-      throws CacheMetadataCorruptedException, IOException, CacheDirectoryNotOwnedException {
-    Path tempBaseCacheDirectory = temporaryFolder.newFolder().toPath();
-    Path tempApplicationCacheDirectory = temporaryFolder.newFolder().toPath();
-
-    try (Caches caches =
-        Caches.newInitializer(tempApplicationCacheDirectory)
-            .setBaseCacheDirectory(tempBaseCacheDirectory)
-            .init()) {
-      Assert.assertEquals(tempBaseCacheDirectory, caches.getBaseCache().getCacheDirectory());
-      Assert.assertEquals(
-          tempApplicationCacheDirectory, caches.getApplicationCache().getCacheDirectory());
+    @Test
+    public void testInitializer() throws CacheMetadataCorruptedException, IOException, CacheDirectoryNotOwnedException {
+        Path tempBaseCacheDirectory = temporaryFolder.newFolder().toPath();
+        Path tempApplicationCacheDirectory = temporaryFolder.newFolder().toPath();
+        try (Caches caches = Caches.newInitializer(tempApplicationCacheDirectory).setBaseCacheDirectory(tempBaseCacheDirectory).init()) {
+            Assert.assertEquals(tempBaseCacheDirectory, caches.getBaseCache().getCacheDirectory());
+            Assert.assertEquals(tempApplicationCacheDirectory, caches.getApplicationCache().getCacheDirectory());
+        }
+        // Checks that the caches were closed (metadata.json saved).
+        Assert.assertTrue(Files.exists(tempBaseCacheDirectory.resolve(CacheFiles.METADATA_FILENAME)));
+        Assert.assertTrue(Files.exists(tempApplicationCacheDirectory.resolve(CacheFiles.METADATA_FILENAME)));
     }
 
-    // Checks that the caches were closed (metadata.json saved).
-    Assert.assertTrue(Files.exists(tempBaseCacheDirectory.resolve(CacheFiles.METADATA_FILENAME)));
-    Assert.assertTrue(
-        Files.exists(tempApplicationCacheDirectory.resolve(CacheFiles.METADATA_FILENAME)));
-  }
-
-  @Test
-  public void testEnsureOwnership_notOwned() throws IOException {
-    Path cacheDirectory = temporaryFolder.newFolder().toPath();
-
-    try {
-      Caches.Initializer.ensureOwnership(cacheDirectory);
-      Assert.fail("Expected CacheDirectoryNotOwnedException to be thrown");
-
-    } catch (CacheDirectoryNotOwnedException ex) {
-      Assert.assertEquals(cacheDirectory, ex.getCacheDirectory());
+    @Test
+    public void testEnsureOwnership_notOwned() throws IOException {
+        Path cacheDirectory = temporaryFolder.newFolder().toPath();
+        try {
+            Caches.Initializer.ensureOwnership(cacheDirectory);
+            Assert.fail("Expected CacheDirectoryNotOwnedException to be thrown");
+        } catch (CacheDirectoryNotOwnedException ex) {
+            Assert.assertEquals(cacheDirectory, ex.getCacheDirectory());
+        }
     }
-  }
 
-  @Test
-  public void testEnsureOwnership_create() throws IOException, CacheDirectoryNotOwnedException {
-    Path cacheDirectory = temporaryFolder.newFolder().toPath();
-    Path nonexistentDirectory = cacheDirectory.resolve("somefolder");
-
-    Caches.Initializer.ensureOwnership(nonexistentDirectory);
-  }
+    @Test
+    public void testEnsureOwnership_create() throws IOException, CacheDirectoryNotOwnedException {
+        Path cacheDirectory = temporaryFolder.newFolder().toPath();
+        Path nonexistentDirectory = cacheDirectory.resolve("somefolder");
+        Caches.Initializer.ensureOwnership(nonexistentDirectory);
+    }
 }

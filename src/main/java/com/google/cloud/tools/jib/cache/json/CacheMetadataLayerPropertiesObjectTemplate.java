@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
@@ -27,27 +26,31 @@ import java.util.List;
  */
 public class CacheMetadataLayerPropertiesObjectTemplate implements JsonTemplate {
 
-  /** The paths to the source files that the layer was constructed from. */
-  private List<String> sourceFiles = new ArrayList<>();
+    /**
+     * The paths to the source files that the layer was constructed from.
+     */
+    private List<String> sourceFiles = new ArrayList<>();
 
-  /** The last time the layer was constructed. */
-  private long lastModifiedTime;
+    /**
+     * The last time the layer was constructed.
+     */
+    private long lastModifiedTime;
 
-  public List<String> getSourceFiles() {
-    return sourceFiles;
-  }
+    public List<String> getSourceFiles() {
+        return sourceFiles;
+    }
 
-  public FileTime getLastModifiedTime() {
-    return FileTime.fromMillis(lastModifiedTime);
-  }
+    public FileTime getLastModifiedTime() {
+        return FileTime.fromMillis(lastModifiedTime);
+    }
 
-  public CacheMetadataLayerPropertiesObjectTemplate setSourceFiles(List<String> sourceFiles) {
-    this.sourceFiles = sourceFiles;
-    return this;
-  }
+    public CacheMetadataLayerPropertiesObjectTemplate setSourceFiles(List<String> sourceFiles) {
+        this.sourceFiles = sourceFiles;
+        return this;
+    }
 
-  public CacheMetadataLayerPropertiesObjectTemplate setLastModifiedTime(FileTime lastModifiedTime) {
-    this.lastModifiedTime = lastModifiedTime.toMillis();
-    return this;
-  }
+    public CacheMetadataLayerPropertiesObjectTemplate setLastModifiedTime(FileTime lastModifiedTime) {
+        this.lastModifiedTime = lastModifiedTime.toMillis();
+        return this;
+    }
 }

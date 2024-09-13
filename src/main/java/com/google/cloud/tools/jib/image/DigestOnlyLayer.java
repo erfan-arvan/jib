@@ -13,35 +13,40 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 
-/** A {@link Layer} reference that only has its {@link DescriptorDigest}. */
+/**
+ * A {@link Layer} reference that only has its {@link DescriptorDigest}.
+ */
 public class DigestOnlyLayer implements Layer {
 
-  /** The {@link BlobDescriptor} of the compressed layer content. */
-  private final BlobDescriptor blobDescriptor;
+    /**
+     * The {@link BlobDescriptor} of the compressed layer content.
+     */
+    private final BlobDescriptor blobDescriptor;
 
-  /** Instantiate with a {@link DescriptorDigest}. */
-  public DigestOnlyLayer(DescriptorDigest digest) {
-    blobDescriptor = new BlobDescriptor(digest);
-  }
+    /**
+     * Instantiate with a {@link DescriptorDigest}.
+     */
+    public DigestOnlyLayer(DescriptorDigest digest) {
+        blobDescriptor = new BlobDescriptor(digest);
+    }
 
-  @Override
-  public Blob getBlob() throws LayerPropertyNotFoundException {
-    throw new LayerPropertyNotFoundException("Blob not available for digest-only layer");
-  }
+    @Override
+    public Blob getBlob() throws LayerPropertyNotFoundException {
+        throw new LayerPropertyNotFoundException("Blob not available for digest-only layer");
+    }
 
-  @Override
-  public BlobDescriptor getBlobDescriptor() {
-    return blobDescriptor;
-  }
+    @Override
+    public BlobDescriptor getBlobDescriptor() {
+        return blobDescriptor;
+    }
 
-  @Override
-  public DescriptorDigest getDiffId() throws LayerPropertyNotFoundException {
-    throw new LayerPropertyNotFoundException("Diff ID not available for digest-only layer");
-  }
+    @Override
+    public DescriptorDigest getDiffId() throws LayerPropertyNotFoundException {
+        throw new LayerPropertyNotFoundException("Diff ID not available for digest-only layer");
+    }
 }

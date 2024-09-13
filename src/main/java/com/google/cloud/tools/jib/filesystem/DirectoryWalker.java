@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.filesystem;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
@@ -24,29 +23,33 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/** Recursively applies a function to each file in a directory. */
+/**
+ * Recursively applies a function to each file in a directory.
+ */
 public class DirectoryWalker {
 
-  private final Path rootDir;
+    private final Path rootDir;
 
-  /** Initialize with a root directory to walk. */
-  public DirectoryWalker(Path rootDir) throws NotDirectoryException {
-    if (!Files.isDirectory(rootDir)) {
-      throw new NotDirectoryException(rootDir + " is not a directory");
+    /**
+     * Initialize with a root directory to walk.
+     */
+    public DirectoryWalker(Path rootDir) throws NotDirectoryException {
+        if (!Files.isDirectory(rootDir)) {
+            throw new NotDirectoryException(rootDir + " is not a directory");
+        }
+        this.rootDir = rootDir;
     }
-    this.rootDir = rootDir;
-  }
 
-  /**
-   * Walks {@link #rootDir} and applies {@code pathConsumer} to each file. Note that {@link
-   * #rootDir} itself is visited as well.
-   */
-  public void walk(PathConsumer pathConsumer) throws IOException {
-    try (Stream<Path> fileStream = Files.walk(rootDir)) {
-      List<Path> files = fileStream.collect(Collectors.toList());
-      for (Path path : files) {
-        pathConsumer.accept(path);
-      }
+    /**
+     * Walks {@link #rootDir} and applies {@code pathConsumer} to each file. Note that {@link
+     * #rootDir} itself is visited as well.
+     */
+    public void walk(PathConsumer pathConsumer) throws IOException {
+        try (Stream<Path> fileStream = Files.walk(rootDir)) {
+            List<Path> files = fileStream.collect(Collectors.toList());
+            for (Path path : files) {
+                pathConsumer.accept(path);
+            }
+        }
     }
-  }
 }

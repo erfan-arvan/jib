@@ -13,23 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.http.Authorization;
 import org.junit.Assert;
 import org.junit.Test;
 
-/** Integration tests for {@link RegistryAuthenticator}. */
+/**
+ * Integration tests for {@link RegistryAuthenticator}.
+ */
 public class RegistryAuthenticatorIntegrationTest {
 
-  @Test
-  public void testAuthenticate() throws RegistryAuthenticationFailedException {
-    RegistryAuthenticator registryAuthenticator =
-        RegistryAuthenticators.forDockerHub("library/busybox");
-    Authorization authorization = registryAuthenticator.authenticatePull();
-
-    // Checks that some token was received.
-    Assert.assertTrue(0 < authorization.getToken().length());
-  }
+    @Test
+    public void testAuthenticate() throws RegistryAuthenticationFailedException {
+        RegistryAuthenticator registryAuthenticator = RegistryAuthenticators.forDockerHub("library/busybox");
+        Authorization authorization = registryAuthenticator.authenticatePull();
+        // Checks that some token was received.
+        Assert.assertTrue(0 < authorization.getToken().length());
+    }
 }

@@ -13,34 +13,32 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.jib.json.JsonTemplate;
-import javax.annotation.Nullable;
 
 // TODO: Should include detail field as well - need to have custom parser
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorEntryTemplate implements JsonTemplate {
 
-   private String code;
-   private String message;
+    private String code;
 
-  public ErrorEntryTemplate(String code, String message) {
-    this.code = code;
-    this.message = message;
-  }
+    private String message;
 
-  private ErrorEntryTemplate() {}
+    public ErrorEntryTemplate(String code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 
-  
-  public String getCode() {
-    return code;
-  }
+    private ErrorEntryTemplate() {
+    }
 
-  
-  public String getMessage() {
-    return message;
-  }
+    public String getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

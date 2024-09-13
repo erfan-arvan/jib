@@ -13,15 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image.json;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.cloud.tools.jib.json.JsonTemplate;
 
-/** Parent class for image manifest JSON templates. */
+/**
+ * Parent class for image manifest JSON templates.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public interface ManifestTemplate extends JsonTemplate {
 
-  int getSchemaVersion();
+    int getSchemaVersion();
 }

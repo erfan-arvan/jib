@@ -13,14 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.filesystem;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 
 @FunctionalInterface
 public interface PathConsumer {
 
-  void accept(Path path) throws IOException;
+    void accept(@Nullable() Path path) throws IOException;
 }

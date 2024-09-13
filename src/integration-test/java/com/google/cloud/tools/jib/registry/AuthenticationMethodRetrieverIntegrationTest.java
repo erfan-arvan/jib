@@ -13,26 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.http.Authorization;
 import java.io.IOException;
 import org.junit.Test;
 
-/** Integration tests for {@link AuthenticationMethodRetriever}. */
+/**
+ * Integration tests for {@link AuthenticationMethodRetriever}.
+ */
 public class AuthenticationMethodRetrieverIntegrationTest {
 
-  @Test
-  public void testGetRegistryAuthenticator()
-      throws RegistryAuthenticationFailedException, IOException, RegistryException {
-    RegistryClient registryClient =
-        new RegistryClient(null, "registry.hub.docker.com", "library/busybox");
-    RegistryAuthenticator registryAuthenticator = registryClient.getRegistryAuthenticator();
-    Authorization authorization = registryAuthenticator.authenticatePull();
-
-    RegistryClient authorizedRegistryClient =
-        new RegistryClient(authorization, "registry.hub.docker.com", "library/busybox");
-    authorizedRegistryClient.pullManifest("latest");
-  }
+    @Test
+    public void testGetRegistryAuthenticator() throws RegistryAuthenticationFailedException, IOException, RegistryException {
+        RegistryClient registryClient = new RegistryClient(null, "registry.hub.docker.com", "library/busybox");
+        RegistryAuthenticator registryAuthenticator = registryClient.getRegistryAuthenticator();
+        Authorization authorization = registryAuthenticator.authenticatePull();
+        RegistryClient authorizedRegistryClient = new RegistryClient(authorization, "registry.hub.docker.com", "library/busybox");
+        authorizedRegistryClient.pullManifest("latest");
+    }
 }

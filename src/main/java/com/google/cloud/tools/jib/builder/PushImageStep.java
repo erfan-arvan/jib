@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.Timer;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 import com.google.cloud.tools.jib.cache.CachedLayer;
@@ -36,97 +35,77 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/** Pushes the final image. */
+/**
+ * Pushes the final image.
+ */
 class PushImageStep implements Callable<Void> {
 
-  private static final String DESCRIPTION = "Pushing new image";
+    private static final String DESCRIPTION = "Pushing new image";
 
-  private final BuildConfiguration buildConfiguration;
-  private final ListeningExecutorService listeningExecutorService;
-  private final ListenableFuture<Authorization> pushAuthorizationFuture;
-  private final ListenableFuture<List<ListenableFuture<CachedLayer>>>
-      pullBaseImageLayerFuturesFuture;
-  private final List<ListenableFuture<CachedLayer>> buildApplicationLayerFutures;
+    private final BuildConfiguration buildConfiguration;
 
-  private final ListenableFuture<List<ListenableFuture<Void>>> pushBaseImageLayerFuturesFuture;
-  private final List<ListenableFuture<Void>> pushApplicationLayerFutures;
-  private final ListenableFuture<ListenableFuture<BlobDescriptor>>
-      containerConfigurationBlobDescriptorFutureFuture;
+    private final ListeningExecutorService listeningExecutorService;
 
-  PushImageStep(
-      BuildConfiguration buildConfiguration,
-      ListeningExecutorService listeningExecutorService,
-      ListenableFuture<Authorization> pushAuthorizationFuture,
-      ListenableFuture<List<ListenableFuture<CachedLayer>>> pullBaseImageLayerFuturesFuture,
-      List<ListenableFuture<CachedLayer>> buildApplicationLayerFutures,
-      ListenableFuture<List<ListenableFuture<Void>>> pushBaseImageLayerFuturesFuture,
-      List<ListenableFuture<Void>> pushApplicationLayerFutures,
-      ListenableFuture<ListenableFuture<BlobDescriptor>>
-          containerConfigurationBlobDescriptorFutureFuture) {
-    this.buildConfiguration = buildConfiguration;
-    this.listeningExecutorService = listeningExecutorService;
-    this.pushAuthorizationFuture = pushAuthorizationFuture;
-    this.pullBaseImageLayerFuturesFuture = pullBaseImageLayerFuturesFuture;
-    this.buildApplicationLayerFutures = buildApplicationLayerFutures;
+    private final ListenableFuture<Authorization> pushAuthorizationFuture;
 
-    this.pushBaseImageLayerFuturesFuture = pushBaseImageLayerFuturesFuture;
-    this.pushApplicationLayerFutures = pushApplicationLayerFutures;
-    this.containerConfigurationBlobDescriptorFutureFuture =
-        containerConfigurationBlobDescriptorFutureFuture;
-  }
+    private final ListenableFuture<List<ListenableFuture<CachedLayer>>> pullBaseImageLayerFuturesFuture;
 
-  /**
-   * Depends on {@code pushBaseImageLayerFuturesFuture} and {@code
-   * containerConfigurationBlobDescriptorFutureFuture}.
-   */
-  @Override
-  public Void call() throws ExecutionException, InterruptedException {
-    List<ListenableFuture<?>> dependencies = new ArrayList<>();
-    dependencies.add(pushAuthorizationFuture);
-    dependencies.addAll(NonBlockingFutures.get(pushBaseImageLayerFuturesFuture));
-    dependencies.addAll(pushApplicationLayerFutures);
-    dependencies.add(NonBlockingFutures.get(containerConfigurationBlobDescriptorFutureFuture));
-    return Futures.whenAllComplete(dependencies)
-        .call(this::afterPushBaseImageLayerFuturesFuture, listeningExecutorService)
-        .get();
-  }
+    private final List<ListenableFuture<CachedLayer>> buildApplicationLayerFutures;
 
-  /**
-   * Depends on {@code pushAuthorizationFuture}, {@code pushBaseImageLayerFuturesFuture.get()},
-   * {@code pushApplicationLayerFutures}, and (@code
-   * containerConfigurationBlobDescriptorFutureFuture.get()}.
-   */
-  private Void afterPushBaseImageLayerFuturesFuture()
-      throws IOException, RegistryException, ExecutionException, InterruptedException,
-          LayerPropertyNotFoundException {
-    try (Timer ignored = new Timer(buildConfiguration.getBuildLogger(), DESCRIPTION)) {
-      RegistryClient registryClient =
-          new RegistryClient(
-              NonBlockingFutures.get(pushAuthorizationFuture),
-              buildConfiguration.getTargetRegistry(),
-              buildConfiguration.getTargetRepository());
+    private final ListenableFuture<List<ListenableFuture<Void>>> pushBaseImageLayerFuturesFuture;
 
-      // TODO: Consolidate with BuildAndPushContainerConfigurationStep.
-      // Constructs the image.
-      Image image = new Image();
-      for (Future<CachedLayer> cachedLayerFuture :
-          NonBlockingFutures.get(pullBaseImageLayerFuturesFuture)) {
-        image.addLayer(NonBlockingFutures.get(cachedLayerFuture));
-      }
-      for (Future<CachedLayer> cachedLayerFuture : buildApplicationLayerFutures) {
-        image.addLayer(NonBlockingFutures.get(cachedLayerFuture));
-      }
-      ImageToJsonTranslator imageToJsonTranslator = new ImageToJsonTranslator(image);
+    private final List<ListenableFuture<Void>> pushApplicationLayerFutures;
 
-      // Pushes the image manifest.
-      BuildableManifestTemplate manifestTemplate =
-          imageToJsonTranslator.getManifestTemplate(
-              buildConfiguration.getTargetFormat(),
-              NonBlockingFutures.get(
-                  NonBlockingFutures.get(containerConfigurationBlobDescriptorFutureFuture)));
-      registryClient.pushManifest(manifestTemplate, buildConfiguration.getTargetTag());
+    private final ListenableFuture<ListenableFuture<BlobDescriptor>> containerConfigurationBlobDescriptorFutureFuture;
+
+    PushImageStep(BuildConfiguration buildConfiguration, ListeningExecutorService listeningExecutorService, ListenableFuture<Authorization> pushAuthorizationFuture, ListenableFuture<List<ListenableFuture<CachedLayer>>> pullBaseImageLayerFuturesFuture, List<ListenableFuture<CachedLayer>> buildApplicationLayerFutures, ListenableFuture<List<ListenableFuture<Void>>> pushBaseImageLayerFuturesFuture, List<ListenableFuture<Void>> pushApplicationLayerFutures, ListenableFuture<ListenableFuture<BlobDescriptor>> containerConfigurationBlobDescriptorFutureFuture) {
+        this.buildConfiguration = buildConfiguration;
+        this.listeningExecutorService = listeningExecutorService;
+        this.pushAuthorizationFuture = pushAuthorizationFuture;
+        this.pullBaseImageLayerFuturesFuture = pullBaseImageLayerFuturesFuture;
+        this.buildApplicationLayerFutures = buildApplicationLayerFutures;
+        this.pushBaseImageLayerFuturesFuture = pushBaseImageLayerFuturesFuture;
+        this.pushApplicationLayerFutures = pushApplicationLayerFutures;
+        this.containerConfigurationBlobDescriptorFutureFuture = containerConfigurationBlobDescriptorFutureFuture;
     }
 
-    return null;
-  }
+    /**
+     * Depends on {@code pushBaseImageLayerFuturesFuture} and {@code
+     * containerConfigurationBlobDescriptorFutureFuture}.
+     */
+    @Override
+    public Void call() throws ExecutionException, InterruptedException {
+        List<ListenableFuture<?>> dependencies = new ArrayList<>();
+        dependencies.add(pushAuthorizationFuture);
+        dependencies.addAll(NonBlockingFutures.get(pushBaseImageLayerFuturesFuture));
+        dependencies.addAll(pushApplicationLayerFutures);
+        dependencies.add(NonBlockingFutures.get(containerConfigurationBlobDescriptorFutureFuture));
+        return Futures.whenAllComplete(dependencies).call(this::afterPushBaseImageLayerFuturesFuture, listeningExecutorService).get();
+    }
+
+    /**
+     * Depends on {@code pushAuthorizationFuture}, {@code pushBaseImageLayerFuturesFuture.get()},
+     * {@code pushApplicationLayerFutures}, and (@code
+     * containerConfigurationBlobDescriptorFutureFuture.get()}.
+     */
+    @Nullable()
+    private Void afterPushBaseImageLayerFuturesFuture() throws IOException, RegistryException, ExecutionException, InterruptedException, LayerPropertyNotFoundException {
+        try (Timer ignored = new Timer(buildConfiguration.getBuildLogger(), DESCRIPTION)) {
+            RegistryClient registryClient = new RegistryClient(NonBlockingFutures.get(pushAuthorizationFuture), buildConfiguration.getTargetRegistry(), buildConfiguration.getTargetRepository());
+            // TODO: Consolidate with BuildAndPushContainerConfigurationStep.
+            // Constructs the image.
+            Image image = new Image();
+            for (Future<CachedLayer> cachedLayerFuture : NonBlockingFutures.get(pullBaseImageLayerFuturesFuture)) {
+                image.addLayer(NonBlockingFutures.get(cachedLayerFuture));
+            }
+            for (Future<CachedLayer> cachedLayerFuture : buildApplicationLayerFutures) {
+                image.addLayer(NonBlockingFutures.get(cachedLayerFuture));
+            }
+            ImageToJsonTranslator imageToJsonTranslator = new ImageToJsonTranslator(image);
+            // Pushes the image manifest.
+            BuildableManifestTemplate manifestTemplate = imageToJsonTranslator.getManifestTemplate(buildConfiguration.getTargetFormat(), NonBlockingFutures.get(NonBlockingFutures.get(containerConfigurationBlobDescriptorFutureFuture)));
+            registryClient.pushManifest(manifestTemplate, buildConfiguration.getTargetTag());
+        }
+        return null;
+    }
 }

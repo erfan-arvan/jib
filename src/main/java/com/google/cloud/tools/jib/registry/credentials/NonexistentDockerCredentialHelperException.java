@@ -13,13 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry.credentials;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-/** Thrown because the requested credential helper CLI does not exist. */
+/**
+ * Thrown because the requested credential helper CLI does not exist.
+ */
 public class NonexistentDockerCredentialHelperException extends Exception {
 
-  NonexistentDockerCredentialHelperException(String credentialHelperSuffix, Throwable cause) {
-    super("The system does not have docker-credential-" + credentialHelperSuffix + " CLI", cause);
-  }
+    NonexistentDockerCredentialHelperException(String credentialHelperSuffix, Throwable cause) {
+        super("The system does not have docker-credential-" + credentialHelperSuffix + " CLI", cause);
+    }
 }

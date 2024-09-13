@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.cache;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -27,47 +26,41 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-/** Tests for {@link Cache}. */
+/**
+ * Tests for {@link Cache}.
+ */
 public class CacheTest {
 
-  @Rule public TemporaryFolder temporaryCacheDirectory = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temporaryCacheDirectory = new TemporaryFolder();
 
-  @Test
-  public void testInit_empty() throws IOException, CacheMetadataCorruptedException {
-    Path cacheDirectory = temporaryCacheDirectory.newFolder().toPath();
-
-    Cache cache = Cache.init(cacheDirectory);
-    Assert.assertEquals(0, cache.getMetadata().getLayers().getLayers().size());
-  }
-
-  @Test
-  public void testInit_notDirectory() throws CacheMetadataCorruptedException, IOException {
-    Path tempFile = temporaryCacheDirectory.newFile().toPath();
-
-    try {
-      Cache.init(tempFile);
-      Assert.fail("Cache should not be able to initialize on non-directory");
-
-    } catch (NotDirectoryException ex) {
-      Assert.assertEquals("The cache can only write to a directory", ex.getMessage());
-    }
-  }
-
-  @Test
-  public void testInit_withMetadata()
-      throws URISyntaxException, IOException, CacheMetadataCorruptedException {
-    Path cacheDirectory = temporaryCacheDirectory.newFolder().toPath();
-
-    Path resourceMetadataJsonPath =
-        Paths.get(getClass().getClassLoader().getResource("json/metadata.json").toURI());
-    Path testMetadataJsonPath = cacheDirectory.resolve(CacheFiles.METADATA_FILENAME);
-    Files.copy(resourceMetadataJsonPath, testMetadataJsonPath);
-
-    try (Cache cache = Cache.init(cacheDirectory)) {
-      Assert.assertEquals(2, cache.getMetadata().getLayers().getLayers().size());
+    @Test
+    public void testInit_empty() throws IOException, CacheMetadataCorruptedException {
+        Path cacheDirectory = temporaryCacheDirectory.newFolder().toPath();
+        Cache cache = Cache.init(cacheDirectory);
+        Assert.assertEquals(0, cache.getMetadata().getLayers().getLayers().size());
     }
 
-    Assert.assertArrayEquals(
-        Files.readAllBytes(resourceMetadataJsonPath), Files.readAllBytes(testMetadataJsonPath));
-  }
+    @Test
+    public void testInit_notDirectory() throws CacheMetadataCorruptedException, IOException {
+        Path tempFile = temporaryCacheDirectory.newFile().toPath();
+        try {
+            Cache.init(tempFile);
+            Assert.fail("Cache should not be able to initialize on non-directory");
+        } catch (NotDirectoryException ex) {
+            Assert.assertEquals("The cache can only write to a directory", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testInit_withMetadata() throws URISyntaxException, IOException, CacheMetadataCorruptedException {
+        Path cacheDirectory = temporaryCacheDirectory.newFolder().toPath();
+        Path resourceMetadataJsonPath = Paths.get(getClass().getClassLoader().getResource("json/metadata.json").toURI());
+        Path testMetadataJsonPath = cacheDirectory.resolve(CacheFiles.METADATA_FILENAME);
+        Files.copy(resourceMetadataJsonPath, testMetadataJsonPath);
+        try (Cache cache = Cache.init(cacheDirectory)) {
+            Assert.assertEquals(2, cache.getMetadata().getLayers().getLayers().size());
+        }
+        Assert.assertArrayEquals(Files.readAllBytes(resourceMetadataJsonPath), Files.readAllBytes(testMetadataJsonPath));
+    }
 }

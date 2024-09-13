@@ -13,12 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.builder.BuildLogger;
 import java.io.Closeable;
-import javax.annotation.Nullable;
 
 /**
  * Times execution intervals. This is only for testing purposes and will be removed before the first
@@ -26,64 +24,60 @@ import javax.annotation.Nullable;
  */
 public class Timer implements Closeable {
 
-  private final BuildLogger buildLogger;
-  private final int depth;
+    @Nullable
+    private final BuildLogger buildLogger;
 
-   private String label;
-  private long startTime = System.nanoTime();
+    private final int depth;
 
-  public Timer(BuildLogger buildLogger, String label) {
-    this(buildLogger, label, 0);
-  }
+    private String label;
 
-  private Timer(BuildLogger buildLogger, String label, int depth) {
-    this.buildLogger = buildLogger;
-    this.label = label;
-    this.depth = depth;
+    private long startTime = System.nanoTime();
 
-    if (buildLogger != null) {
-      buildLogger.debug(getTabs().append("TIMING\t").append(label));
-      if (depth == 0) {
-        buildLogger.info("RUNNING\t" + label);
-      }
+    public Timer(BuildLogger buildLogger, String label) {
+        this(buildLogger, label, 0);
     }
-  }
 
-  public Timer subTimer(String label) {
-    return new Timer(buildLogger, label, depth + 1);
-  }
-
-  public void lap( String label) {
-    if (this.label == null) {
-      throw new IllegalStateException("Tried to lap Timer after closing");
+    private Timer(BuildLogger buildLogger, String label, int depth) {
+        this.buildLogger = buildLogger;
+        this.label = label;
+        this.depth = depth;
+        if (buildLogger != null) {
+            buildLogger.debug(getTabs().append("TIMING\t").append(label));
+            if (depth == 0) {
+                buildLogger.info("RUNNING\t" + label);
+            }
+        }
     }
-    if (buildLogger != null) {
-      double timeInMillis = (System.nanoTime() - startTime) / 1000 / 1000.0;
-      buildLogger.debug(
-          getTabs()
-              .append("TIMED\t")
-              .append(this.label)
-              .append(" : ")
-              .append(timeInMillis)
-              .append(" ms"));
-      if (depth == 0) {
-        buildLogger.info(this.label + " : " + timeInMillis + " ms");
-      }
-    }
-    this.label = label;
-    startTime = System.nanoTime();
-  }
 
-  private StringBuilder getTabs() {
-    StringBuilder tabs = new StringBuilder();
-    for (int i = 0; i < depth; i++) {
-      tabs.append("\t");
+    public Timer subTimer(String label) {
+        return new Timer(buildLogger, label, depth + 1);
     }
-    return tabs;
-  }
 
-  @Override
-  public void close() {
-    lap(null);
-  }
+    public void lap(String label) {
+        if (this.label == null) {
+            throw new IllegalStateException("Tried to lap Timer after closing");
+        }
+        if (buildLogger != null) {
+            double timeInMillis = (System.nanoTime() - startTime) / 1000 / 1000.0;
+            buildLogger.debug(getTabs().append("TIMED\t").append(this.label).append(" : ").append(timeInMillis).append(" ms"));
+            if (depth == 0) {
+                buildLogger.info(this.label + " : " + timeInMillis + " ms");
+            }
+        }
+        this.label = label;
+        startTime = System.nanoTime();
+    }
+
+    private StringBuilder getTabs() {
+        StringBuilder tabs = new StringBuilder();
+        for (int i = 0; i < depth; i++) {
+            tabs.append("\t");
+        }
+        return tabs;
+    }
+
+    @Override
+    public void close() {
+        lap(null);
+    }
 }

@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import org.junit.Assert;
@@ -26,31 +25,30 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-/** Tests for {@link Image}. */
+/**
+ * Tests for {@link Image}.
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ImageTest {
 
-  @Mock private Layer mockLayer;
-  @Mock private ImageLayers<Layer> mockImageLayers;
+    @Mock
+    private Layer mockLayer;
 
-  @InjectMocks private Image image;
+    @Mock
+    private ImageLayers<Layer> mockImageLayers;
 
-  @Test
-  public void test_smokeTest() throws LayerPropertyNotFoundException {
-    ImmutableList<String> expectedEnvironment =
-        ImmutableList.of("crepecake=is great", "VARIABLE=VALUE");
+    @InjectMocks
+    private Image image;
 
-    image.setEnvironmentVariable("crepecake", "is great");
-    image.setEnvironmentVariable("VARIABLE", "VALUE");
-
-    image.setEntrypoint(Arrays.asList("some", "command"));
-
-    image.addLayer(mockLayer);
-
-    Mockito.verify(mockImageLayers).add(mockLayer);
-
-    Assert.assertEquals(expectedEnvironment, image.getEnvironment());
-
-    Assert.assertEquals(Arrays.asList("some", "command"), image.getEntrypoint());
-  }
+    @Test
+    public void test_smokeTest() throws LayerPropertyNotFoundException {
+        ImmutableList<String> expectedEnvironment = ImmutableList.of("crepecake=is great", "VARIABLE=VALUE");
+        image.setEnvironmentVariable("crepecake", "is great");
+        image.setEnvironmentVariable("VARIABLE", "VALUE");
+        image.setEntrypoint(Arrays.asList("some", "command"));
+        image.addLayer(mockLayer);
+        Mockito.verify(mockImageLayers).add(mockLayer);
+        Assert.assertEquals(expectedEnvironment, image.getEnvironment());
+        Assert.assertEquals(Arrays.asList("some", "command"), image.getEntrypoint());
+    }
 }

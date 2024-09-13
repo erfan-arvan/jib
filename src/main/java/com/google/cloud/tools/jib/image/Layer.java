@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.image;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.blob.Blob;
 import com.google.cloud.tools.jib.blob.BlobDescriptor;
 
@@ -50,21 +49,21 @@ import com.google.cloud.tools.jib.blob.BlobDescriptor;
  */
 public interface Layer {
 
-  /**
-   * @return the layer's content BLOB
-   * @throws LayerPropertyNotFoundException if not available
-   */
-  Blob getBlob() throws LayerPropertyNotFoundException;
+    /**
+     * @return the layer's content BLOB
+     * @throws LayerPropertyNotFoundException if not available
+     */
+    Blob getBlob() throws LayerPropertyNotFoundException;
 
-  /**
-   * @return the layer's content {@link BlobDescriptor}
-   * @throws LayerPropertyNotFoundException if not available
-   */
-  BlobDescriptor getBlobDescriptor() throws LayerPropertyNotFoundException;
+    /**
+     * @return the layer's content {@link BlobDescriptor}
+     * @throws LayerPropertyNotFoundException if not available
+     */
+    BlobDescriptor getBlobDescriptor() throws LayerPropertyNotFoundException;
 
-  /**
-   * @return the layer's diff ID
-   * @throws LayerPropertyNotFoundException if not available
-   */
-  DescriptorDigest getDiffId() throws LayerPropertyNotFoundException;
+    /**
+     * @return the layer's diff ID
+     * @throws LayerPropertyNotFoundException if not available
+     */
+    DescriptorDigest getDiffId() throws LayerPropertyNotFoundException;
 }

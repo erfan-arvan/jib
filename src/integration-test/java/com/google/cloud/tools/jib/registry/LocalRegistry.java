@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.registry;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.Command;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
@@ -25,69 +24,60 @@ import java.util.UUID;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TestRule;
 
-/** {@link TestRule} that runs a local registry. */
+/**
+ * {@link TestRule} that runs a local registry.
+ */
 public class LocalRegistry extends ExternalResource {
 
-  private final int port;
+    private final int port;
 
-  /** The name for the container running the registry. */
-  private final String containerName = "registry-" + UUID.randomUUID();
+    /**
+     * The name for the container running the registry.
+     */
+    private final String containerName = "registry-" + UUID.randomUUID();
 
-  public LocalRegistry(int port) {
-    this.port = port;
-  }
-
-  /** Starts the local registry. */
-  @Override
-  protected void before() throws Throwable {
-    // Runs the Docker registry.
-    new Command(
-            "docker",
-            "run",
-            "-d",
-            "-p",
-            port + ":5000",
-            "--restart=always",
-            "--name",
-            containerName,
-            "registry:2")
-        .run();
-
-    // Pulls 'busybox'.
-    new Command("docker", "pull", "busybox").run();
-
-    // Tags 'busybox' to push to our local registry.
-    new Command("docker", "tag", "busybox", "localhost:" + port + "/busybox").run();
-
-    // Pushes 'busybox' to our local registry.
-    new Command("docker", "push", "localhost:" + port + "/busybox").run();
-  }
-
-  /** Stops the local registry. */
-  @Override
-  protected void after() {
-    try {
-      // Stops the registry.
-      new Command("docker", "stop", containerName).run();
-
-      // Removes the container.
-      new Command("docker", "rm", "-v", containerName).run();
-
-    } catch (InterruptedException | IOException ex) {
-      throw new RuntimeException("Could not stop local registry fully: " + containerName, ex);
+    public LocalRegistry(int port) {
+        this.port = port;
     }
-  }
 
-  private void printLogs() throws IOException, InterruptedException {
-    Process process = Runtime.getRuntime().exec("docker logs " + containerName);
-    try (InputStreamReader inputStreamReader =
-        new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
-      System.out.println(CharStreams.toString(inputStreamReader));
+    /**
+     * Starts the local registry.
+     */
+    @Override
+    protected void before() throws Throwable {
+        // Runs the Docker registry.
+        new Command("docker", "run", "-d", "-p", port + ":5000", "--restart=always", "--name", containerName, "registry:2").run();
+        // Pulls 'busybox'.
+        new Command("docker", "pull", "busybox").run();
+        // Tags 'busybox' to push to our local registry.
+        new Command("docker", "tag", "busybox", "localhost:" + port + "/busybox").run();
+        // Pushes 'busybox' to our local registry.
+        new Command("docker", "push", "localhost:" + port + "/busybox").run();
     }
-    try (InputStreamReader inputStreamReader =
-        new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8)) {
-      System.err.println(CharStreams.toString(inputStreamReader));
+
+    /**
+     * Stops the local registry.
+     */
+    @Override
+    protected void after() {
+        try {
+            // Stops the registry.
+            new Command("docker", "stop", containerName).run();
+            // Removes the container.
+            new Command("docker", "rm", "-v", containerName).run();
+        } catch (InterruptedException | IOException ex) {
+            throw new RuntimeException("Could not stop local registry fully: " + containerName, ex);
+        }
     }
-    process.waitFor();
-  }
+
+    private void printLogs() throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec("docker logs " + containerName);
+        try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
+            System.out.println(CharStreams.toString(inputStreamReader));
+        }
+        try (InputStreamReader inputStreamReader = new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8)) {
+            System.err.println(CharStreams.toString(inputStreamReader));
+        }
+        process.waitFor();
+    }
 }

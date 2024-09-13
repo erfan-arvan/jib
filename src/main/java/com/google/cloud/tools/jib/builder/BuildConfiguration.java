@@ -13,9 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.tools.jib.builder;
-
+import org.checkerframework.checker.nullness.qual.Nullable;
 import com.google.cloud.tools.jib.image.ImageReference;
 import com.google.cloud.tools.jib.image.json.BuildableManifestTemplate;
 import com.google.cloud.tools.jib.image.json.V22ManifestTemplate;
@@ -25,231 +24,241 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
-/** Immutable configuration options for the builder process. */
+/**
+ * Immutable configuration options for the builder process.
+ */
 public class BuildConfiguration {
 
-  public static class Builder {
+    public static class Builder {
 
-    // All the parameters below are set to their default values.
-     private ImageReference baseImageReference;
-     private ImageReference targetImageReference;
-    private List<String> credentialHelperNames = new ArrayList<>();
-    private RegistryCredentials knownRegistryCredentials = RegistryCredentials.none();
-    private boolean enableReproducibleBuilds = true;
-     private String mainClass;
-    private List<String> jvmFlags = new ArrayList<>();
-    private Map<String, String> environmentMap = new HashMap<>();
-    private Class<? extends BuildableManifestTemplate> targetFormat = V22ManifestTemplate.class;
+        // All the parameters below are set to their default values.
+        @Nullable
+        private ImageReference baseImageReference;
 
-    private BuildLogger buildLogger;
+        @Nullable
+        private ImageReference targetImageReference;
 
-    private Builder(BuildLogger buildLogger) {
-      this.buildLogger = buildLogger;
-    }
+        @Nullable
+        private List<String> credentialHelperNames = new ArrayList<>();
 
-    public Builder setBaseImage( ImageReference imageReference) {
-      baseImageReference = imageReference;
-      return this;
-    }
+        @Nullable
+        private RegistryCredentials knownRegistryCredentials = RegistryCredentials.none();
 
-    public Builder setTargetImage( ImageReference imageReference) {
-      targetImageReference = imageReference;
-      return this;
-    }
+        private boolean enableReproducibleBuilds = true;
 
-    public Builder setCredentialHelperNames( List<String> credentialHelperNames) {
-      if (credentialHelperNames != null) {
-        this.credentialHelperNames = credentialHelperNames;
-      }
-      return this;
-    }
+        @Nullable
+        private String mainClass;
 
-    public Builder setKnownRegistryCredentials(
-         RegistryCredentials knownRegistryCredentials) {
-      if (knownRegistryCredentials != null) {
-        this.knownRegistryCredentials = knownRegistryCredentials;
-      }
-      return this;
-    }
+        @Nullable
+        private List<String> jvmFlags = new ArrayList<>();
 
-    public Builder setEnableReproducibleBuilds(boolean isEnabled) {
-      enableReproducibleBuilds = isEnabled;
-      return this;
-    }
+        @Nullable
+        private Map<String, String> environmentMap = new HashMap<>();
 
-    public Builder setMainClass( String mainClass) {
-      this.mainClass = mainClass;
-      return this;
-    }
+        private Class<? extends BuildableManifestTemplate> targetFormat = V22ManifestTemplate.class;
 
-    public Builder setJvmFlags( List<String> jvmFlags) {
-      if (jvmFlags != null) {
-        this.jvmFlags = jvmFlags;
-      }
-      return this;
-    }
+        private BuildLogger buildLogger;
 
-    public Builder setEnvironment( Map<String, String> environmentMap) {
-      if (environmentMap != null) {
-        this.environmentMap = environmentMap;
-      }
-      return this;
-    }
+        private Builder(BuildLogger buildLogger) {
+            this.buildLogger = buildLogger;
+        }
 
-    public Builder setTargetFormat(Class<? extends BuildableManifestTemplate> targetFormat) {
-      this.targetFormat = targetFormat;
-      return this;
-    }
+        public Builder setBaseImage(ImageReference imageReference) {
+            baseImageReference = imageReference;
+            return this;
+        }
 
-    /** @return the corresponding build configuration */
-    public BuildConfiguration build() {
-      // Validates the parameters.
-      List<String> errorMessages = new ArrayList<>();
-      if (baseImageReference == null) {
-        errorMessages.add("base image is required but not set");
-      }
-      if (targetImageReference == null) {
-        errorMessages.add("target image is required but not set");
-      }
-      if (mainClass == null) {
-        errorMessages.add("main class is required but not set");
-      }
+        public Builder setTargetImage(ImageReference imageReference) {
+            targetImageReference = imageReference;
+            return this;
+        }
 
-      switch (errorMessages.size()) {
-        case 0: // No errors
-          if (baseImageReference == null || targetImageReference == null || mainClass == null) {
-            throw new IllegalStateException("Required fields should not be null");
-          }
-          return new BuildConfiguration(
-              buildLogger,
-              baseImageReference,
-              targetImageReference,
-              credentialHelperNames,
-              knownRegistryCredentials,
-              enableReproducibleBuilds,
-              mainClass,
-              jvmFlags,
-              environmentMap,
-              targetFormat);
-
-        case 1:
-          throw new IllegalStateException(errorMessages.get(0));
-
-        case 2:
-          throw new IllegalStateException(errorMessages.get(0) + " and " + errorMessages.get(1));
-
-        default:
-          // Appends the descriptions in correct grammar.
-          StringBuilder errorMessage = new StringBuilder(errorMessages.get(0));
-          for (int errorMessageIndex = 1;
-              errorMessageIndex < errorMessages.size();
-              errorMessageIndex++) {
-            if (errorMessageIndex == errorMessages.size() - 1) {
-              errorMessage.append(", and ");
-            } else {
-              errorMessage.append(", ");
+        public Builder setCredentialHelperNames(List<String> credentialHelperNames) {
+            if (credentialHelperNames != null) {
+                this.credentialHelperNames = credentialHelperNames;
             }
-            errorMessage.append(errorMessages.get(errorMessageIndex));
-          }
-          throw new IllegalStateException(errorMessage.toString());
-      }
+            return this;
+        }
+
+        public Builder setKnownRegistryCredentials(RegistryCredentials knownRegistryCredentials) {
+            if (knownRegistryCredentials != null) {
+                this.knownRegistryCredentials = knownRegistryCredentials;
+            }
+            return this;
+        }
+
+        public Builder setEnableReproducibleBuilds(boolean isEnabled) {
+            enableReproducibleBuilds = isEnabled;
+            return this;
+        }
+
+        public Builder setMainClass(String mainClass) {
+            this.mainClass = mainClass;
+            return this;
+        }
+
+        public Builder setJvmFlags(List<String> jvmFlags) {
+            if (jvmFlags != null) {
+                this.jvmFlags = jvmFlags;
+            }
+            return this;
+        }
+
+        public Builder setEnvironment(Map<String, String> environmentMap) {
+            if (environmentMap != null) {
+                this.environmentMap = environmentMap;
+            }
+            return this;
+        }
+
+        public Builder setTargetFormat(Class<? extends BuildableManifestTemplate> targetFormat) {
+            this.targetFormat = targetFormat;
+            return this;
+        }
+
+        /**
+         * @return the corresponding build configuration
+         */
+        public BuildConfiguration build() {
+            // Validates the parameters.
+            List<String> errorMessages = new ArrayList<>();
+            if (baseImageReference == null) {
+                errorMessages.add("base image is required but not set");
+            }
+            if (targetImageReference == null) {
+                errorMessages.add("target image is required but not set");
+            }
+            if (mainClass == null) {
+                errorMessages.add("main class is required but not set");
+            }
+            switch(errorMessages.size()) {
+                case // No errors
+                0:
+                    if (baseImageReference == null || targetImageReference == null || mainClass == null) {
+                        throw new IllegalStateException("Required fields should not be null");
+                    }
+                    return new BuildConfiguration(buildLogger, baseImageReference, targetImageReference, credentialHelperNames, knownRegistryCredentials, enableReproducibleBuilds, mainClass, jvmFlags, environmentMap, targetFormat);
+                case 1:
+                    throw new IllegalStateException(errorMessages.get(0));
+                case 2:
+                    throw new IllegalStateException(errorMessages.get(0) + " and " + errorMessages.get(1));
+                default:
+                    // Appends the descriptions in correct grammar.
+                    StringBuilder errorMessage = new StringBuilder(errorMessages.get(0));
+                    for (int errorMessageIndex = 1; errorMessageIndex < errorMessages.size(); errorMessageIndex++) {
+                        if (errorMessageIndex == errorMessages.size() - 1) {
+                            errorMessage.append(", and ");
+                        } else {
+                            errorMessage.append(", ");
+                        }
+                        errorMessage.append(errorMessages.get(errorMessageIndex));
+                    }
+                    throw new IllegalStateException(errorMessage.toString());
+            }
+        }
     }
-  }
 
-  private final BuildLogger buildLogger;
-  private ImageReference baseImageReference;
-  private ImageReference targetImageReference;
-  private List<String> credentialHelperNames;
-  private RegistryCredentials knownRegistryCredentials;
-  private boolean enableReproducibleBuilds;
-  private String mainClass;
-  private List<String> jvmFlags;
-  private Map<String, String> environmentMap;
-  private Class<? extends BuildableManifestTemplate> targetFormat;
+    private final BuildLogger buildLogger;
 
-  public static Builder builder(BuildLogger buildLogger) {
-    return new Builder(buildLogger);
-  }
+    @Nullable
+    private ImageReference baseImageReference;
 
-  /** Instantiate with {@link Builder#build}. */
-  private BuildConfiguration(
-      BuildLogger buildLogger,
-      ImageReference baseImageReference,
-      ImageReference targetImageReference,
-      List<String> credentialHelperNames,
-      RegistryCredentials knownRegistryCredentials,
-      boolean enableReproducibleBuilds,
-      String mainClass,
-      List<String> jvmFlags,
-      Map<String, String> environmentMap,
-      Class<? extends BuildableManifestTemplate> targetFormat) {
-    this.buildLogger = buildLogger;
-    this.baseImageReference = baseImageReference;
-    this.targetImageReference = targetImageReference;
-    this.credentialHelperNames = Collections.unmodifiableList(credentialHelperNames);
-    this.knownRegistryCredentials = knownRegistryCredentials;
-    this.enableReproducibleBuilds = enableReproducibleBuilds;
-    this.mainClass = mainClass;
-    this.jvmFlags = Collections.unmodifiableList(jvmFlags);
-    this.environmentMap = Collections.unmodifiableMap(environmentMap);
-    this.targetFormat = targetFormat;
-  }
+    @Nullable
+    private ImageReference targetImageReference;
 
-  public BuildLogger getBuildLogger() {
-    return buildLogger;
-  }
+    @Nullable
+    private List<String> credentialHelperNames;
 
-  public String getBaseImageRegistry() {
-    return baseImageReference.getRegistry();
-  }
+    @Nullable
+    private RegistryCredentials knownRegistryCredentials;
 
-  public String getBaseImageRepository() {
-    return baseImageReference.getRepository();
-  }
+    private boolean enableReproducibleBuilds;
 
-  public String getBaseImageTag() {
-    return baseImageReference.getTag();
-  }
+    @Nullable
+    private String mainClass;
 
-  public String getTargetRegistry() {
-    return targetImageReference.getRegistry();
-  }
+    @Nullable
+    private List<String> jvmFlags;
 
-  public String getTargetRepository() {
-    return targetImageReference.getRepository();
-  }
+    @Nullable
+    private Map<String, String> environmentMap;
 
-  public String getTargetTag() {
-    return targetImageReference.getTag();
-  }
+    private Class<? extends BuildableManifestTemplate> targetFormat;
 
-  public RegistryCredentials getKnownRegistryCredentials() {
-    return knownRegistryCredentials;
-  }
+    public static Builder builder(BuildLogger buildLogger) {
+        return new Builder(buildLogger);
+    }
 
-  public List<String> getCredentialHelperNames() {
-    return credentialHelperNames;
-  }
+    /**
+     * Instantiate with {@link Builder#build}.
+     */
+    private BuildConfiguration(BuildLogger buildLogger, ImageReference baseImageReference, ImageReference targetImageReference, List<String> credentialHelperNames, RegistryCredentials knownRegistryCredentials, boolean enableReproducibleBuilds, String mainClass, List<String> jvmFlags, Map<String, String> environmentMap, Class<? extends BuildableManifestTemplate> targetFormat) {
+        this.buildLogger = buildLogger;
+        this.baseImageReference = baseImageReference;
+        this.targetImageReference = targetImageReference;
+        this.credentialHelperNames = Collections.unmodifiableList(credentialHelperNames);
+        this.knownRegistryCredentials = knownRegistryCredentials;
+        this.enableReproducibleBuilds = enableReproducibleBuilds;
+        this.mainClass = mainClass;
+        this.jvmFlags = Collections.unmodifiableList(jvmFlags);
+        this.environmentMap = Collections.unmodifiableMap(environmentMap);
+        this.targetFormat = targetFormat;
+    }
 
-  public boolean getEnableReproducibleBuilds() {
-    return enableReproducibleBuilds;
-  }
+    public BuildLogger getBuildLogger() {
+        return buildLogger;
+    }
 
-  public String getMainClass() {
-    return mainClass;
-  }
+    public String getBaseImageRegistry() {
+        return baseImageReference.getRegistry();
+    }
 
-  public List<String> getJvmFlags() {
-    return jvmFlags;
-  }
+    public String getBaseImageRepository() {
+        return baseImageReference.getRepository();
+    }
 
-  public Map<String, String> getEnvironment() {
-    return environmentMap;
-  }
+    public String getBaseImageTag() {
+        return baseImageReference.getTag();
+    }
 
-  public Class<? extends BuildableManifestTemplate> getTargetFormat() {
-    return targetFormat;
-  }
+    public String getTargetRegistry() {
+        return targetImageReference.getRegistry();
+    }
+
+    public String getTargetRepository() {
+        return targetImageReference.getRepository();
+    }
+
+    public String getTargetTag() {
+        return targetImageReference.getTag();
+    }
+
+    public RegistryCredentials getKnownRegistryCredentials() {
+        return knownRegistryCredentials;
+    }
+
+    public List<String> getCredentialHelperNames() {
+        return credentialHelperNames;
+    }
+
+    public boolean getEnableReproducibleBuilds() {
+        return enableReproducibleBuilds;
+    }
+
+    public String getMainClass() {
+        return mainClass;
+    }
+
+    public List<String> getJvmFlags() {
+        return jvmFlags;
+    }
+
+    public Map<String, String> getEnvironment() {
+        return environmentMap;
+    }
+
+    public Class<? extends BuildableManifestTemplate> getTargetFormat() {
+        return targetFormat;
+    }
 }
